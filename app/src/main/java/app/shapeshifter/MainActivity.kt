@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import app.feature.home.ui.Home
+import app.shapeshifter.inject.ApplicationComponent
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -31,8 +32,8 @@ class MainActivity : ComponentActivity() {
         .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
         setContent {
             CircuitCompositionLocals(circuit = circuit) {

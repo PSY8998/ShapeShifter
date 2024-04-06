@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.androidx.compose.preview)
     implementation(libs.androidx.compose.foundation)
 
+    implementation(libs.kotlininject.runtime)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

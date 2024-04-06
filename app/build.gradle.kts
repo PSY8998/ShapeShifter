@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -44,6 +45,10 @@ android {
     }
 }
 
+ksp {
+    arg("me.tatarka.inject.generateCompanionExtensions", "true")
+}
+
 dependencies {
     implementation(project(":feature:home:ui"))
 
@@ -54,6 +59,8 @@ dependencies {
 
     implementation(libs.circuit.foundation)
 
+    implementation(libs.kotlininject.runtime)
+    ksp(libs.kotlininject.compiler)
 
 
     testImplementation(libs.junit)

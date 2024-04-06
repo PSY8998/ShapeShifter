@@ -10,6 +10,9 @@ material = "1.11.0"
 activity = "1.9.0-rc01"
 compose-bom = "2024.04.00"
 circuit = "0.20.0"
+jvm = "1.9.22"
+ksp = "1.9.22-1.0.17"
+tatarka = "0.6.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,9 +32,15 @@ androidx-compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 circuit-foundation = { group = "com.slack.circuit", name = "circuit-foundation", version.ref = "circuit" }
 
 
+kotlininject-compiler = {group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka"}
+kotlininject-runtime = {group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka"}
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jvm" }
+google-devtools-ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
