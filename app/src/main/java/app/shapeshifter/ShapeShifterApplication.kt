@@ -5,8 +5,8 @@ import app.shapeshifter.inject.ApplicationComponent
 import app.shapeshifter.inject.create
 
 class ShapeShifterApplication: Application() {
-    override fun onCreate() {
-        super.onCreate()
-        ApplicationComponent.create()
+
+    val component: ApplicationComponent by lazy {
+        ApplicationComponent.create(this)
     }
 }

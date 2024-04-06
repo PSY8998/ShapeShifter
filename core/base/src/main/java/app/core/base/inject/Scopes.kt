@@ -1,4 +1,4 @@
-package app.shapeshifter.inject.scopes
+package app.core.base.inject
 
 import me.tatarka.inject.annotations.Scope
 

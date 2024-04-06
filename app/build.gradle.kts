@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.devtools.ksp)
 }
 
@@ -50,7 +49,8 @@ ksp {
 }
 
 dependencies {
-    implementation(project(":feature:home:ui"))
+    implementation(projects.feature.home.ui)
+    implementation(projects.core.base)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
