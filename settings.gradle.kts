@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ShapeShifter"
 include(":app")
- 
+include(":feature:home:ui")
