@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
 import app.feature.home.ui.HomeScreen
+import app.feature.home.ui.exercisedetail.ExerciseDetailScreen
 import app.shapeshifter.inject.ActivityComponent
 import app.shapeshifter.inject.ApplicationComponent
 import app.shapeshifter.inject.create
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         val component = ActivityComponent.create(this, applicationComponent)
 
         setContent {
-            val backStack = rememberSaveableBackStack(root = HomeScreen)
+            val backStack = rememberSaveableBackStack(root = ExerciseDetailScreen)
             val navigator = rememberCircuitNavigator(backStack)
 
             component.shapeShifterContent(

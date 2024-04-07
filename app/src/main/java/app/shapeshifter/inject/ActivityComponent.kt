@@ -4,6 +4,7 @@ import android.app.Activity
 import app.core.base.inject.ActivityScope
 import app.feature.home.ui.HomeComponent
 import app.feature.home.ui.ShapeShifterContent
+import app.feature.home.ui.exercisedetail.ExerciseDetailComponent
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui
@@ -15,7 +16,8 @@ import me.tatarka.inject.annotations.Provides
 abstract class ActivityComponent(
     @get:Provides val activity: Activity,
     @Component val applicationComponent: ApplicationComponent,
-): HomeComponent {
+) : HomeComponent,
+    ExerciseDetailComponent {
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope
