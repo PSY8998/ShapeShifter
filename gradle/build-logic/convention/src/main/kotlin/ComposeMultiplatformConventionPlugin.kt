@@ -12,7 +12,6 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.compose")
         configureCompose()
     }
-
 }
 
 fun Project.configureCompose() {
@@ -38,5 +37,3 @@ fun Project.configureCompose() {
 fun Project.compose(block: ComposeExtension.() -> Unit) {
     extensions.configure<ComposeExtension>(block)
 }
-
-

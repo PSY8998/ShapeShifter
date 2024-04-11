@@ -39,7 +39,7 @@ ksp {
 }
 
 dependencies {
-    //core
+    // core
     implementation(projects.core.base)
 
     // features

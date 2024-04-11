@@ -1,6 +1,4 @@
 import app.shapeshifter.configureAndroid
-import app.shapeshifter.configureKotlin
-import app.shapeshifter.configureSpotless
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

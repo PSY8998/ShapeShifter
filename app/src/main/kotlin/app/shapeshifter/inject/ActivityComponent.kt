@@ -2,9 +2,9 @@ package app.shapeshifter.inject
 
 import android.app.Activity
 import app.shapeshifter.core.base.inject.ActivityScope
+import app.shapeshifter.feature.exercise.ui.ExerciseDetailComponent
 import app.shapeshifter.feature.home.ui.HomeComponent
 import app.shapeshifter.feature.home.ui.ShapeShifterContent
-import app.shapeshifter.feature.exercise.ui.ExerciseDetailComponent
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.ui.Ui

@@ -25,7 +25,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
 //                    // add common dependencies
 //                }
 //            }
-
         }
 
         configureSpotless()
