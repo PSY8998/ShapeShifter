@@ -1,6 +1,7 @@
 plugins {
     `android-application`
-    alias(libs.plugins.google.devtools.ksp)
+    `compose-multiplatform`
+    alias(libs.plugins.ksp)
     alias(libs.plugins.sqldelight)
 }
 
@@ -28,7 +29,7 @@ sqldelight {
     databases {
         create("ShapeShifterDatabase") {
             packageName.set("app.shapeshifter")
-            dependency(projects.feature.home.ui)
+            dependency(projects.feature.exercise.data)
         }
     }
 }
@@ -38,8 +39,17 @@ ksp {
 }
 
 dependencies {
-    implementation(projects.feature.home.ui)
+    // core
     implementation(projects.core.base)
+
+    // features
+
+    // home
+    implementation(projects.feature.home.ui)
+
+    // exercise
+    implementation(projects.feature.exercise.ui)
+    implementation(projects.feature.exercise.data)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

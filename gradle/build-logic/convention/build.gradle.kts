@@ -18,6 +18,7 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.spotless.gradlePlugin)
+    compileOnly(libs.compose.multiplatformPlugin)
 }
 
 gradlePlugin {
@@ -40,6 +41,16 @@ gradlePlugin {
         register("kotlinLibrary") {
             id = "shapeshifter.kotlin.library"
             implementationClass = "KotlinLibraryConventionPlugin"
+        }
+
+        register("kotlinMultiplatform") {
+            id = "shapeshifter.kotlin.multiplatform"
+            implementationClass = "KotlinMultiplatformConventionPlugin"
+        }
+
+        register("composeMultiplatform") {
+            id = "shapeshifter.compose.multiplatform"
+            implementationClass = "ComposeMultiplatformConventionPlugin"
         }
     }
 }
