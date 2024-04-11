@@ -1,4 +1,4 @@
-package app.shapeshifter.feature.home.ui.exercisedetail
+package app.shapeshifter.feature.exercise.ui
 
 import app.shapeshifter.core.base.inject.ActivityScope
 import com.slack.circuit.runtime.presenter.Presenter

@@ -1,4 +1,5 @@
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -53,3 +54,10 @@ inline val PluginDependenciesSpec.`android-library`: PluginDependencySpec
 
 inline val PluginDependenciesSpec.`kotlin-library`: PluginDependencySpec
     get() = id("shapeshifter.kotlin.library")
+
+inline val PluginDependenciesSpec.`kotlin-multiplatform`: PluginDependencySpec
+    get() = id("shapeshifter.kotlin.multiplatform")
+
+inline val PluginDependenciesSpec.`compose-multiplatform`: PluginDependencySpec
+    get() = id("shapeshifter.compose.multiplatform")
+

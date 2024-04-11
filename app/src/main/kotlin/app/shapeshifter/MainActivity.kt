@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
-import app.shapeshifter.feature.home.ui.exercisedetail.ExerciseDetailScreen
+import app.shapeshifter.feature.exercise.ui.ExerciseDetailScreen
 import app.shapeshifter.inject.ActivityComponent
 import app.shapeshifter.inject.ApplicationComponent
 import app.shapeshifter.inject.create

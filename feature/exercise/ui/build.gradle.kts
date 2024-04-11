@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "app.shapeshifter.feature.home.ui"
+    namespace = "app.shapeshifter.feature.exercise.ui"
 }
 
 kotlin {
@@ -15,13 +15,12 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
 
-                implementation(libs.circuit.foundation)
-
                 implementation(libs.kotlininject.runtime)
-
-                implementation(compose.material3)
+                implementation(libs.circuit.foundation)
+                implementation(compose.preview)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
+                implementation(compose.material3)
             }
         }
     }

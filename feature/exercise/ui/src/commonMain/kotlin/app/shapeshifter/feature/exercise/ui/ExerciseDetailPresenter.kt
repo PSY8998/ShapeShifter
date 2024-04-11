@@ -1,7 +1,6 @@
-package app.shapeshifter.feature.home.ui.exercisedetail
+package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.runtime.Composable
-import app.shapeshifter.feature.home.ui.EmptyUiState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -28,9 +27,9 @@ class ExerciseDetailPresenterFactory(
 @Inject
 class ExerciseDetailPresenter(
     @Assisted private val exerciseDetailScreen: ExerciseDetailScreen,
-) : Presenter<EmptyUiState> {
+) : Presenter<ExerciseDetailState> {
     @Composable
-    override fun present(): EmptyUiState {
-        return EmptyUiState()
+    override fun present(): ExerciseDetailState {
+        return ExerciseDetailState
     }
 }

@@ -1,8 +1,8 @@
-package app.shapeshifter.feature.home.ui.exercisedetail
+package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import app.shapeshifter.feature.home.ui.EmptyUiState
+import androidx.compose.ui.tooling.preview.Preview
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -17,14 +17,16 @@ data object ExerciseDetailScreen : Screen
 class ExerciseDetailUiFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
         return when (screen) {
-            is ExerciseDetailScreen -> ui<EmptyUiState> { _, _ ->
+            is ExerciseDetailScreen -> ui<ExerciseDetailState> { _, _ ->
                 ExerciseDetail()
             }
+
             else -> null
         }
     }
 }
 
+@Preview
 @Composable
 fun ExerciseDetail() {
     Text(text = "Exercise details")
