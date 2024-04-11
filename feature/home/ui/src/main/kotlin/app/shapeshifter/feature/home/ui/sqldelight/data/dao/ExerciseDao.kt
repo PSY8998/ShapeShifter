@@ -9,7 +9,7 @@ class ExerciseDao(
     private val db: Database,
 ) {
     fun testDb() {
-        val hdj =db.exerciseQueries.selectAll { id, name, instructions ->
+        val hdj = db.exerciseQueries.selectAll { id, name, instructions ->
             Exercise(id, name, instructions)
         }.executeAsList()
     }

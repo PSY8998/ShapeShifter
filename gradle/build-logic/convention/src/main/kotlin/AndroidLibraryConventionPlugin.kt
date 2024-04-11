@@ -15,7 +15,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             configureKotlin(
-                enableWarningsAsErrors = false
+                enableWarningsAsErrors = false,
             )
 
             configureAndroid()

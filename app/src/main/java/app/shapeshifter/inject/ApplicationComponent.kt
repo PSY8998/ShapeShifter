@@ -10,7 +10,7 @@ import me.tatarka.inject.annotations.Provides
 @Component
 abstract class ApplicationComponent(
     @get:Provides val application: Application,
-): SqlDelightDatabaseComponent {
+) : SqlDelightDatabaseComponent {
 
     companion object
 }

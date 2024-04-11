@@ -22,15 +22,15 @@ interface SqlDelightDatabaseDriverComponent {
 
 @Inject
 class DatabaseFactory(
-    private val driver: SqlDriver
-){
+    private val driver: SqlDriver,
+) {
     fun build(): Database = Database(driver)
 }
 
-interface SqlDelightDatabaseComponent: SqlDelightDatabaseDriverComponent{
+interface SqlDelightDatabaseComponent : SqlDelightDatabaseDriverComponent {
     @ApplicationScope
     @Provides
     fun provideSqlDelightDatabase(
-        factory: DatabaseFactory
+        factory: DatabaseFactory,
     ) = factory.build()
 }
