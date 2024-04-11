@@ -2,7 +2,7 @@ package app.shapeshifter.inject
 
 import android.app.Application
 import app.shapeshifter.core.base.inject.ApplicationScope
-import app.shapeshifter.feature.home.ui.sqldelight.data.SqlDelightDatabaseComponent
+import app.shapeshifter.database.SqlDelightDatabaseComponent
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 

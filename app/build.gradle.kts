@@ -1,6 +1,7 @@
 plugins {
     `android-application`
     alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -21,13 +22,14 @@ android {
             )
         }
     }
+}
 
-    buildFeatures {
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
+sqldelight {
+    databases {
+        create("ShapeShifterDatabase") {
+            packageName.set("app.shapeshifter")
+            dependency(projects.feature.home.ui)
+        }
     }
 }
 
@@ -48,6 +50,8 @@ dependencies {
 
     implementation(libs.kotlininject.runtime)
     ksp(libs.kotlininject.compiler)
+
+    implementation(libs.sqldelight.androidDriver)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
