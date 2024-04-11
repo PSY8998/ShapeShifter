@@ -20,7 +20,7 @@ class HomeUiFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
         return when (screen) {
             is HomeScreen -> {
-                ui<EmptyUiState> { state, modifier ->
+                ui<EmptyUiState> { _, modifier ->
                     Home(
                         modifier = modifier
                     )

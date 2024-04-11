@@ -17,7 +17,7 @@ data object ExerciseDetailScreen : Screen
 class ExerciseDetailUiFactory: Ui.Factory{
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
         return when(screen){
-            is ExerciseDetailScreen -> ui<EmptyUiState> { state, modifier ->
+            is ExerciseDetailScreen -> ui<EmptyUiState> { _, _ ->
                 ExerciseDetail()
             }
             else -> null
