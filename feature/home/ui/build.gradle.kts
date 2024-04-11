@@ -1,10 +1,19 @@
 plugins {
     `android-library`
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.sqldelight)
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("app.shapeshifter.feature.home.ui")
+        }
+    }
 }
 
 android {
-    namespace = "app.feature.home.ui"
+    namespace = "app.shapeshifter.feature.home.ui"
 
     buildFeatures {
         compose = true
@@ -30,6 +39,8 @@ dependencies {
     implementation(libs.circuit.foundation)
 
     implementation(libs.kotlininject.runtime)
+
+    implementation(libs.sqldelight.androidDriver)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -14,7 +14,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 apply("org.jetbrains.kotlin.android")
             }
 
-            configureKotlin()
+            configureKotlin(
+                enableWarningsAsErrors = false
+            )
 
             configureAndroid()
 
