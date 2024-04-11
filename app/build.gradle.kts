@@ -17,7 +17,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -48,7 +48,6 @@ dependencies {
 
     implementation(libs.kotlininject.runtime)
     ksp(libs.kotlininject.compiler)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -9,8 +9,8 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import kotlinx.parcelize.Parcelize
 import me.tatarka.inject.annotations.Inject
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data object HomeScreen : Screen
@@ -22,7 +22,7 @@ class HomeUiFactory : Ui.Factory {
             is HomeScreen -> {
                 ui<EmptyUiState> { _, modifier ->
                     Home(
-                        modifier = modifier
+                        modifier = modifier,
                     )
                 }
             }
@@ -32,18 +32,17 @@ class HomeUiFactory : Ui.Factory {
     }
 }
 
-
 @Composable
 fun Home(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         Text(
             text = "ShapeShifter",
             modifier = Modifier
-                .padding(paddingValues)
+                .padding(paddingValues),
         )
     }
 }

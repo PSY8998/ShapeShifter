@@ -15,7 +15,6 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
             configureSpotless()
 
             dependencies {
-
             }
         }
     }

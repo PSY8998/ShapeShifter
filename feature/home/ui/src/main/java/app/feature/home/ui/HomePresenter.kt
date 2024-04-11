@@ -9,7 +9,6 @@ import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 
-
 class EmptyUiState : CircuitUiState
 
 @Inject
@@ -19,14 +18,13 @@ class HomePresenterFactory(
     override fun create(
         screen: Screen,
         navigator: Navigator,
-        context: CircuitContext
+        context: CircuitContext,
     ): Presenter<*>? {
         return when (screen) {
             is HomeScreen -> presenterFactory(screen, navigator)
             else -> null
         }
     }
-
 }
 
 @Inject

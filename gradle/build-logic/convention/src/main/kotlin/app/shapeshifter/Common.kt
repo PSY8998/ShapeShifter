@@ -41,7 +41,6 @@ fun KotlinProjectExtension.setProjectToolChainVersion() {
     jvmToolchain(17)
 }
 
-
 fun KotlinProjectExtension.compilerOptions(
     action: KotlinJvmCompilerOptions.() -> Unit,
 ) = project(
