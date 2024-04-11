@@ -23,14 +23,14 @@ fun ShapeShifterContent(
     @Assisted backstack: SaveableBackStack,
     @Assisted navigator: Navigator,
     circuit: Circuit,
-    @Assisted modifier: Modifier
+    @Assisted modifier: Modifier,
 ) {
     CircuitCompositionLocals(circuit) {
         MaterialTheme {
             NavigableCircuitContent(
                 navigator = navigator,
                 backStack = backstack,
-                modifier = modifier
+                modifier = modifier,
             )
         }
     }

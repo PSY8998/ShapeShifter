@@ -11,11 +11,14 @@ interface ExerciseDetailComponent {
     @IntoSet
     @Provides
     @ActivityScope
-    fun bindExerciseDetailPresenterFactory(factory: ExerciseDetailPresenterFactory): Presenter.Factory =
-        factory
+    fun bindExerciseDetailPresenterFactory(
+        factory: ExerciseDetailPresenterFactory,
+    ): Presenter.Factory = factory
 
     @IntoSet
     @Provides
     @ActivityScope
-    fun bindExerciseDetailUiFactory(factory: ExerciseDetailUiFactory): Ui.Factory = factory
+    fun bindExerciseDetailUiFactory(
+        factory: ExerciseDetailUiFactory,
+    ): Ui.Factory = factory
 }

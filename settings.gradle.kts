@@ -11,14 +11,33 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    includeBuild("gradle/build-logic")
 }
 
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io")
     }
+}
+
+plugins {
+    id("com.gradle.develocity").version("3.17.1")
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = "yes"
+    }
+}
+
+dependencyResolutionManagement {
+    defaultLibrariesExtensionName.set("libs")
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

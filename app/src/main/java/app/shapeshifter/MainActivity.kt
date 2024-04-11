@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
-import app.feature.home.ui.HomeScreen
 import app.feature.home.ui.exercisedetail.ExerciseDetailScreen
 import app.shapeshifter.inject.ActivityComponent
 import app.shapeshifter.inject.ApplicationComponent
@@ -29,7 +28,7 @@ class MainActivity : ComponentActivity() {
             component.shapeShifterContent(
                 backStack,
                 navigator,
-                Modifier
+                Modifier,
             )
         }
     }
