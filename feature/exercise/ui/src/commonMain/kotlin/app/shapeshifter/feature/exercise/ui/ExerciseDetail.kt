@@ -1,7 +1,14 @@
 package app.shapeshifter.feature.exercise.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -29,5 +36,16 @@ class ExerciseDetailUiFactory : Ui.Factory {
 @Preview
 @Composable
 fun ExerciseDetail() {
-    Text(text = "Exercise details")
+    Surface(
+        modifier = Modifier
+            .fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
+        Box(
+            modifier = Modifier
+                .systemBarsPadding(),
+        ) {
+            Text(text = "Exercise details")
+        }
+    }
 }
