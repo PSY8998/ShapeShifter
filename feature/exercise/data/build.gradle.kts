@@ -10,3 +10,7 @@ sqldelight {
         }
     }
 }
+
+dependencies {
+    implementation(libs.kotlininject.runtime)
+}
