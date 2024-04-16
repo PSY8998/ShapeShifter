@@ -2,6 +2,7 @@ package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
+import app.shapeshifter.feature.exercise.data.ExerciseRepository
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -28,6 +29,7 @@ class ExerciseDetailPresenterFactory(
 @Inject
 class ExerciseDetailPresenter(
     @Assisted private val exerciseDetailScreen: ExerciseDetailScreen,
+    private val exerciseRepository: ExerciseRepository,
 ) : Presenter<ExerciseDetailState> {
     @Composable
     override fun present(): ExerciseDetailState {
