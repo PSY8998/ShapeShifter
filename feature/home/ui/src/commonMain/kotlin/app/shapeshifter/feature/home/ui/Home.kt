@@ -21,7 +21,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
@@ -100,7 +99,6 @@ fun Home(
     }
 }
 
-
 @Composable
 private fun HomeBottomNavigation(
     selectedNavigation: Screen,
@@ -118,9 +116,11 @@ private fun HomeBottomNavigation(
                 selected = selectedNavigation == item.screen,
                 icon = {
                     Icon(
-                        imageVector = if (selectedNavigation == item.screen)
+                        imageVector = if (selectedNavigation == item.screen) {
                             item.selectedImageVector ?: item.iconImageVector
-                        else item.iconImageVector,
+                        } else {
+                            item.iconImageVector
+                        },
                         contentDescription = "",
                     )
                 },
@@ -138,7 +138,6 @@ private fun HomeBottomNavigation(
         }
     }
 }
-
 
 @Immutable
 private data class HomeNavigationItem(

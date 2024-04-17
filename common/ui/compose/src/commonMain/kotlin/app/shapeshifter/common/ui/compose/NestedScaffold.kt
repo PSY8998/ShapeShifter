@@ -46,56 +46,56 @@ fun NestedScaffold(
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-  val upstreamContentPadding = LocalScaffoldContentPadding.current
-  val layoutDirection = LocalLayoutDirection.current
+    val upstreamContentPadding = LocalScaffoldContentPadding.current
+    val layoutDirection = LocalLayoutDirection.current
 
-  val insets = remember {
-    MutableWindowInsets(
-      contentWindowInsets.add(PaddingValuesInsets(upstreamContentPadding)),
-    )
-  }
-
-  LaunchedEffect(contentWindowInsets, upstreamContentPadding, layoutDirection) {
-    insets.insets = contentWindowInsets.add(PaddingValuesInsets(upstreamContentPadding))
-  }
-
-  Scaffold(
-    modifier = modifier,
-    topBar = topBar,
-    bottomBar = bottomBar,
-    snackbarHost = snackbarHost,
-    floatingActionButton = floatingActionButton,
-    floatingActionButtonPosition = floatingActionButtonPosition,
-    containerColor = containerColor,
-    contentColor = contentColor,
-    contentWindowInsets = insets,
-  ) { contentPadding ->
-    val contentPaddingMinusInsets = contentPadding.minus(
-      contentWindowInsets.asPaddingValues(),
-      layoutDirection,
-    )
-
-    CompositionLocalProvider(LocalScaffoldContentPadding provides contentPaddingMinusInsets) {
-      content(contentPadding)
+    val insets = remember {
+        MutableWindowInsets(
+            contentWindowInsets.add(PaddingValuesInsets(upstreamContentPadding)),
+        )
     }
-  }
+
+    LaunchedEffect(contentWindowInsets, upstreamContentPadding, layoutDirection) {
+        insets.insets = contentWindowInsets.add(PaddingValuesInsets(upstreamContentPadding))
+    }
+
+    Scaffold(
+        modifier = modifier,
+        topBar = topBar,
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        contentWindowInsets = insets,
+    ) { contentPadding ->
+        val contentPaddingMinusInsets = contentPadding.minus(
+            contentWindowInsets.asPaddingValues(),
+            layoutDirection,
+        )
+
+        CompositionLocalProvider(LocalScaffoldContentPadding provides contentPaddingMinusInsets) {
+            content(contentPadding)
+        }
+    }
 }
 
 @Stable
 private data class PaddingValuesInsets(private val paddingValues: PaddingValues) : WindowInsets {
-  override fun getLeft(density: Density, layoutDirection: LayoutDirection) = with(density) {
-    paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
-  }
+    override fun getLeft(density: Density, layoutDirection: LayoutDirection) = with(density) {
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+    }
 
-  override fun getTop(density: Density) = with(density) {
-    paddingValues.calculateTopPadding().roundToPx()
-  }
+    override fun getTop(density: Density) = with(density) {
+        paddingValues.calculateTopPadding().roundToPx()
+    }
 
-  override fun getRight(density: Density, layoutDirection: LayoutDirection) = with(density) {
-    paddingValues.calculateRightPadding(layoutDirection).roundToPx()
-  }
+    override fun getRight(density: Density, layoutDirection: LayoutDirection) = with(density) {
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+    }
 
-  override fun getBottom(density: Density) = with(density) {
-    paddingValues.calculateBottomPadding().roundToPx()
-  }
+    override fun getBottom(density: Density) = with(density) {
+        paddingValues.calculateBottomPadding().roundToPx()
+    }
 }

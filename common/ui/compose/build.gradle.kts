@@ -7,6 +7,10 @@ plugins {
 
 android {
     namespace = "app.shapeshifter.common.ui.compose"
+
+    sourceSets["main"].apply {
+        res.srcDirs("src/androidMain/res", "src/commonMain/resources")
+    }
 }
 
 kotlin {

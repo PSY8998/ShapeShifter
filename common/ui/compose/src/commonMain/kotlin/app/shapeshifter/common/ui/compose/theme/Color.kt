@@ -1,9 +1,7 @@
 package app.shapeshifter.common.ui.compose.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val VampireBlack = Color(0xFF070707)
@@ -28,19 +26,3 @@ val ShapeShifterDarkColorScheme = darkColorScheme(
     surface = Color.Black,
     background = Color.Black,
 )
-
-
-@Composable
-fun ShapeshifterTheme(
-    useDarkTheme: Boolean,
-    content: @Composable () -> Unit,
-) {
-    MaterialTheme(
-        colorScheme = if (useDarkTheme)
-            ShapeShifterDarkColorScheme
-        else
-            ShapeShifterLightColorScheme,
-    ) {
-        content()
-    }
-}
