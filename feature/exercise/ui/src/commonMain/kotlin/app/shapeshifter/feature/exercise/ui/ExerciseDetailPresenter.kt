@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.runtime.Composable
+import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter

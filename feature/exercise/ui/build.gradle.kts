@@ -14,6 +14,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.core.base)
+                implementation(projects.common.ui.compose)
 
                 implementation(libs.kotlininject.runtime)
                 implementation(libs.circuit.foundation)

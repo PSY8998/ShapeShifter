@@ -1,17 +1,24 @@
 package app.shapeshifter.feature.exercise.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import app.shapeshifter.common.ui.compose.NestedScaffold
+import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-data object ExerciseDetailScreen : Screen
 
 @Inject
 class ExerciseDetailUiFactory : Ui.Factory {
@@ -29,5 +36,15 @@ class ExerciseDetailUiFactory : Ui.Factory {
 @Preview
 @Composable
 fun ExerciseDetail() {
-    Text(text = "Exercise details")
+    NestedScaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .padding(paddingValues),
+        ) {
+            Text(text = "Exercise details")
+        }
+    }
 }

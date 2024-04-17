@@ -93,3 +93,5 @@ screenshots/**/*.png
 test_output
 
 *.env*
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetSelector.xml
