@@ -41,6 +41,7 @@ ksp {
 dependencies {
     // core
     implementation(projects.core.base)
+    implementation(projects.common.ui.compose)
 
     // features
 
