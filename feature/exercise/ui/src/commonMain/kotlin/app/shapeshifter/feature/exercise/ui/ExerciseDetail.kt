@@ -39,7 +39,8 @@ fun ExerciseDetail() {
             modifier = Modifier
                 .padding(paddingValues),
         ) {
-            Text(text = "Exercise details")
+            Text(text = "Exercise details",
+                )
         }
     }
 }

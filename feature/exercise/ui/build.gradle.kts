@@ -15,6 +15,7 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
                 implementation(projects.common.ui.compose)
+                implementation(projects.feature.exercise.data)
 
                 implementation(libs.kotlininject.runtime)
                 implementation(libs.circuit.foundation)

@@ -4,6 +4,7 @@ import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import app.shapeshifter.ShapeShifterDatabase
+import app.shapeshifter.feature.exercise.data.ShapeShifterDatabase as ExerciseDatabase
 import app.shapeshifter.core.base.inject.ApplicationScope
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
@@ -13,7 +14,7 @@ interface SqlDelightDatabaseDriverComponent {
     @Provides
     fun provideDatabaseDriver(
         application: Application,
-    ) = AndroidSqliteDriver(
+    ): SqlDriver = AndroidSqliteDriver(
         schema = ShapeShifterDatabase.Schema,
         context = application,
         name = "shapeshifter.db",
@@ -24,7 +25,7 @@ interface SqlDelightDatabaseDriverComponent {
 class DatabaseFactory(
     private val driver: SqlDriver,
 ) {
-    fun build(): ShapeShifterDatabase = ShapeShifterDatabase(driver)
+    fun build() = ShapeShifterDatabase(driver)
 }
 
 interface SqlDelightDatabaseComponent : SqlDelightDatabaseDriverComponent {
@@ -32,5 +33,11 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabaseDriverComponent {
     @Provides
     fun provideSqlDelightDatabase(
         factory: DatabaseFactory,
-    ) = factory.build()
+    ): ShapeShifterDatabase = factory.build()
+
+    @ApplicationScope
+    @Provides
+    fun provideExerciseDatabase(
+        database: ShapeShifterDatabase,
+    ): ExerciseDatabase = database
 }

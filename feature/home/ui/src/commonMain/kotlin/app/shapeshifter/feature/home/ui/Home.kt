@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
+import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.CircuitContext
@@ -158,7 +159,7 @@ private fun buildNavigationItems(): List<HomeNavigationItem> {
             selectedImageVector = Icons.Default.Home,
         ),
         HomeNavigationItem(
-            screen = ExerciseDetailScreen,
+            screen = ExercisesScreen,
             label = "Exercise",
             contentDescription = "Exercise",
             iconImageVector = Icons.Outlined.Face,

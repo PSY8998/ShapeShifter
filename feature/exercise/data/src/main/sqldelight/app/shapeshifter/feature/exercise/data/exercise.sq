@@ -1,9 +1,17 @@
-CREATE TABLE exercise(
-    id INTEGER PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL,
-    instructions TEXT NOT NULL
+CREATE TABLE `exercise`(
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `name` TEXT NOT NULL,
+    `instructions` TEXT NOT NULL
 );
 
 selectAll:
 SELECT *
 FROM exercise;
+
+insert:
+INSERT INTO exercise (`id`, `name`, `instructions`)
+VALUES (
+nullif(:id, 0),
+:name,
+:instructions
+);

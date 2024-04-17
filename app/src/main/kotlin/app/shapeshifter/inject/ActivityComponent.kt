@@ -3,6 +3,7 @@ package app.shapeshifter.inject
 import android.app.Activity
 import app.shapeshifter.core.base.inject.ActivityScope
 import app.shapeshifter.feature.exercise.ui.ExerciseDetailComponent
+import app.shapeshifter.feature.exercise.ui.exercises.ExercisesComponent
 import app.shapeshifter.feature.home.ui.HomeComponent
 import app.shapeshifter.feature.home.ui.ShapeShifterContent
 import com.slack.circuit.foundation.Circuit
@@ -17,7 +18,8 @@ abstract class ActivityComponent(
     @get:Provides val activity: Activity,
     @Component val applicationComponent: ApplicationComponent,
 ) : HomeComponent,
-    ExerciseDetailComponent {
+    ExerciseDetailComponent,
+    ExercisesComponent {
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope
