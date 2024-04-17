@@ -2,7 +2,7 @@ package app.shapeshifter.feature.home.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.shapeshifter.common.ui.compose.theme.ShapeshifterTheme
+import app.shapeshifter.common.ui.compose.theme.ShapeShifterTheme
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -25,7 +25,7 @@ fun ShapeShifterContent(
     @Assisted modifier: Modifier,
 ) {
     CircuitCompositionLocals(circuit) {
-        ShapeshifterTheme(
+        ShapeShifterTheme(
             useDarkTheme = false,
         ) {
             Home(

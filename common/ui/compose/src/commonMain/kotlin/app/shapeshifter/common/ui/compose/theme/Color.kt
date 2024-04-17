@@ -28,19 +28,3 @@ val ShapeShifterDarkColorScheme = darkColorScheme(
     surface = Color.Black,
     background = Color.Black,
 )
-
-
-@Composable
-fun ShapeshifterTheme(
-    useDarkTheme: Boolean,
-    content: @Composable () -> Unit,
-) {
-    MaterialTheme(
-        colorScheme = if (useDarkTheme)
-            ShapeShifterDarkColorScheme
-        else
-            ShapeShifterLightColorScheme,
-    ) {
-        content()
-    }
-}
