@@ -44,6 +44,7 @@ dependencies {
     implementation(projects.common.ui.compose)
 
     // features
+    implementation(projects.feature.root.ui)
 
     // home
     implementation(projects.feature.home.ui)

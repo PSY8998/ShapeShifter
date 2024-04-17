@@ -1,4 +1,4 @@
-package app.shapeshifter.feature.home.ui
+package app.shapeshifter.feature.root.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,7 +28,7 @@ fun ShapeShifterContent(
         ShapeShifterTheme(
             useDarkTheme = false,
         ) {
-            Home(
+            Root(
                 navigator = navigator,
                 backStack = backStack,
                 modifier = modifier,
