@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.home.ui
 
 import androidx.compose.runtime.Composable
+import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator

@@ -2,7 +2,6 @@ plugins {
     `android-library`
     `kotlin-multiplatform`
     `compose-multiplatform`
-    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -14,7 +13,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.core.base)
-                implementation(projects.common.ui.compose)
+                api(projects.common.ui.compose)
 
                 implementation(libs.circuit.foundation)
 
@@ -23,6 +22,7 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
+                implementation(compose.components.resources)
             }
         }
     }
