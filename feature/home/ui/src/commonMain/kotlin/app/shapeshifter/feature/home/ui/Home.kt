@@ -99,7 +99,6 @@ fun Home(
     }
 }
 
-
 @Composable
 private fun HomeBottomNavigation(
     selectedNavigation: Screen,
@@ -117,9 +116,11 @@ private fun HomeBottomNavigation(
                 selected = selectedNavigation == item.screen,
                 icon = {
                     Icon(
-                        imageVector = if (selectedNavigation == item.screen)
+                        imageVector = if (selectedNavigation == item.screen) {
                             item.selectedImageVector ?: item.iconImageVector
-                        else item.iconImageVector,
+                        } else {
+                            item.iconImageVector
+                        },
                         contentDescription = "",
                     )
                 },
@@ -137,7 +138,6 @@ private fun HomeBottomNavigation(
         }
     }
 }
-
 
 @Immutable
 private data class HomeNavigationItem(

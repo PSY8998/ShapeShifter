@@ -9,10 +9,11 @@ fun ShapeShifterTheme(
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = if (useDarkTheme)
+        colorScheme = if (useDarkTheme) {
             ShapeShifterDarkColorScheme
-        else
-            ShapeShifterLightColorScheme,
+        } else {
+            ShapeShifterLightColorScheme
+        },
         typography = ShapeShifterTypography,
     ) {
         content()
