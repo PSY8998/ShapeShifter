@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,10 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.vectorResource
+import shapeshifter.feature.exercise.ui.generated.resources.Res
+import shapeshifter.feature.exercise.ui.generated.resources.barbell_overhead
 
 @Inject
 class ExercisesUiFactory : Ui.Factory {
@@ -32,6 +37,7 @@ class ExercisesUiFactory : Ui.Factory {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Exercises(
     state: ExercisesState,
@@ -52,17 +58,22 @@ fun Exercises(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Box(
+            Column(
                 modifier = Modifier
                     .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Image(
+                    imageVector = vectorResource(Res.drawable.barbell_overhead),
+                    contentDescription = "overweight child"
+                )
                 Button(
                     onClick = {
                         state.eventSink(ExerciseUiEvent.OpenCreateExercise)
                     },
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    ) {
+                    modifier = Modifier,
+                ) {
                     Text("Create Exercise")
                 }
             }

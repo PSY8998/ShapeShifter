@@ -20,6 +20,7 @@ spotless = "6.25.0"
 desugaring = "2.0.4"
 sqlDelight = "2.0.2"
 compose-multiplatform = "1.6.2"
+compottie = "1.1.2"
 
 # test
 junit = "4.13.2"
@@ -32,9 +33,9 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-sqldelight = {id = "app.cash.sqldelight",  version.ref = "sqlDelight" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 
 [libraries]
@@ -50,12 +51,13 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
-sqldelight-androidDriver = {module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight"}
+sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 
 circuit-foundation = { group = "com.slack.circuit", name = "circuit-foundation", version.ref = "circuit" }
 
-kotlininject-compiler = {group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka"}
-kotlininject-runtime = {group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka"}
+kotlininject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka" }
+kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }
