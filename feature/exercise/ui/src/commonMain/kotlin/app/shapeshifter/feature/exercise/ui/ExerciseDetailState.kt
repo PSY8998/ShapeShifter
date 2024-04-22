@@ -1,5 +1,19 @@
 package app.shapeshifter.feature.exercise.ui
 
+import app.shapeshifter.feature.exercise.data.ExerciseDataSource
+import app.shapeshifter.feature.exercise.data.ExerciseRepository
+import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
+import me.tatarka.inject.annotations.Inject
 
-object ExerciseDetailState : CircuitUiState
+data class ExerciseDetailState(
+    val eventSink: (ExerciseDetailUiEvent) -> Unit
+) : CircuitUiState
+
+@Inject
+sealed interface ExerciseDetailUiEvent : CircuitUiEvent {
+    data object GoBack : ExerciseDetailUiEvent
+    data class CreateExercise(
+        val exerciseName: String
+    ) : ExerciseDetailUiEvent
+}

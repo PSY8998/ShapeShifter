@@ -1,8 +1,11 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
+import app.shapeshifter.feature.exercise.data.ExerciseRepository
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -34,6 +37,7 @@ class ExercisesPresenterFactory(
 @Inject
 class ExercisesPresenter(
     @Assisted private val navigator: Navigator,
+    private val exerciseRepository: ExerciseRepository,
 ) : Presenter<ExercisesState> {
 
     @Composable
@@ -46,8 +50,11 @@ class ExercisesPresenter(
             }
         }
 
-        return ExercisesState(
+        val exercises by exerciseRepository.allExercises().collectAsState(initial = emptyList())
+
+        return ExercisesState.Exercises(
             eventSink = ::eventSink,
+            exercises = exercises
         )
     }
 

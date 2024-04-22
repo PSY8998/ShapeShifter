@@ -14,4 +14,6 @@ sqldelight {
 dependencies {
     implementation(projects.core.base)
     implementation(libs.kotlininject.runtime)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.sqldelight.coroutines)
 }
