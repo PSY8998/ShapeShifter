@@ -76,6 +76,17 @@ fun KotlinJvmCompilerOptions.setProjectDefaults(
 ) {
     // Treat all Kotlin warnings as errors (disabled by default)
     allWarningsAsErrors.set(enableWarningsAsErrors)
+    addK2CompilerArgs()
+}
+
+/**
+ * Make sure to remove this with kotlin 2.0.0
+ * K2 compiler will be default
+ */
+fun KotlinJvmCompilerOptions.addK2CompilerArgs() {
+    // Suppress compileKotlin's warning:
+    // > Language version 2.0 is experimental, there are no backwards compatibility guarantees for new language and library features
+    freeCompilerArgs.add("-Xsuppress-version-warnings")
 }
 
 fun KotlinJvmCompilerOptions.addCoroutinesCompilerArgs() {
