@@ -52,7 +52,7 @@ fun Root(
     NestedScaffold(
         modifier = modifier,
         bottomBar = {
-            HomeBottomNavigation(
+            RootBottomNavigation(
                 selectedNavigation = rootScreen,
                 navigationItems = navigationItems,
                 onNavigationSelected = { screen ->
@@ -69,9 +69,8 @@ fun Root(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun HomeBottomNavigation(
+private fun RootBottomNavigation(
     selectedNavigation: Screen,
     navigationItems: List<RootNavigationItem>,
     onNavigationSelected: (Screen) -> Unit,
@@ -86,7 +85,7 @@ private fun HomeBottomNavigation(
             NavigationBarItem(
                 selected = selectedNavigation == item.screen,
                 icon = {
-                    HomeNavigationIcon(
+                    RootNavigationIcon(
                         selected = selectedNavigation == item.screen,
                         selectedImage = item.selectedImage,
                         iconImage = item.iconImage,
@@ -103,6 +102,8 @@ private fun HomeBottomNavigation(
                 colors = NavigationBarItemDefaults.colors(
                     unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
                     unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    indicatorColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
         }
@@ -111,7 +112,7 @@ private fun HomeBottomNavigation(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun HomeNavigationIcon(
+private fun RootNavigationIcon(
     selected: Boolean,
     iconImage: Any,
     selectedImage: Any,
