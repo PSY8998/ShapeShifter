@@ -19,6 +19,7 @@ kotlin {
             dependencies {
                 implementation(compose.material3)
                 implementation(libs.circuit.foundation)
+                implementation(compose.components.resources)
             }
         }
     }

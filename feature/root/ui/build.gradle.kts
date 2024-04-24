@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "app.shapeshifter.feature.home.ui"
+    namespace = "app.shapeshifter.feature.root.ui"
 }
 
 kotlin {
