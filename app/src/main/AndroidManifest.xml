@@ -16,8 +16,11 @@
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustNothing">
+
             <intent-filter>
                 <!-- MAIN represents that it is the Main Activity-->
                 <action android:name="android.intent.action.MAIN" />

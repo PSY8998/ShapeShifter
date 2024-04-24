@@ -15,15 +15,17 @@ kotlin {
             implementation(projects.common.ui.compose)
             implementation(projects.feature.exercise.data)
 
-            implementation(libs.kotlininject.runtime)
-            implementation(libs.circuit.foundation)
-
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
 
             implementation(compose.components.resources)
+
+            implementation(libs.kotlininject.runtime)
+
+            implementation(libs.circuit.foundation)
+            implementation(libs.circuit.retained)
         }
     }
 }

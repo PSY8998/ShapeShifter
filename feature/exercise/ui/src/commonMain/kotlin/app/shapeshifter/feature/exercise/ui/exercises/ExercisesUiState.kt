@@ -4,15 +4,18 @@ import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
-sealed interface ExercisesState : CircuitUiState {
+sealed interface ExercisesUiState : CircuitUiState {
+
+    val eventSink: (ExerciseUiEvent) -> Unit
+
     data class Exercises(
-        val eventSink: (ExerciseUiEvent) -> Unit,
+        override val eventSink: (ExerciseUiEvent) -> Unit,
         val exercises: List<Exercise>,
-    ) : ExercisesState
+    ) : ExercisesUiState
 
     data class Empty(
-        val eventSink: (ExerciseUiEvent.OpenCreateExercise) -> Unit,
-    ) : ExercisesState
+        override val eventSink: (ExerciseUiEvent) -> Unit,
+    ) : ExercisesUiState
 }
 
 
