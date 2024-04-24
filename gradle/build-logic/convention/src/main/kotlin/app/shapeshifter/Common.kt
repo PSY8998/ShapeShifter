@@ -116,9 +116,9 @@ fun Project.buildComposeMetricsParameters(): List<String> {
             "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsFolder",
         )
 
-        val isMetricsTaskCacheable = plugins.hasPlugin("com.android.application")
+        // the task is never cacheable
         tasks.withType<KotlinCompile> {
-            outputs.upToDateWhen { isMetricsTaskCacheable }
+            outputs.upToDateWhen { false }
         }
     }
 
