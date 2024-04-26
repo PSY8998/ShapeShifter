@@ -45,10 +45,19 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 rootProject.name = "ShapeShifter"
+
 include(":app")
+
+include(":feature:root:ui")
 include(":feature:home:ui")
-include(":core:base")
+
+// feature
+// exercise
 include(":feature:exercise:ui")
 include(":feature:exercise:data")
+
 include(":common:ui:compose")
-include(":feature:root:ui")
+
+include(":domain")
+
+include(":core:base")

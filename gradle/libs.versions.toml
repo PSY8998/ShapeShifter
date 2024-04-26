@@ -20,6 +20,7 @@ desugaring = "2.0.4"
 sqlDelight = "2.0.2"
 compose-multiplatform = "1.6.2"
 coroutines = "1.8.0"
+paging-multiplatform = "3.3.0-alpha02-0.5.1"
 
 # test
 junit = "4.13.2"
@@ -45,10 +46,12 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 
+kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.24.0"
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
 sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 
-kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 
 circuit-foundation = { group = "com.slack.circuit", name = "circuit-foundation", version.ref = "circuit" }
@@ -56,6 +59,9 @@ circuit-retained = { module = "com.slack.circuit:circuit-retained", version.ref 
 
 kotlininject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka" }
 kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }
+
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging-multiplatform" }
+paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-multiplatform" }
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }
