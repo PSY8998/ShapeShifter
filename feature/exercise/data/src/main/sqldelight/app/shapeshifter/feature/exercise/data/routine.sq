@@ -1,0 +1,17 @@
+-- routine consists a set of exercises
+CREATE TABLE routine (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `name` TEXT NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM routine;
+
+insert:
+INSERT INTO routine (`id`, `name`)
+VALUES (
+nullif(:id, 0),
+:name
+);
+

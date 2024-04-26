@@ -1,0 +1,6 @@
+CREATE TABLE workout_set (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `workout_exercise_id` INTEGER NOT NULL,
+    `weight` INTEGER NOT NULL,
+    `reps` INTEGER NOT NULL
+);

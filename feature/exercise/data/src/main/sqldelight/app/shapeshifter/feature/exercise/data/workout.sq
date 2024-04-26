@@ -1,0 +1,12 @@
+-- a workout can belong to single routine, but routine can have multiple workouts
+CREATE TABLE workout (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `name` TEXT NOT NULL,
+    -- routine_id is primary id of routine table
+    -- specified nullable because quick workout can also be performed
+    `routine_id` INTEGER,
+    `start_time` INTEGER NOT NULL,
+    `finish_time` INTEGER NOT NULL
+);
+
+

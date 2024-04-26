@@ -1,0 +1,8 @@
+-- routine_exercise has many to one relationship with routine
+-- many to many relationship between routine and exercise
+CREATE TABLE routine_exercise (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `exercise_id` INTEGER NOT NULL,
+    `routine_id` INTEGER NOT NULL,
+    `rest_time` INTEGER NOT NULL
+);

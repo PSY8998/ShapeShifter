@@ -1,4 +1,4 @@
-package app.shapeshifter.feature.exercise.data.models
+package app.shapeshifter.feature.exercise.data.exercise.models
 
 data class Exercise(
     val id: Long = 0,
