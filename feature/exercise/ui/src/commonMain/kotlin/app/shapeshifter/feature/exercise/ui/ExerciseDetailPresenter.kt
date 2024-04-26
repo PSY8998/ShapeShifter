@@ -35,19 +35,22 @@ class ExerciseDetailPresenter(
 ) : Presenter<ExerciseDetailState> {
     @Composable
     override fun present(): ExerciseDetailState {
-        fun eventSink(exerciseDetailUiEvent: ExerciseDetailUiEvent){
-            when(exerciseDetailUiEvent){
+        fun eventSink(event: ExerciseDetailUiEvent) {
+            when (event) {
                 is ExerciseDetailUiEvent.GoBack -> navigator.pop()
                 is ExerciseDetailUiEvent.CreateExercise -> {
-                    exerciseRepository
-                        .insert(exercise = Exercise(name = exerciseDetailUiEvent.exerciseName, instructions = ""))
+                    val exercise = Exercise(
+                        name = event.exerciseName,
+                        instructions = "",
+                    )
+                    exerciseRepository.insert(exercise)
                     navigator.pop()
                 }
             }
         }
 
         return ExerciseDetailState(
-            eventSink = ::eventSink
+            eventSink = ::eventSink,
         )
     }
 }

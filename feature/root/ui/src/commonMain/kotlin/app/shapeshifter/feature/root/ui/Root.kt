@@ -90,7 +90,9 @@ private fun RootBottomNavigation(
                         selectedImage = item.selectedImage,
                         iconImage = item.iconImage,
                         contentDescription = item.contentDescription,
-                        modifier = if (item.screen == HomeScreen) Modifier.padding(3.dp) else Modifier,
+                        modifier = if (item.screen == HomeScreen)
+                            Modifier.padding(3.dp)
+                        else Modifier,
                     )
                 },
                 label = {

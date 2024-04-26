@@ -4,10 +4,10 @@ import android.app.Application
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import app.shapeshifter.ShapeShifterDatabase
-import app.shapeshifter.feature.exercise.data.ShapeShifterDatabase as ExerciseDatabase
 import app.shapeshifter.core.base.inject.ApplicationScope
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
+import app.shapeshifter.feature.exercise.data.ShapeShifterDatabase as ExerciseDatabase
 
 interface SqlDelightDatabaseDriverComponent {
     @ApplicationScope

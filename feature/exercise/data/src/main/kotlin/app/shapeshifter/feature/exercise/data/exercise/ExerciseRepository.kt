@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Inject
 class ExerciseRepository(
-    private val exerciseDataSource: ExerciseDataSource
+    private val exerciseDataSource: ExerciseDataSource,
 ) {
-    fun insert(exercise: Exercise){
+    fun insert(exercise: Exercise) {
         exerciseDataSource.insert(exercise)
     }
 

@@ -1,12 +1,11 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
-import app.shapeshifter.feature.exercise.data.models.Exercise
+import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator

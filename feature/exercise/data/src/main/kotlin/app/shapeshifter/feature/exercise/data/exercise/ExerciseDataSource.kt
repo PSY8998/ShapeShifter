@@ -15,12 +15,12 @@ class ExerciseDataSource(
     private val shapeShifterDatabase: ShapeShifterDatabase,
 ) {
     fun insert(
-        exercise: Exercise
-    ){
+        exercise: Exercise,
+    ) {
         shapeShifterDatabase.exerciseQueries.insert(
             id = exercise.id,
             name = exercise.name,
-            instructions = exercise.instructions
+            instructions = exercise.instructions,
         )
     }
 
@@ -29,7 +29,7 @@ class ExerciseDataSource(
      **/
     fun allExercises(): Flow<List<Exercise>> {
         return shapeShifterDatabase.exerciseQueries.selectAll(
-            mapper = ::Exercise
+            mapper = ::Exercise,
         )
             .asFlow()
             .mapToList(Dispatchers.IO)

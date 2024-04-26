@@ -6,14 +6,14 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class RoutineDataSource(
-    private val shapeShifterDatabase: ShapeShifterDatabase
+    private val shapeShifterDatabase: ShapeShifterDatabase,
 ) {
     fun insert(
-        routine: Routine
-    ){
+        routine: Routine,
+    ) {
         shapeShifterDatabase.routineQueries.insert(
             id = routine.id,
-            name = routine.name
+            name = routine.name,
         )
     }
 }
