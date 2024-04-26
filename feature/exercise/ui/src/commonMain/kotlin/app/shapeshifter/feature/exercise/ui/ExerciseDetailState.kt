@@ -1,7 +1,5 @@
 package app.shapeshifter.feature.exercise.ui
 
-import app.shapeshifter.feature.exercise.data.ExerciseDataSource
-import app.shapeshifter.feature.exercise.data.ExerciseRepository
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import me.tatarka.inject.annotations.Inject

@@ -1,6 +1,6 @@
-package app.shapeshifter.feature.exercise.data
+package app.shapeshifter.feature.exercise.data.exercise
 
-import app.shapeshifter.feature.exercise.data.models.Exercise
+import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 

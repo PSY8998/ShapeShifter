@@ -1,6 +1,6 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
-import app.shapeshifter.feature.exercise.data.models.Exercise
+import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
