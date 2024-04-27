@@ -1,5 +1,26 @@
 package app.shapeshifter.feature.root.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -17,6 +38,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -27,7 +49,9 @@ import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.WorkoutsScreen
 import com.slack.circuit.backstack.SaveableBackStack
+import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import org.jetbrains.compose.resources.DrawableResource
@@ -52,13 +76,23 @@ fun Root(
     NestedScaffold(
         modifier = modifier,
         bottomBar = {
-            RootBottomNavigation(
-                selectedNavigation = rootScreen,
-                navigationItems = navigationItems,
-                onNavigationSelected = { screen ->
-                    navigator.resetRootIfDifferent(screen, saveState = true, restoreState = true)
-                },
-            )
+            AnimatedVisibility(
+                visible = backStack.isAtRoot,
+                exit = hideBelow,
+                enter = showFromBelow,
+            ) {
+                RootBottomNavigation(
+                    selectedNavigation = rootScreen,
+                    navigationItems = navigationItems,
+                    onNavigationSelected = { screen ->
+                        navigator.resetRootIfDifferent(
+                            screen,
+                            saveState = true,
+                            restoreState = true,
+                        )
+                    },
+                )
+            }
         },
     ) {
         NavigableCircuitContent(
@@ -188,4 +222,50 @@ private fun Navigator.resetRootIfDifferent(
         resetRoot(screen, saveState, restoreState)
     }
 }
+
+
+private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)
+private val AccelerateEasing = CubicBezierEasing(0.3f, 0f, 1f, 1f)
+private const val DEBUG_MULTIPLIER = 1
+private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
+private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
+
+val hideBelow = slideOutVertically { it }
+
+val showFromBelow = slideInVertically { it }
+
+@Suppress("unused")
+val hide = fadeOut(
+    animationSpec =
+    tween(
+        durationMillis = SHORT_DURATION,
+        delayMillis = 0,
+        easing = AccelerateEasing,
+    ),
+) +
+    slideOutHorizontally(
+        targetOffsetX = { fullWidth -> (fullWidth / 10) * -1 },
+        animationSpec =
+        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+    ) + shrinkHorizontally(
+    animationSpec =
+    tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+    targetWidth = { (it * .9f).toInt() },
+    shrinkTowards = Alignment.End,
+)
+
+@Suppress("unused")
+val show = fadeIn(
+    animationSpec =
+    tween(
+        durationMillis = SHORT_DURATION,
+        delayMillis = 0,
+        easing = LinearEasing,
+    ),
+) +
+    slideInHorizontally(
+        initialOffsetX = { fullWidth -> (fullWidth / 10) * -1 },
+        animationSpec =
+        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+    ) + EnterTransition.None
 
