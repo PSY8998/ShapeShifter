@@ -1,7 +1,11 @@
 plugins {
-    `kotlin-library`
+    `kotlin-multiplatform`
 }
 
-dependencies {
-    implementation(libs.kotlininject.runtime)
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlininject.runtime)
+        }
+    }
 }
