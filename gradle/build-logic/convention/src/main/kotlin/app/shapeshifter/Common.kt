@@ -4,16 +4,18 @@ import buildDirectory
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import projectDirectory
 
 fun Project.configureKotlin(
     enableWarningsAsErrors: Boolean = true,
-    compilerOptions: KotlinJvmCompilerOptions.() -> Unit = {},
+    compilerOptions: KotlinCommonCompilerOptions.() -> Unit = {},
 ) {
     kotlin {
         setProjectToolChainVersion()
@@ -42,36 +44,16 @@ fun KotlinProjectExtension.setProjectToolChainVersion() {
 }
 
 fun KotlinProjectExtension.compilerOptions(
-    action: KotlinJvmCompilerOptions.() -> Unit,
-) = project(
-    androidProject = {
-        compilerOptions(action)
-    },
-    kotlinJvmProject = {
-        compilerOptions(action)
-    },
-    kotlinMultiplatformProject = {
-        androidTarget {
-            compilations.configureEach {
-                compilerOptions.configure(action)
-            }
-        }
-    },
-)
-
-fun KotlinProjectExtension.project(
-    androidProject: KotlinAndroidProjectExtension.() -> Unit,
-    kotlinJvmProject: KotlinJvmProjectExtension.() -> Unit,
-    kotlinMultiplatformProject: KotlinMultiplatformExtension.() -> Unit,
+    action: KotlinCommonCompilerOptions.() -> Unit,
 ) {
-    when (this) {
-        is KotlinAndroidProjectExtension -> androidProject()
-        is KotlinJvmProjectExtension -> kotlinJvmProject()
-        is KotlinMultiplatformExtension -> kotlinMultiplatformProject()
+    targets.forEach { target ->
+        target.compilations.configureEach {
+            compilerOptions.configure(action)
+        }
     }
 }
 
-fun KotlinJvmCompilerOptions.setProjectDefaults(
+fun KotlinCommonCompilerOptions.setProjectDefaults(
     enableWarningsAsErrors: Boolean = true,
 ) {
     // Treat all Kotlin warnings as errors (disabled by default)
@@ -83,13 +65,13 @@ fun KotlinJvmCompilerOptions.setProjectDefaults(
  * Make sure to remove this with kotlin 2.0.0
  * K2 compiler will be default
  */
-fun KotlinJvmCompilerOptions.addK2CompilerArgs() {
+fun KotlinCommonCompilerOptions.addK2CompilerArgs() {
     // Suppress compileKotlin's warning:
     // > Language version 2.0 is experimental, there are no backwards compatibility guarantees for new language and library features
     freeCompilerArgs.add("-Xsuppress-version-warnings")
 }
 
-fun KotlinJvmCompilerOptions.addCoroutinesCompilerArgs() {
+fun KotlinCommonCompilerOptions.addCoroutinesCompilerArgs() {
     // Enable experimental coroutines APIs, including Flow
     freeCompilerArgs.add("-opt-in=kotlinx.coroutines.FlowPreview")
     freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
