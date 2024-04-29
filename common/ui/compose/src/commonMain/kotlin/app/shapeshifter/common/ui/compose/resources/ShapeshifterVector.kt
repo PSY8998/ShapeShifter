@@ -11,16 +11,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-
 private var _ShapeshifterDark: ImageVector? = null
 private var _ShapeshifterLight: ImageVector? = null
 
 fun shapeshifter(dark: Boolean): ImageVector {
-    if (dark && _ShapeshifterDark != null)
+    if (dark && _ShapeshifterDark != null) {
         return _ShapeshifterDark as ImageVector
+    }
 
-    if (!dark && _ShapeshifterLight != null)
+    if (!dark && _ShapeshifterLight != null) {
         return _ShapeshifterLight as ImageVector
+    }
 
     return if (dark) {
         _ShapeshifterDark = buildShapeShifterVector(Color.Black)
@@ -35,9 +36,11 @@ fun buildShapeShifterVector(
     tint: Color,
 ): ImageVector {
     return ImageVector.Builder(
-        name = "Shapeshifter2", defaultWidth = 18.0.dp,
+        name = "Shapeshifter2",
+        defaultWidth = 18.0.dp,
         defaultHeight = 18.0.dp,
-        viewportWidth = 24.0f, viewportHeight = 23.0f,
+        viewportWidth = 24.0f,
+        viewportHeight = 23.0f,
     ).apply {
         path(
             fill = SolidColor(tint),
@@ -105,5 +108,3 @@ fun buildShapeShifterVector(
     }
         .build()
 }
-
-

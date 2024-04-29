@@ -20,7 +20,7 @@ abstract class ActivityComponent(
 ) : HomeComponent,
     ExerciseDetailComponent,
     ExercisesComponent {
-    abstract val shapeShifterContent: app.shapeshifter.feature.root.ui.ShapeShifterContent
+    abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope
     @Provides

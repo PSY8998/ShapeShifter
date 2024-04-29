@@ -1,11 +1,12 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
+import app.shapeshifter.data.models.Exercise
+import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -15,7 +16,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ExercisesPresenterFactory(
-    private val presenterFactory: (Navigator) -> ExercisesPresenter ,
+    private val presenterFactory: (Navigator) -> ExercisesPresenter,
 ) : Presenter.Factory {
 
     override fun create(
@@ -38,10 +39,10 @@ class ExercisesPresenterFactory(
 class ExercisesPresenter(
     @Assisted private val navigator: Navigator,
     private val exerciseRepository: ExerciseRepository,
-) : Presenter<ExercisesState> {
+) : Presenter<ExercisesUiState> {
 
     @Composable
-    override fun present(): ExercisesState {
+    override fun present(): ExercisesUiState {
         fun eventSink(exerciseUiEvent: ExerciseUiEvent) {
             when (exerciseUiEvent) {
                 is ExerciseUiEvent.OpenCreateExercise -> {
@@ -50,12 +51,19 @@ class ExercisesPresenter(
             }
         }
 
-        val exercises by exerciseRepository.allExercises().collectAsState(initial = emptyList())
+        val exercises: List<app.shapeshifter.data.models.Exercise> by exerciseRepository.observeExercises()
+            .collectAsRetainedState(initial = emptyList())
 
-        return ExercisesState.Exercises(
-            eventSink = ::eventSink,
-            exercises = exercises
-        )
+        return if (exercises.isEmpty()) {
+            ExercisesUiState.Empty(
+                eventSink = ::eventSink,
+            )
+        } else {
+            ExercisesUiState.Exercises(
+                eventSink = ::eventSink,
+                exercises = exercises,
+            )
+        }
     }
 
 }

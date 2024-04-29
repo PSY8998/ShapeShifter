@@ -3,16 +3,15 @@ minSdk = "24"
 compileSdk = "34"
 targetSdk = "34"
 
-agp = "8.2.0"
+agp = "8.2.2"
 kotlin = "1.9.23"
 ktlint = "0.48.2"
-coreKtx = "1.12.0"
+coreKtx = "1.13.0"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
-activity = "1.9.0-rc01"
-compose-bom = "2024.04.00"
+activity = "1.9.0"
 circuit = "0.20.0"
 ksp = "1.9.23-1.0.20"
 tatarka = "0.6.3"
@@ -21,6 +20,7 @@ desugaring = "2.0.4"
 sqlDelight = "2.0.2"
 compose-multiplatform = "1.6.2"
 coroutines = "1.8.0"
+paging-multiplatform = "3.3.0-alpha02-0.5.1"
 
 # test
 junit = "4.13.2"
@@ -39,28 +39,38 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 
 [libraries]
+
+# android target
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-androidx-compose-material = { module = "androidx.compose.material3:material3" }
-androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui" }
-androidx-compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
+
+# multiplatform
+
+# kotlin
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.24.0"
+
+# databse
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
+# android specific
 sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
 
-kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
-
+# navigation
 circuit-foundation = { group = "com.slack.circuit", name = "circuit-foundation", version.ref = "circuit" }
+circuit-retained = { module = "com.slack.circuit:circuit-retained", version.ref = "circuit" }
 
-kotlininject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka" }
+# dependency injection
 kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }
+kotlininject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "tatarka" }
+
+# paging
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging-multiplatform" }
+paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-multiplatform" }
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }

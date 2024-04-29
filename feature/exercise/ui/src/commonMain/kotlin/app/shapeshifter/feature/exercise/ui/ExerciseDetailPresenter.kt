@@ -3,7 +3,7 @@ package app.shapeshifter.feature.exercise.ui
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
-import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
+import app.shapeshifter.data.models.Exercise
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -35,19 +35,22 @@ class ExerciseDetailPresenter(
 ) : Presenter<ExerciseDetailState> {
     @Composable
     override fun present(): ExerciseDetailState {
-        fun eventSink(exerciseDetailUiEvent: ExerciseDetailUiEvent){
-            when(exerciseDetailUiEvent){
+        fun eventSink(event: ExerciseDetailUiEvent) {
+            when (event) {
                 is ExerciseDetailUiEvent.GoBack -> navigator.pop()
                 is ExerciseDetailUiEvent.CreateExercise -> {
-                    exerciseRepository
-                        .insert(exercise = Exercise(name = exerciseDetailUiEvent.exerciseName, instructions = ""))
+                    val exercise = Exercise(
+                        name = event.exerciseName,
+                        instructions = "",
+                    )
+                    exerciseRepository.insert(exercise)
                     navigator.pop()
                 }
             }
         }
 
         return ExerciseDetailState(
-            eventSink = ::eventSink
+            eventSink = ::eventSink,
         )
     }
 }

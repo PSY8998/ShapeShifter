@@ -14,9 +14,7 @@ kotlin {
             implementation(projects.core.base)
             implementation(projects.common.ui.compose)
             implementation(projects.feature.exercise.data)
-
-            implementation(libs.kotlininject.runtime)
-            implementation(libs.circuit.foundation)
+            implementation(projects.data.models)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -24,6 +22,11 @@ kotlin {
             implementation(compose.ui)
 
             implementation(compose.components.resources)
+
+            implementation(libs.kotlininject.runtime)
+
+            implementation(libs.circuit.foundation)
+            implementation(libs.circuit.retained)
         }
     }
 }
