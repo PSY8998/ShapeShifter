@@ -3,6 +3,7 @@ package app.shapeshifter.feature.exercise.ui
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.Muscles
 import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -41,7 +42,8 @@ class ExerciseDetailPresenter(
                 is ExerciseDetailUiEvent.CreateExercise -> {
                     val exercise = Exercise(
                         name = event.exerciseName,
-                        instructions = "",
+                        primaryMuscle = Muscles.OTHER,
+                        secondaryMuscle = emptyList(),
                     )
                     // exerciseRepository.insert(exercise)
                     navigator.pop()

@@ -22,7 +22,8 @@ class SqlDelightExerciseEntityDao(
         db.exerciseQueries.insert(
             id = entity.id,
             name = entity.name,
-            instructions = entity.instructions,
+            primary_muscle = entity.primaryMuscle,
+            secondary_muscles = entity.secondaryMuscle,
         )
     }
 

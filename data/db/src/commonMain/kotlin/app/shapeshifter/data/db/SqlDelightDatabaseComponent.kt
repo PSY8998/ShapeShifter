@@ -2,6 +2,8 @@ package app.shapeshifter.data.db
 
 import app.cash.sqldelight.db.SqlDriver
 import app.shapeshifter.core.base.inject.ApplicationScope
+import app.shapeshifter.data.db.columnadapters.MuscleColumnAdapter
+import app.shapeshifter.data.db.columnadapters.MusclesColumnAdapter
 import app.shapeshifter.data.db.daos.ExerciseEntityDao
 import app.shapeshifter.data.db.daos.RoutineEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightExerciseEntityDao
@@ -15,7 +17,13 @@ expect interface SqlDelightDatabasePlatformDriverComponent
 class DatabaseFactory(
     private val driver: SqlDriver,
 ) {
-    fun build() = ShapeShifterDatabase(driver)
+    fun build() = ShapeShifterDatabase(
+        driver = driver,
+        exerciseAdapter = Exercise.Adapter(
+            primary_muscleAdapter = MuscleColumnAdapter,
+            secondary_musclesAdapter = MusclesColumnAdapter
+        )
+    )
 }
 
 interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponent {
