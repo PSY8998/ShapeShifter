@@ -61,3 +61,6 @@ include(":common:ui:compose")
 include(":domain")
 
 include(":core:base")
+
+include(":data:db")
+include(":data:models")

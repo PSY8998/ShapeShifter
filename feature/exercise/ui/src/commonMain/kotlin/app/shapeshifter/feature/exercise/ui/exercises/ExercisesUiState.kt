@@ -1,6 +1,6 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
-import app.shapeshifter.feature.exercise.data.exercise.models.Exercise
+import app.shapeshifter.data.models.Exercise
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
@@ -10,7 +10,7 @@ sealed interface ExercisesUiState : CircuitUiState {
 
     data class Exercises(
         override val eventSink: (ExerciseUiEvent) -> Unit,
-        val exercises: List<Exercise>,
+        val exercises: List<app.shapeshifter.data.models.Exercise>,
     ) : ExercisesUiState
 
     data class Empty(

@@ -2,7 +2,6 @@ plugins {
     `android-application`
     `compose-multiplatform`
     alias(libs.plugins.ksp)
-    alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -25,15 +24,6 @@ android {
     }
 }
 
-sqldelight {
-    databases {
-        create("ShapeShifterDatabase") {
-            packageName.set("app.shapeshifter")
-            dependency(projects.feature.exercise.data)
-        }
-    }
-}
-
 ksp {
     arg("me.tatarka.inject.generateCompanionExtensions", "true")
 }
@@ -42,6 +32,7 @@ dependencies {
     // core
     implementation(projects.core.base)
     implementation(projects.common.ui.compose)
+    implementation(projects.data.db)
 
     // features
     implementation(projects.feature.root.ui)
@@ -62,8 +53,6 @@ dependencies {
 
     implementation(libs.kotlininject.runtime)
     ksp(libs.kotlininject.compiler)
-
-    implementation(libs.sqldelight.androidDriver)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
