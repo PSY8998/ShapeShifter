@@ -1,11 +1,10 @@
 package app.shapeshifter.data.db.daos
 
-import app.shapeshifter.data.models.Routine
 import app.shapeshifter.data.db.ShapeShifterDatabase
+import app.shapeshifter.data.models.Routine
 import me.tatarka.inject.annotations.Inject
 
 interface RoutineEntityDao : EntityDao<Routine>
-
 
 @Inject
 class SqlDelightRoutineEntityDao(
@@ -25,5 +24,4 @@ class SqlDelightRoutineEntityDao(
     override fun deleteEntity(entity: Routine) {
         TODO("Not yet implemented")
     }
-
 }

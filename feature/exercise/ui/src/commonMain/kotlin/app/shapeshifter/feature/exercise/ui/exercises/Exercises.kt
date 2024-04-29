@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:filename")
+
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.foundation.Image

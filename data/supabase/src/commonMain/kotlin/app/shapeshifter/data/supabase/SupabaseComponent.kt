@@ -29,7 +29,6 @@ interface SupabaseComponent {
             defaultLogLevel = LogLevel.DEBUG
         }
 
-
     @ApplicationScope
     @Provides
     fun provideExerciseDataSource(

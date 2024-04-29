@@ -56,7 +56,8 @@ suspend operator fun <R> UseCase<Unit, R>.invoke(
     timeout: Duration = UseCase.DefaultTimeout,
 ) = invoke(Unit, timeout)
 
-abstract class PagingUseCase<P : PagingUseCase.Parameters<T>, T : Any> : FlowUseCase<P, PagingData<T>>() {
+abstract class PagingUseCase<P : PagingUseCase.Parameters<T>, T : Any> :
+    FlowUseCase<P, PagingData<T>>() {
     interface Parameters<T : Any> {
         val pagingConfig: PagingConfig
     }

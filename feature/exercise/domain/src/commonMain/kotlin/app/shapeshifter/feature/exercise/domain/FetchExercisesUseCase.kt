@@ -9,8 +9,8 @@ import kotlinx.coroutines.withContext
 @Inject
 class FetchExercisesUseCase(
     private val exerciseRepository: ExerciseRepository,
-    private val dispatchers: AppCoroutineDispatchers
-): UseCase<Unit, Unit>() {
+    private val dispatchers: AppCoroutineDispatchers,
+) : UseCase<Unit, Unit>() {
     override suspend fun doWork(params: Unit) {
         withContext(dispatchers.io) {
             exerciseRepository.fetchExercises()

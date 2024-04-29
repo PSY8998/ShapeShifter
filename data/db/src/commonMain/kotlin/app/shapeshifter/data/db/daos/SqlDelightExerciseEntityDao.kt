@@ -3,8 +3,8 @@ package app.shapeshifter.data.db.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
-import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.db.ShapeShifterDatabase
+import app.shapeshifter.data.models.Exercise
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 

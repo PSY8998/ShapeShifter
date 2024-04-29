@@ -20,7 +20,6 @@ kotlin {
     }
 }
 
-
 android {
     namespace = "app.shapeshifter.feature.exercise.data"
 }
