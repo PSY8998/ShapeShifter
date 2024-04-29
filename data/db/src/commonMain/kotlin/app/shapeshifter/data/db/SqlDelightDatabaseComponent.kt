@@ -43,4 +43,3 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponen
         dao: SqlDelightRoutineEntityDao,
     ): RoutineEntityDao = dao
 }
-

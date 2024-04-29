@@ -18,7 +18,6 @@ sealed interface ExercisesUiState : CircuitUiState {
     ) : ExercisesUiState
 }
 
-
 sealed interface ExerciseUiEvent : CircuitUiEvent {
     data object OpenCreateExercise : ExerciseUiEvent
 }

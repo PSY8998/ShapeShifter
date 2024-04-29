@@ -1,7 +1,7 @@
 package app.shapeshifter.data.db.daos
 
-import app.shapeshifter.data.models.Entity
 import app.shapeshifter.data.db.ShapeShifterDatabase
+import app.shapeshifter.data.models.Entity
 
 interface SqlDelightEntityDao<in E : Entity> : EntityDao<E> {
     val db: ShapeShifterDatabase

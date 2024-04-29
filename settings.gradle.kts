@@ -54,6 +54,7 @@ include(":feature:home:ui")
 // feature
 // exercise
 include(":feature:exercise:ui")
+include(":feature:exercise:domain")
 include(":feature:exercise:data")
 
 include(":common:ui:compose")
@@ -64,3 +65,4 @@ include(":core:base")
 
 include(":data:db")
 include(":data:models")
+include(":data:supabase")

@@ -1,26 +1,17 @@
 package app.shapeshifter.feature.root.ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkOut
-import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOut
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -51,7 +42,6 @@ import app.shapeshifter.common.ui.compose.screens.WorkoutsScreen
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.NavigatorDefaults
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import org.jetbrains.compose.resources.DrawableResource
@@ -124,9 +114,11 @@ private fun RootBottomNavigation(
                         selectedImage = item.selectedImage,
                         iconImage = item.iconImage,
                         contentDescription = item.contentDescription,
-                        modifier = if (item.screen == HomeScreen)
+                        modifier = if (item.screen == HomeScreen) {
                             Modifier.padding(3.dp)
-                        else Modifier,
+                        } else {
+                            Modifier
+                        },
                     )
                 },
                 label = {
@@ -159,15 +151,17 @@ private fun RootNavigationIcon(
         painterResource(selectedImage)
     } else if (selectedImage is ImageVector) {
         rememberVectorPainter(selectedImage)
-    } else
+    } else {
         throw IllegalStateException("unable to determine image type")
+    }
 
     val unSelectedPainter = if (iconImage is DrawableResource) {
         painterResource(iconImage)
     } else if (selectedImage is ImageVector) {
         rememberVectorPainter(selectedImage)
-    } else
+    } else {
         throw IllegalStateException("unable to determine image type")
+    }
 
     Icon(
         painter = if (selected) selectedPainter else unSelectedPainter,
@@ -223,7 +217,6 @@ private fun Navigator.resetRootIfDifferent(
     }
 }
 
-
 private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)
 private val AccelerateEasing = CubicBezierEasing(0.3f, 0f, 1f, 1f)
 private const val DEBUG_MULTIPLIER = 1
@@ -248,11 +241,11 @@ val hide = fadeOut(
         animationSpec =
         tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
     ) + shrinkHorizontally(
-    animationSpec =
-    tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-    targetWidth = { (it * .9f).toInt() },
-    shrinkTowards = Alignment.End,
-)
+        animationSpec =
+        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+        targetWidth = { (it * .9f).toInt() },
+        shrinkTowards = Alignment.End,
+    )
 
 @Suppress("unused")
 val show = fadeIn(
@@ -268,4 +261,3 @@ val show = fadeIn(
         animationSpec =
         tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
     ) + EnterTransition.None
-

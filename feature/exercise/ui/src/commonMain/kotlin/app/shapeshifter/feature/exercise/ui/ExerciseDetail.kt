@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:filename")
+
 package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.foundation.Image
@@ -15,14 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -48,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitContext
@@ -172,7 +170,7 @@ private fun HeaderComponent(
                 },
                 modifier = Modifier,
 
-                ) {
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
                     contentDescription = "",
@@ -214,7 +212,6 @@ private fun ExerciseNameTextField(
             text = "Name of Exercise",
             modifier = Modifier,
         )
-
 
         BasicTextField(
             modifier = Modifier
@@ -268,7 +265,7 @@ private fun CreateExerciseButton(
             },
             modifier = Modifier,
 
-            ) {
+        ) {
             Text("Create Exercise")
         }
     }
