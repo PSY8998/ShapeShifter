@@ -43,7 +43,7 @@ class ExerciseDetailPresenter(
                         name = event.exerciseName,
                         instructions = "",
                     )
-                    exerciseRepository.insert(exercise)
+                    //exerciseRepository.insert(exercise)
                     navigator.pop()
                 }
             }

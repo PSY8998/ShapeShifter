@@ -21,6 +21,7 @@ sqlDelight = "2.0.2"
 compose-multiplatform = "1.6.2"
 coroutines = "1.8.0"
 paging-multiplatform = "3.3.0-alpha02-0.5.1"
+supabase = "2.3.1"
 
 # test
 junit = "4.13.2"
@@ -37,6 +38,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 
 [libraries]
 
@@ -54,6 +57,7 @@ android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref =
 # kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.24.0"
+kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
 # databse
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
@@ -71,6 +75,13 @@ kotlininject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-com
 # paging
 paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging-multiplatform" }
 paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-multiplatform" }
+
+# open source database
+supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
+supabase-database = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+
+# networking
+ktor-cio = { module = "io.ktor:ktor-client-cio", version = "2.3.10" }
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }

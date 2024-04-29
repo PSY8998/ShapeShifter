@@ -14,6 +14,7 @@ kotlin {
             implementation(projects.core.base)
             implementation(projects.common.ui.compose)
             implementation(projects.feature.exercise.data)
+            implementation(projects.feature.exercise.domain)
             implementation(projects.data.models)
 
             implementation(compose.runtime)

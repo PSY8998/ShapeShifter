@@ -22,6 +22,10 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 ksp {
@@ -33,6 +37,8 @@ dependencies {
     implementation(projects.core.base)
     implementation(projects.common.ui.compose)
     implementation(projects.data.db)
+    implementation(projects.data.supabase)
+    implementation(projects.domain)
 
     // features
     implementation(projects.feature.root.ui)
@@ -43,6 +49,7 @@ dependencies {
     // exercise
     implementation(projects.feature.exercise.ui)
     implementation(projects.feature.exercise.data)
+    implementation(projects.feature.exercise.domain)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -53,6 +60,9 @@ dependencies {
 
     implementation(libs.kotlininject.runtime)
     ksp(libs.kotlininject.compiler)
+
+    implementation(project.dependencies.platform(libs.supabase.bom))
+    implementation(libs.supabase.database)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

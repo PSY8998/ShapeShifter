@@ -1,11 +1,14 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
 import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.feature.exercise.domain.FetchExercisesUseCase
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -38,11 +41,17 @@ class ExercisesPresenterFactory(
 @Inject
 class ExercisesPresenter(
     @Assisted private val navigator: Navigator,
+    private val fetchExercisesUseCase: FetchExercisesUseCase,
     private val exerciseRepository: ExerciseRepository,
 ) : Presenter<ExercisesUiState> {
 
     @Composable
     override fun present(): ExercisesUiState {
+        LaunchedEffect(Unit) {
+            val result = fetchExercisesUseCase(Unit)
+            result.isFailure
+        }
+
         fun eventSink(exerciseUiEvent: ExerciseUiEvent) {
             when (exerciseUiEvent) {
                 is ExerciseUiEvent.OpenCreateExercise -> {
@@ -51,7 +60,8 @@ class ExercisesPresenter(
             }
         }
 
-        val exercises: List<app.shapeshifter.data.models.Exercise> by exerciseRepository.observeExercises()
+
+        val exercises: List<Exercise> by exerciseRepository.observeExercises()
             .collectAsRetainedState(initial = emptyList())
 
         return if (exercises.isEmpty()) {

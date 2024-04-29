@@ -10,6 +10,7 @@ kotlin {
                 implementation(projects.core.base)
                 implementation(projects.data.models)
                 implementation(projects.data.db)
+                implementation(projects.data.supabase)
 
                 implementation(libs.kotlininject.runtime)
                 implementation(libs.kotlin.coroutines.core)

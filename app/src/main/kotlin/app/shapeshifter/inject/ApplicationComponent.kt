@@ -5,6 +5,7 @@ import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.core.base.inject.ApplicationCoroutineScope
 import app.shapeshifter.core.base.inject.ApplicationScope
 import app.shapeshifter.data.db.SqlDelightDatabaseComponent
+import app.shapeshifter.data.supabase.SupabaseComponent
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +17,8 @@ import kotlinx.coroutines.SupervisorJob
 @Component
 abstract class ApplicationComponent(
     @get:Provides val application: Application,
-) : SqlDelightDatabaseComponent {
+) : SqlDelightDatabaseComponent,
+    SupabaseComponent {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @ApplicationScope

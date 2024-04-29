@@ -13,10 +13,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.multiplatform")
         }
 
-        configureKotlin(enableWarningsAsErrors = false) {
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
-
         extensions.configure<KotlinMultiplatformExtension> {
             applyDefaultHierarchyTemplate()
 
@@ -38,7 +34,10 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             }
         }
 
-
+        // apply this after targets are configured
+        configureKotlin(enableWarningsAsErrors = false) {
+            freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
 
         configureSpotless()
     }
