@@ -8,10 +8,12 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.core.base)
+                implementation(projects.data.models)
                 api(projects.domain)
                 implementation(projects.feature.exercise.data)
 
                 implementation(libs.kotlininject.runtime)
+
             }
         }
     }
