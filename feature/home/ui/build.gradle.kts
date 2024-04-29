@@ -12,8 +12,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                //implementation(projects.core.base)
-                //api(projects.common.ui.compose)
+                implementation(projects.core.base)
+                api(projects.common.ui.compose)
 
                 implementation(libs.circuit.foundation)
 
