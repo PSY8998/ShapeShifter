@@ -4,4 +4,4 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object WorkoutsScreen : Screen
+data object SavedWorkoutsScreen : Screen

@@ -38,7 +38,7 @@ import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.shapeshifter
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
-import app.shapeshifter.common.ui.compose.screens.WorkoutsScreen
+import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.foundation.NavigableCircuitContent
@@ -190,7 +190,7 @@ private fun buildNavigationItems(): List<RootNavigationItem> {
             selectedImage = shapeshifter(true),
         ),
         RootNavigationItem(
-            screen = WorkoutsScreen,
+            screen = SavedWorkoutsScreen,
             label = "Workout",
             contentDescription = "Workout",
             iconImage = Res.drawable.grapler_outlined,

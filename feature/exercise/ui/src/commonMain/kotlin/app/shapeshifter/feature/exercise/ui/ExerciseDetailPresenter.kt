@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.Muscles
-import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -32,7 +31,6 @@ class ExerciseDetailPresenterFactory(
 class ExerciseDetailPresenter(
     @Assisted private val exerciseDetailScreen: ExerciseDetailScreen,
     @Assisted private val navigator: Navigator,
-    private val exerciseRepository: ExerciseRepository,
 ) : Presenter<ExerciseDetailState> {
     @Composable
     override fun present(): ExerciseDetailState {

@@ -7,8 +7,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.data.models.Exercise
-import app.shapeshifter.feature.exercise.data.exercise.ExerciseRepository
 import app.shapeshifter.feature.exercise.domain.FetchExercisesUseCase
+import app.shapeshifter.feature.exercise.domain.ObserveExercisesUseCase
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -16,6 +16,7 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import kotlinx.coroutines.launch
 
 @Inject
 class ExercisesPresenterFactory(
@@ -42,7 +43,7 @@ class ExercisesPresenter(
     @Assisted private val screen: ExercisesScreen,
     @Assisted private val navigator: Navigator,
     private val fetchExercisesUseCase: FetchExercisesUseCase,
-    private val exerciseRepository: ExerciseRepository,
+    private val observeExercisesUseCase: ObserveExercisesUseCase,
 ) : Presenter<ExercisesUiState> {
 
     @Composable
@@ -50,7 +51,13 @@ class ExercisesPresenter(
         val canSelect: Boolean = rememberSaveable { screen.canSelect }
 
         LaunchedEffect(Unit) {
-            fetchExercisesUseCase(Unit)
+            launch {
+                fetchExercisesUseCase(Unit)
+            }
+
+            launch {
+                observeExercisesUseCase(Unit)
+            }
         }
 
         fun eventSink(event: ExerciseUiEvent) {
@@ -65,7 +72,7 @@ class ExercisesPresenter(
             }
         }
 
-        val exercises: List<Exercise> by exerciseRepository.observeExercises()
+        val exercises: List<Exercise> by observeExercisesUseCase.flow
             .collectAsRetainedState(initial = emptyList())
 
         return if (exercises.isEmpty()) {
