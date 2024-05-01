@@ -38,7 +38,7 @@ class TrackWorkoutPresenter(
         fun eventSink(event: TrackWorkoutUiEvent){
             when(event){
                 is TrackWorkoutUiEvent.GoBack -> navigator.pop()
-                is TrackWorkoutUiEvent.OnAddExercise -> navigator.goTo(ExercisesScreen)
+                is TrackWorkoutUiEvent.OnAddExercise -> navigator.goTo(ExercisesScreen(true))
             }
         }
         return TrackWorkoutUiState(

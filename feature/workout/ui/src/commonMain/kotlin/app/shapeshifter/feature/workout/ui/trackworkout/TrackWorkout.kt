@@ -1,7 +1,9 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import android.graphics.Paint.Align
+import android.graphics.Paint.Style
 import android.graphics.drawable.shapes.Shape
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,7 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import com.slack.circuit.runtime.CircuitContext
@@ -31,6 +36,10 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import shapeshifter.feature.workout.ui.generated.resources.Res
+import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
 import java.util.Timer
 
 @Inject
@@ -132,6 +141,7 @@ private fun TrackWorkoutTopBar(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ExerciseLog(
     modifier: Modifier = Modifier,
@@ -140,7 +150,24 @@ private fun ExerciseLog(
     Column(
         modifier = modifier
             .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_dumbbell_workout),
+            "",
+            modifier = Modifier,
+        )
+
+        Text(
+            style = TextStyle(fontWeight = FontWeight.Bold),
+            text = "Get Started",
+        )
+
+        Spacer(
+            modifier = Modifier
+                .padding(8.dp),
+        )
+
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
