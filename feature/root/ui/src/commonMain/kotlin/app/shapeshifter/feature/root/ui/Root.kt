@@ -197,7 +197,7 @@ private fun buildNavigationItems(): List<RootNavigationItem> {
             selectedImage = Res.drawable.grapler_filled,
         ),
         RootNavigationItem(
-            screen = ExercisesScreen,
+            screen = ExercisesScreen(canSelect = true),
             label = "Exercise",
             contentDescription = "Exercise",
             iconImage = Icons.Outlined.Face,
@@ -241,11 +241,11 @@ val hide = fadeOut(
         animationSpec =
         tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
     ) + shrinkHorizontally(
-        animationSpec =
-        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-        targetWidth = { (it * .9f).toInt() },
-        shrinkTowards = Alignment.End,
-    )
+    animationSpec =
+    tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+    targetWidth = { (it * .9f).toInt() },
+    shrinkTowards = Alignment.End,
+)
 
 @Suppress("unused")
 val show = fadeIn(

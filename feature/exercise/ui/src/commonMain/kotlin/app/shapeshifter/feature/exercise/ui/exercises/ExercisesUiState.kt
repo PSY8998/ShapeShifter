@@ -10,7 +10,8 @@ sealed interface ExercisesUiState : CircuitUiState {
 
     data class Exercises(
         override val eventSink: (ExerciseUiEvent) -> Unit,
-        val exercises: List<app.shapeshifter.data.models.Exercise>,
+        val exercises: List<Exercise>,
+        val canSelect: Boolean = false,
     ) : ExercisesUiState
 
     data class Empty(
@@ -20,4 +21,8 @@ sealed interface ExercisesUiState : CircuitUiState {
 
 sealed interface ExerciseUiEvent : CircuitUiEvent {
     data object OpenCreateExercise : ExerciseUiEvent
+
+    data class SelectExercises(
+        val ids: List<Long>,
+    ) : ExerciseUiEvent
 }

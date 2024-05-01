@@ -10,4 +10,10 @@ data class ExerciseResponse(
 
     @SerialName("name")
     val name: String,
+
+    @SerialName("primary_muscle")
+    val primaryMuscle: String,
+
+    @SerialName("secondary_muscles")
+    val secondaryMuscles: List<String>?,
 )

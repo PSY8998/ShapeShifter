@@ -3,6 +3,7 @@ package app.shapeshifter.feature.exercise.ui.exercises
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.data.models.Exercise
@@ -18,7 +19,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class ExercisesPresenterFactory(
-    private val presenterFactory: (Navigator) -> ExercisesPresenter,
+    private val presenterFactory: (ExercisesScreen, Navigator) -> ExercisesPresenter,
 ) : Presenter.Factory {
 
     override fun create(
@@ -28,7 +29,7 @@ class ExercisesPresenterFactory(
     ): Presenter<*>? {
         return when (screen) {
             is ExercisesScreen -> {
-                presenterFactory(navigator)
+                presenterFactory(screen, navigator)
             }
 
             else -> null
@@ -38,6 +39,7 @@ class ExercisesPresenterFactory(
 
 @Inject
 class ExercisesPresenter(
+    @Assisted private val screen: ExercisesScreen,
     @Assisted private val navigator: Navigator,
     private val fetchExercisesUseCase: FetchExercisesUseCase,
     private val exerciseRepository: ExerciseRepository,
@@ -45,15 +47,20 @@ class ExercisesPresenter(
 
     @Composable
     override fun present(): ExercisesUiState {
+        val canSelect: Boolean = rememberSaveable { screen.canSelect }
+
         LaunchedEffect(Unit) {
-            val result = fetchExercisesUseCase(Unit)
-            result.isFailure
+            fetchExercisesUseCase(Unit)
         }
 
-        fun eventSink(exerciseUiEvent: ExerciseUiEvent) {
-            when (exerciseUiEvent) {
+        fun eventSink(event: ExerciseUiEvent) {
+            when (event) {
                 is ExerciseUiEvent.OpenCreateExercise -> {
                     navigator.goTo(ExerciseDetailScreen)
+                }
+
+                is ExerciseUiEvent.SelectExercises -> {
+                    navigator.pop(result = ExercisesScreen.Result(event.ids))
                 }
             }
         }
@@ -69,6 +76,7 @@ class ExercisesPresenter(
             ExercisesUiState.Exercises(
                 eventSink = ::eventSink,
                 exercises = exercises,
+                canSelect = canSelect,
             )
         }
     }
