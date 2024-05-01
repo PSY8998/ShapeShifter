@@ -11,6 +11,7 @@ sealed interface ExercisesUiState : CircuitUiState {
     data class Exercises(
         override val eventSink: (ExerciseUiEvent) -> Unit,
         val exercises: List<Exercise>,
+        val canSelect: Boolean = false,
     ) : ExercisesUiState
 
     data class Empty(

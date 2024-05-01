@@ -171,6 +171,7 @@ private fun ExercisesContent(
                 selectedExerciseIds = selectedExerciseIds.minus(it)
             },
             exercises = uiState.exercises,
+            canSelect = uiState.canSelect,
         )
 
         val exerciseSelectionStarted by remember {
@@ -205,6 +206,7 @@ private fun ExerciseScrollContent(
     onSelectExercises: (exerciseId: Long) -> Unit,
     onUnSelectExercise: (exerciseId: Long) -> Unit,
     exercises: List<Exercise>,
+    canSelect: Boolean,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -232,6 +234,7 @@ private fun ExerciseScrollContent(
 
             ExerciseAnchorBox(
                 state = state,
+                enabled = canSelect,
                 backgroundContent = {
                     Box(
                         modifier = Modifier
@@ -266,15 +269,24 @@ private fun ExerciseScrollContent(
                     ExerciseCard(
                         exercise = exercise,
                         onClick = {
-                            if (state.currentValue == ExerciseAnchors.SELECTED) {
-                                scope.launch {
-                                    state.dismiss(ExerciseAnchors.UNSELECTED)
+                            when {
+                                canSelect && state.currentValue == ExerciseAnchors.SELECTED -> {
+                                    scope.launch {
+                                        state.dismiss(ExerciseAnchors.UNSELECTED)
+                                    }
                                 }
-                            } else {
-                                scope.launch {
-                                    state.dismiss(ExerciseAnchors.SELECTED)
+
+                                canSelect && state.currentValue == ExerciseAnchors.UNSELECTED -> {
+                                    scope.launch {
+                                        state.dismiss(ExerciseAnchors.SELECTED)
+                                    }
+                                }
+
+                                else -> {
+                                    // TODO: Open exercise details
                                 }
                             }
+
                         },
                         modifier = Modifier,
                     )
@@ -556,6 +568,7 @@ private fun ExerciseAnchorBox(
     backgroundContent: @Composable RowScope.() -> Unit,
     content: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
@@ -564,7 +577,7 @@ private fun ExerciseAnchorBox(
             .anchoredDraggable(
                 state = state.anchoredDraggableState,
                 orientation = Orientation.Horizontal,
-                enabled = true,
+                enabled = enabled,
                 reverseDirection = isRtl,
             ),
         propagateMinConstraints = true,
