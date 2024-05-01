@@ -90,6 +90,7 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.theme.NoIndication
 import app.shapeshifter.common.ui.compose.theme.NoRippleTheme
+import app.shapeshifter.common.ui.compose.theme.Procelain
 import app.shapeshifter.data.models.Exercise
 import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
@@ -479,14 +480,14 @@ private fun ExercisesTopBar(
                 modifier = Modifier
                     .wrapContentWidth(align = Alignment.CenterHorizontally)
                     .align(Alignment.Center),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
             )
 
             Box(
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-                            .compositeOver(MaterialTheme.colorScheme.surface),
+                        color = Procelain,
                         shape = MaterialTheme.shapes.small,
                     )
                     .clip(shape = MaterialTheme.shapes.small)
