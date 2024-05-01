@@ -20,4 +20,8 @@ sealed interface ExercisesUiState : CircuitUiState {
 
 sealed interface ExerciseUiEvent : CircuitUiEvent {
     data object OpenCreateExercise : ExerciseUiEvent
+
+    data class SelectExercises(
+        val ids: List<Long>,
+    ) : ExerciseUiEvent
 }

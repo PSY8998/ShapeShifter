@@ -51,10 +51,14 @@ class ExercisesPresenter(
             result.isFailure
         }
 
-        fun eventSink(exerciseUiEvent: ExerciseUiEvent) {
-            when (exerciseUiEvent) {
+        fun eventSink(event: ExerciseUiEvent) {
+            when (event) {
                 is ExerciseUiEvent.OpenCreateExercise -> {
                     navigator.goTo(ExerciseDetailScreen)
+                }
+
+                is ExerciseUiEvent.SelectExercises -> {
+                    navigator.pop(result = ExercisesScreen.Result(event.ids))
                 }
             }
         }

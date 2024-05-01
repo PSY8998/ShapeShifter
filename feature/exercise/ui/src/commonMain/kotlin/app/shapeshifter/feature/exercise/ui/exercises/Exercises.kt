@@ -3,14 +3,12 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -23,30 +21,36 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
@@ -56,6 +60,7 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -70,10 +75,13 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import shapeshifter.feature.exercise.ui.generated.resources.Res
 import shapeshifter.feature.exercise.ui.generated.resources.barbell_overhead
+import shapeshifter.feature.exercise.ui.generated.resources.exercise_deadlift
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @Inject
 class ExercisesUiFactory : Ui.Factory {
@@ -105,7 +113,11 @@ private fun Exercises(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            ExercisesTopBar()
+            ExercisesTopBar(
+                openCreateExercise = {
+                    eventSink(ExerciseUiEvent.OpenCreateExercise)
+                },
+            )
 
             Box(
                 modifier = Modifier
@@ -115,8 +127,8 @@ private fun Exercises(
                     is ExercisesUiState.Exercises -> {
                         ExercisesContent(
                             uiState = uiState,
-                            openCreateExercise = {
-                                eventSink(ExerciseUiEvent.OpenCreateExercise)
+                            onSelectExercises = {
+                                eventSink(ExerciseUiEvent.SelectExercises(it))
                             },
                             modifier = Modifier,
                         )
@@ -140,26 +152,47 @@ private fun Exercises(
 @Composable
 private fun ExercisesContent(
     uiState: ExercisesUiState.Exercises,
-    openCreateExercise: () -> Unit,
+    onSelectExercises: (exerciseIds: List<Long>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
     ) {
+        var selectedExerciseIds by remember { mutableStateOf(emptySet<Long>()) }
+
         ExerciseScrollContent(
             modifier = Modifier
                 .fillMaxSize(),
+            selectedExerciseIds = selectedExerciseIds.toList(),
+            onSelectExercises = {
+                selectedExerciseIds = selectedExerciseIds.plus(it)
+            },
+            onUnSelectExercise = {
+                selectedExerciseIds = selectedExerciseIds.minus(it)
+            },
             exercises = uiState.exercises,
         )
 
-        Button(
-            onClick = {
-                openCreateExercise()
-            },
+        val exerciseSelectionStarted by remember {
+            derivedStateOf {
+                selectedExerciseIds.isEmpty().not()
+            }
+        }
+
+        AnimatedVisibility(
+            visible = exerciseSelectionStarted,
+            enter = fadeIn(),
+            exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.BottomCenter),
         ) {
-            Text("Create Exercise")
+            Button(
+                onClick = {
+                    onSelectExercises(selectedExerciseIds.toList())
+                },
+            ) {
+                Text("Select Exercises")
+            }
         }
     }
 }
@@ -168,48 +201,34 @@ private fun ExercisesContent(
 @Composable
 private fun ExerciseScrollContent(
     modifier: Modifier = Modifier,
+    selectedExerciseIds: List<Long>,
+    onSelectExercises: (exerciseId: Long) -> Unit,
+    onUnSelectExercise: (exerciseId: Long) -> Unit,
     exercises: List<Exercise>,
 ) {
-    var selectedExerciseIds by remember { mutableStateOf(emptySet<Long>()) }
-
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
     ) {
         items(exercises) { exercise ->
-            val exerciseSelected by remember {
+            val exerciseSelectedIndex by remember(selectedExerciseIds) {
                 derivedStateOf {
-                    selectedExerciseIds.contains(exercise.id)
+                    selectedExerciseIds.indexOf(exercise.id)
                 }
             }
 
-            val exerciseSelectedIndex by remember {
-                derivedStateOf {
-                    if (exerciseSelected)
-                        selectedExerciseIds.indexOf(exercise.id)
-                    else -1
-                }
-            }
-
-            val textStyle = MaterialTheme.typography.labelLarge.merge(
-                color = Color.White,
-            )
-
-            val textMeasurer = rememberTextMeasurer()
-
-            val measure = remember(exerciseSelectedIndex) {
-                textMeasurer.measure(text = exerciseSelectedIndex.toString(), style = textStyle)
-            }
 
             val state = rememberExerciseAnchorState()
 
-            LaunchedEffect(exerciseSelected) {
-                if (exerciseSelected) {
-                    state.dismiss(ExerciseAnchors.SELECTED)
+            LaunchedEffect(state.targetValue) {
+                if (state.targetValue == ExerciseAnchors.SELECTED) {
+                    onSelectExercises(exercise.id)
                 } else {
-                    state.dismiss(ExerciseAnchors.UNSELECTED)
+                    onUnSelectExercise(exercise.id)
                 }
             }
+
+            val scope = rememberCoroutineScope()
 
             ExerciseAnchorBox(
                 state = state,
@@ -217,19 +236,26 @@ private fun ExerciseScrollContent(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = Color.Red),
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = MaterialTheme.shapes.medium,
+                            ),
                     ) {
                         var displayIndex by remember { mutableStateOf("") }
 
                         LaunchedEffect(exerciseSelectedIndex) {
-                            if (exerciseSelectedIndex != -1) {
-                                displayIndex = (exerciseSelectedIndex + 1).toString()
+                            displayIndex = if (exerciseSelectedIndex != -1) {
+                                (exerciseSelectedIndex + 1).toString()
+                            } else {
+                                ""
                             }
                         }
 
                         Text(
                             text = displayIndex,
-                            style = textStyle,
+                            style = MaterialTheme.typography.labelLarge.merge(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            ),
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(horizontal = Dimens.Spacing.Small),
@@ -237,145 +263,174 @@ private fun ExerciseScrollContent(
                     }
                 },
                 content = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = Color.Black)
-                            .clickable {
-                                if (exerciseSelected) {
-                                    selectedExerciseIds = selectedExerciseIds.minus(exercise.id)
-                                } else {
-                                    selectedExerciseIds = selectedExerciseIds.plus(exercise.id)
+                    ExerciseCard(
+                        exercise = exercise,
+                        onClick = {
+                            if (state.currentValue == ExerciseAnchors.SELECTED) {
+                                scope.launch {
+                                    state.dismiss(ExerciseAnchors.UNSELECTED)
                                 }
-                            },
+                            } else {
+                                scope.launch {
+                                    state.dismiss(ExerciseAnchors.SELECTED)
+                                }
+                            }
+                        },
+                        modifier = Modifier,
                     )
                 },
                 modifier = Modifier
                     .padding(horizontal = Dimens.Spacing.Medium)
-                    .fillMaxWidth()
-                    .height(100.dp),
+                    .fillMaxWidth(),
             )
+        }
+    }
+}
 
-//            val exerciseSelectedIndex by remember {
-//                derivedStateOf { if (exerciseSelected) selectedExerciseIds.indexOf(exercise.id) else -1 }
-//            }
-//
-//            val textStyle = MaterialTheme.typography.labelLarge.merge(
-//                color = Color.White,
-//            )
-//            val textMeasurer = rememberTextMeasurer()
-//
-//            val measure = remember(exerciseSelectedIndex) {
-//                textMeasurer.measure(text = exerciseSelectedIndex.toString(), style = textStyle)
-//            }
-//
-//            val offset by animateIntAsState(
-//                if (exerciseSelected) measure.size.width + 64 else 0,
-//                label = "",
-//            )
-//
-//            val cardShifting by remember { derivedStateOf { offset != 0 } }
-//
-//            ElevatedCard(
-//                elevation = CardDefaults.cardElevation(
-//                    defaultElevation = 6.dp,
-//                ),
-//                modifier = Modifier
-//                    .pointerInput(exerciseSelected) {
-//                        detectTapGestures(
-//                            onTap = {
-//                                selectedExerciseIds = if (exerciseSelected) {
-//                                    selectedExerciseIds.minus(element = exercise.id)
-//                                } else {
-//                                    selectedExerciseIds.plus(element = exercise.id)
-//                                }
-//                            },
-//                        )
-//                    }
-//                    .fillMaxWidth()
-//                    .height(100.dp)
-//                    .padding(8.dp)
-//                    .drawBehind {
-//                        if (cardShifting) {
-//                            drawRoundRect(
-//                                color = Color.Black,
-//                                cornerRadius = CornerRadius(x = 12.dp.toPx(), y = 12.dp.toPx()),
-//                            )
-//
-//                            drawText(
-//                                textLayoutResult = measure,
-//                                color = Color.White,
-//                                topLeft = Offset(
-//                                    x = size.width - measure.size.width - 32,
-//                                    y = size.height / 2 - measure.size.height / 2,
-//                                ),
-//                                alpha = 1f,
-//                            )
-//                        }
-//                    }
-//                    .offset {
-//                        IntOffset(x = -offset.toInt(), 0)
-//                    },
-//            ) {
-//                Row(
-//                    modifier = Modifier,
-//                    verticalAlignment = Alignment.CenterVertically,
-//                ) {
-//                    Image(
-//                        painter = painterResource(Res.drawable.exercise_deadlift),
-//                        contentDescription = "exercise image",
-//                        modifier = Modifier,
-//                    )
-//
-//                    Column(
-//                        modifier = Modifier
-//                            .padding(top = 8.dp)
-//                            .align(Alignment.Top),
-//                    ) {
-//                        Text(
-//                            modifier = Modifier
-//                                .padding(horizontal = 8.dp),
-//                            text = exercise.name,
-//                        )
-//
-//                        Text(
-//                            modifier = Modifier
-//                                .padding(horizontal = 8.dp),
-//                            text = exercise.primaryMuscle.displayName,
-//                            color = Color.Gray,
-//                            style = MaterialTheme.typography.labelMedium,
-//                        )
-//
-//                        Text(
-//                            modifier = Modifier
-//                                .padding(horizontal = 8.dp),
-//                            text = exercise.secondaryMuscle.joinToString("/ ") {
-//                                it.displayName
-//                            },
-//                            color = Color.Gray,
-//                            style = MaterialTheme.typography.labelMedium,
-//                        )
-//                    }
-//                }
-//            }
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun ExerciseCard(
+    exercise: Exercise,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+        ),
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+    ) {
+        ExerciseMinHeightContent(
+            modifier = Modifier
+                .fillMaxWidth(),
+            exerciseImage = {
+                Image(
+                    painter = painterResource(Res.drawable.exercise_deadlift),
+                    contentDescription = "exercise image",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                )
+            },
+            exerciseDescription = {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp),
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        text = exercise.name,
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        text = exercise.primaryMuscle.displayName,
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        text = exercise.secondaryMuscle.joinToString("/ ") {
+                            it.displayName
+                        },
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun ExerciseMinHeightContent(
+    modifier: Modifier = Modifier,
+    exerciseImage: @Composable () -> Unit,
+    exerciseDescription: @Composable () -> Unit,
+) {
+    Layout(
+        modifier = modifier,
+        content = {
+            Box(
+                modifier = Modifier
+                    .layoutId("exerciseImage"),
+            ) {
+                exerciseImage()
+            }
+
+            Box(
+                modifier = Modifier
+                    .layoutId("exerciseDescription"),
+            ) {
+                exerciseDescription()
+            }
+        },
+    ) { measurables, constraints ->
+        val exerciseImageMeasurable = measurables.find { it.layoutId == "exerciseImage" }!!
+        val exerciseDescriptionMeasurable =
+            measurables.find { it.layoutId == "exerciseDescription" }!!
+
+        val exerciseDescriptionPlaceable = exerciseDescriptionMeasurable.measure(
+            constraints = constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+                maxHeight = Constraints.Infinity,
+            ),
+        )
+
+        val exerciseImagePlaceable = exerciseImageMeasurable.measure(
+            constraints = constraints.copy(
+                maxHeight = exerciseDescriptionPlaceable.height,
+                minHeight = exerciseDescriptionPlaceable.height,
+                maxWidth = Constraints.Infinity,
+                minWidth = 0,
+            ),
+        )
+
+        layout(width = constraints.maxWidth, height = exerciseDescriptionPlaceable.height) {
+            exerciseImagePlaceable.place(0, 0)
+            exerciseDescriptionPlaceable.place(exerciseImagePlaceable.width, 0)
         }
     }
 }
 
 @Composable
 private fun ExercisesTopBar(
+    openCreateExercise: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             "Exercises",
             modifier = Modifier
-                .padding(8.dp),
+                .weight(1f),
             style = MaterialTheme.typography.headlineMedium,
         )
+
+        TextButton(
+            onClick = {
+                openCreateExercise()
+            },
+            modifier = Modifier,
+        ) {
+            Text(
+                "Create",
+                textDecoration = TextDecoration.Underline,
+            )
+        }
     }
 }
 
@@ -430,15 +485,17 @@ enum class ExerciseAnchors {
 fun rememberExerciseAnchorState(
     initialValue: ExerciseAnchors = ExerciseAnchors.UNSELECTED,
     positionalThreshold: (totalDistance: Float) -> Float = { 42f },
+    confirmValueChange: (ExerciseAnchors) -> Boolean = { true },
 ): ExerciseAnchorState {
     val density = LocalDensity.current
     return rememberSaveable(
         saver = ExerciseAnchorState.Saver(
             density = density,
             positionalThreshold = positionalThreshold,
+            confirmValueChange = confirmValueChange,
         ),
     ) {
-        ExerciseAnchorState(initialValue, density, positionalThreshold)
+        ExerciseAnchorState(initialValue, density, positionalThreshold, confirmValueChange)
     }
 }
 
@@ -447,11 +504,12 @@ class ExerciseAnchorState(
     initialValue: ExerciseAnchors,
     density: Density,
     positionalThreshold: (totalDistance: Float) -> Float,
+    confirmValueChange: (ExerciseAnchors) -> Boolean,
 ) {
     internal val anchoredDraggableState = AnchoredDraggableState(
         initialValue = initialValue,
         animationSpec = tween(),
-        confirmValueChange = { true },
+        confirmValueChange = confirmValueChange,
         positionalThreshold = positionalThreshold,
         velocityThreshold = { with(density) { 148.dp.toPx() } },
     )
@@ -475,12 +533,16 @@ class ExerciseAnchorState(
          */
         fun Saver(
             positionalThreshold: (totalDistance: Float) -> Float,
+            confirmValueChange: (ExerciseAnchors) -> Boolean,
             density: Density,
         ) = Saver<ExerciseAnchorState, ExerciseAnchors>(
             save = { it.currentValue },
             restore = {
                 ExerciseAnchorState(
-                    it, density, positionalThreshold,
+                    initialValue = it,
+                    density = density,
+                    positionalThreshold = positionalThreshold,
+                    confirmValueChange = confirmValueChange,
                 )
             },
         )
@@ -502,7 +564,7 @@ private fun ExerciseAnchorBox(
             .anchoredDraggable(
                 state = state.anchoredDraggableState,
                 orientation = Orientation.Horizontal,
-                enabled = state.currentValue == ExerciseAnchors.UNSELECTED,
+                enabled = true,
                 reverseDirection = isRtl,
             ),
         propagateMinConstraints = true,
@@ -540,8 +602,7 @@ private class ExerciseAnchorsElement(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         other as ExerciseAnchorsElement
-        if (state != other.state) return false
-        return true
+        return state == other.state
     }
 
     override fun hashCode(): Int {
