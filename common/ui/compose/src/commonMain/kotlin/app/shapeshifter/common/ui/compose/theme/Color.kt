@@ -16,6 +16,7 @@ val ShapeShifterLightColorScheme = lightColorScheme(
     onSecondary = Color.White,
     surface = Color.White,
     onSurface = VampireBlack,
+    background = Color.White,
 )
 
 val ShapeShifterDarkColorScheme = darkColorScheme(
