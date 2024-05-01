@@ -24,6 +24,7 @@ class SqlDelightExerciseEntityDao(
             name = entity.name,
             primary_muscle = entity.primaryMuscle,
             secondary_muscles = entity.secondaryMuscle,
+            image_url = entity.imageUrl,
         )
     }
 
@@ -37,7 +38,15 @@ class SqlDelightExerciseEntityDao(
 
     override fun observeExercises(): Flow<List<Exercise>> {
         return db.exerciseQueries.selectAll(
-            mapper = ::Exercise,
+            mapper = { id, name, primary_muscle, secondary_muscle, image_url ->
+                Exercise(
+                    id = id,
+                    name = name,
+                    primaryMuscle = primary_muscle,
+                    secondaryMuscle = secondary_muscle,
+                    imageUrl = image_url,
+                )
+            },
         )
             .asFlow()
             .mapToList(dispatchers.io)

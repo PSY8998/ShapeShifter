@@ -40,6 +40,8 @@ dependencies {
     implementation(projects.data.supabase)
     implementation(projects.domain)
 
+    implementation(projects.common.imageloading)
+
     // features
     implementation(projects.feature.root.ui)
 

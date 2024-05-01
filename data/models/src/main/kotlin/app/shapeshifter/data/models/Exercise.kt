@@ -5,4 +5,5 @@ data class Exercise(
     val name: String,
     val primaryMuscle: Muscles,
     val secondaryMuscle: List<Muscles>,
+    val imageUrl: String,
 ) : Entity

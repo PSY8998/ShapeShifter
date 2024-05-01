@@ -21,6 +21,8 @@ kotlin {
                 implementation(compose.material3)
                 implementation(libs.circuit.foundation)
                 implementation(compose.components.resources)
+
+                api(libs.coil.compose)
             }
         }
     }

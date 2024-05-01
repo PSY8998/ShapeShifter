@@ -23,7 +23,7 @@ abstract class ActivityComponent(
     ExerciseDetailComponent,
     ExercisesComponent,
     SavedWorkoutsComponent,
-    TrackWorkoutComponent{
+    TrackWorkoutComponent {
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope

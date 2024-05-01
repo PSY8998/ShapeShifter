@@ -58,6 +58,7 @@ include(":feature:exercise:domain")
 include(":feature:exercise:data")
 
 include(":common:ui:compose")
+include(":common:imageloading")
 
 include(":domain")
 

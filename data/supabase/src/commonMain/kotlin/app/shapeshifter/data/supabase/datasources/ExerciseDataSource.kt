@@ -29,6 +29,7 @@ class SupabaseExerciseDataSource(
                 primaryMuscle = Muscles.safeValueOf(response.primaryMuscle),
                 secondaryMuscle = response.secondaryMuscles?.map { Muscles.safeValueOf(it) }
                     ?: emptyList(),
+                imageUrl = response.imageUrl ?: "",
             )
         }
     }

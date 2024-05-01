@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -69,6 +71,7 @@ import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.data.models.Exercise
+import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -319,27 +322,29 @@ private fun ExerciseCard(
             modifier = Modifier
                 .fillMaxWidth(),
             exerciseImage = {
-                Image(
-                    painter = painterResource(Res.drawable.exercise_deadlift),
+                AsyncImage(
+                    model = exercise.imageUrl,
                     contentDescription = "exercise image",
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(Res.drawable.exercise_deadlift),
+                    error = painterResource(Res.drawable.exercise_deadlift),
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .aspectRatio(1f),
                 )
             },
             exerciseDescription = {
                 Column(
                     modifier = Modifier
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
+                        modifier = Modifier,
                         text = exercise.name,
                     )
 
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
+                        modifier = Modifier,
                         text = exercise.primaryMuscle.displayName,
                         color = Color.Gray,
                         style = MaterialTheme.typography.labelMedium,
@@ -347,8 +352,7 @@ private fun ExerciseCard(
                     )
 
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
+                        modifier = Modifier,
                         text = exercise.secondaryMuscle.joinToString("/ ") {
                             it.displayName
                         },

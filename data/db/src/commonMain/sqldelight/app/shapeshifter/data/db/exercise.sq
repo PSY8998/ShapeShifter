@@ -5,7 +5,8 @@ CREATE TABLE `exercise`(
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `name` TEXT NOT NULL,
     `primary_muscle` TEXT AS Muscles NOT NULL,
-    `secondary_muscles` TEXT AS List<Muscles> NOT NULL
+    `secondary_muscles` TEXT AS List<Muscles> NOT NULL,
+    `image_url` TEXT NOT NULL
 );
 
 selectAll:
@@ -13,10 +14,11 @@ SELECT *
 FROM exercise;
 
 insert:
-INSERT INTO exercise (`id`, `name`, `primary_muscle`, secondary_muscles)
+INSERT INTO exercise (`id`, `name`, `primary_muscle`, `secondary_muscles`, `image_url`)
 VALUES (
 nullif(:id, 0),
 :name,
 :primary_muscle,
-:secondary_muscles
+:secondary_muscles,
+:image_url
 );
