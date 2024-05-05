@@ -14,9 +14,9 @@ SELECT
     wes.reps
 FROM
     workout w
-JOIN
+LEFT JOIN
     workout_exercise we ON w.id = we.workout_id
-JOIN
+LEFT JOIN
     exercise e ON we.exercise_id = e.id
 LEFT JOIN
     workout_exercise_set wes ON we.id = wes.workout_exercise_id

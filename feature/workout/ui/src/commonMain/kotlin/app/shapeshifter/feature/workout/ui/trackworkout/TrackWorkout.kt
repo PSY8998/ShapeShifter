@@ -1,10 +1,10 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
-import android.graphics.Paint.Align
-import android.graphics.Paint.Style
-import android.graphics.drawable.shapes.Shape
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,54 +12,65 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.feature.workout.ui.components.WorkoutExercise
-import app.shapeshifter.feature.workout.ui.components.sampleWorkoutExercise
+import com.slack.circuit.overlay.LocalOverlayHost
+import com.slack.circuit.overlay.OverlayHost
+import com.slack.circuit.overlay.OverlayNavigator
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import com.slack.circuitx.overlays.BasicAlertDialogOverlay
+import com.slack.circuitx.overlays.BasicDialogOverlay
+import com.slack.circuitx.overlays.DialogResult
+import com.slack.circuitx.overlays.OnClick
+import com.slack.circuitx.overlays.alertDialogOverlay
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
-import java.util.Timer
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Inject
 class TrackWorkoutUiFactory : Ui.Factory {
@@ -74,6 +85,7 @@ class TrackWorkoutUiFactory : Ui.Factory {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TrackWorkout(
     state: TrackWorkoutUiState,
@@ -84,12 +96,26 @@ private fun TrackWorkout(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
+            val overlayHost = LocalOverlayHost.current
+
+            val startTime by remember(state.workoutDetail?.workout?.startTimeInMillis) {
+                val time = state.workoutDetail?.workout?.startTimeInMillis
+                if (time == null) {
+                    mutableLongStateOf(0L)
+                } else {
+                    mutableLongStateOf(
+                        (System.currentTimeMillis() - time) / 1000,
+                    )
+                }
+            }
+
             TrackWorkoutTopBar(
                 modifier = Modifier
                     .fillMaxWidth(),
+                startTimeInSecs = startTime,
                 onBack = {
                     state.eventSink(TrackWorkoutUiEvent.GoBack)
                 },
@@ -99,31 +125,99 @@ private fun TrackWorkout(
                 thickness = 2.dp,
             )
 
-            Spacer(
+            LazyColumn(
                 modifier = Modifier
-                    .padding(vertical = 8.dp),
-            )
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    bottom = paddingValues.calculateBottomPadding(),
+                ),
+            ) {
+                item("spacer") {
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
+                    )
+                }
 
-            ExerciseLog(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                onAddExercise = {
-                    state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
-                },
-            )
+                if (state.workoutDetail != null) {
+                    itemsIndexed(
+                        state.workoutDetail.exercisesWithSets,
+                        key = { _, exercise -> exercise.id },
+                    ) { index, exercise ->
+                        WorkoutExercise(
+                            onAddSet = {},
+                            exerciseWithSets = exercise,
+                        )
 
-            WorkoutExercise(
-                workoutExercise = sampleWorkoutExercise,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            )
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            modifier = Modifier
+                                .padding(vertical = Dimens.Spacing.Medium)
+                                .fillParentMaxWidth(),
+                        )
+                    }
+                }
+
+                if (state.workoutDetail?.exercisesWithSets.isNullOrEmpty()) {
+                    item("empty_exercises_placeholder") {
+                        ExerciseLog(
+                            modifier = Modifier
+                                .padding(top = Dimens.Spacing.Medium)
+                                .fillMaxWidth()
+                                .animateItemPlacement(),
+                            onAddExercise = {
+                                state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
+                            },
+                        )
+                    }
+                }
+
+                item("add_exercise_action") {
+                    AddExercise(
+                        onAddExercise = {
+                            state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = Dimens.Spacing.Medium),
+                    )
+                }
+
+                item("discard_action") {
+                    val scope = rememberCoroutineScope()
+                    DiscardWorkout(
+                        onDiscardWorkout = {
+                            scope.launch {
+                                val result = overlayHost.showConfirmationDialog()
+                                if (result == DialogResult.Confirm) {
+                                    state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Dimens.Spacing.Medium)
+                            .padding(vertical = Dimens.Spacing.Medium),
+                    )
+                }
+            }
         }
+    }
+}
+
+private fun LazyListScope.itemDivider(key: Any? = null) {
+    item(key) {
+        HorizontalDivider(
+            thickness = 1.dp,
+            modifier = Modifier
+                .fillParentMaxWidth(),
+        )
     }
 }
 
 @Composable
 private fun TrackWorkoutTopBar(
     modifier: Modifier = Modifier,
+    startTimeInSecs: Long,
     onBack: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -169,7 +263,9 @@ private fun TrackWorkoutTopBar(
                     modifier = Modifier,
                 )
 
-                WorkoutTimer()
+                WorkoutTimer(
+                    startTimeInSecs = startTimeInSecs,
+                )
             }
 
             Button(
@@ -232,40 +328,48 @@ private fun ExerciseLog(
                 .height(Dimens.Spacing.Medium),
         )
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Dimens.Spacing.Medium),
-            shape = MaterialTheme.shapes.small,
-            onClick = {
-                onAddExercise()
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
-            ),
-        ) {
-            Text("+ Add Exercise")
-        }
+
     }
 }
 
 
 @Composable
-fun WorkoutTimer() {
-    var ticks by remember { mutableLongStateOf(0) }
-    LaunchedEffect(Unit) {
+fun AddExercise(
+    onAddExercise: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        onClick = {
+            onAddExercise()
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
+        ),
+    ) {
+        Text("+ Add Exercise")
+    }
+}
+
+
+@Composable
+fun WorkoutTimer(startTimeInSecs: Long) {
+    var ticks by rememberSaveable(startTimeInSecs) { mutableLongStateOf(startTimeInSecs) }
+    LaunchedEffect(startTimeInSecs) {
         while (true) {
             delay(1.seconds)
             ticks++
         }
     }
 
-    val minutesAndSeconds = remember(ticks) {
+    val minutesAndSeconds by remember(ticks) {
         val minutes = ticks / 60
         val seconds = ticks % 60
 
-        "$minutes m: $seconds s"
+        mutableStateOf("${minutes}m: ${seconds}s")
     }
 
     Text(
@@ -274,4 +378,110 @@ fun WorkoutTimer() {
         color = MaterialTheme.colorScheme.onSurface,
         fontWeight = FontWeight.SemiBold,
     )
+}
+
+@Composable
+private fun DiscardWorkout(
+    onDiscardWorkout: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        onClick = {
+            onDiscardWorkout()
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.error,
+        ),
+    ) {
+        Text("Discard Workout")
+    }
+}
+
+
+/** A hypothetical confirmation dialog. */
+@OptIn(ExperimentalMaterial3Api::class)
+suspend fun OverlayHost.showConfirmationDialog(): DialogResult {
+    return show(
+        dialogOverlay { navigator ->
+            Column(
+                modifier = Modifier
+                    .padding(Dimens.Spacing.Medium)
+                    .fillMaxWidth(),
+            ) {
+                Text(
+                    text = "Discard Workout?",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Text(
+                    text = "Are you sure you want to discard this workout?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(top = Dimens.Spacing.Small),
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.Spacing.Medium),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Dimens.Spacing.Medium,
+                        alignment = Alignment.End,
+                    ),
+                ) {
+                    TextButton(
+                        onClick = {
+                            navigator.finish(DialogResult.Dismiss)
+                        },
+                        modifier = Modifier,
+                        shape = MaterialTheme.shapes.small,
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            navigator.finish(DialogResult.Confirm)
+                        },
+                        modifier = Modifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.errorContainer,
+                        ),
+                        shape = MaterialTheme.shapes.small,
+                    ) {
+                        Text("Discard")
+                    }
+                }
+            }
+        },
+    )
+}
+
+@ExperimentalMaterial3Api
+fun dialogOverlay(
+    properties: DialogProperties = DialogProperties(),
+    content: @Composable (navigator: OverlayNavigator<DialogResult>) -> Unit,
+): BasicDialogOverlay<*, DialogResult> {
+    return BasicDialogOverlay(
+        model = Unit,
+        onDismissRequest = { DialogResult.Dismiss },
+        properties = properties,
+    ) { _, navigator ->
+        Dialog(
+            onDismissRequest = { navigator.finish(DialogResult.Dismiss) },
+        ) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize(),
+                shape = MaterialTheme.shapes.small,
+            ) {
+                content(navigator)
+            }
+        }
+    }
 }

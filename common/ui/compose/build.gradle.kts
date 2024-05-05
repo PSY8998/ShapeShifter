@@ -23,6 +23,7 @@ kotlin {
                 implementation(compose.components.resources)
 
                 api(libs.coil.compose)
+                implementation(libs.circuit.overlay)
             }
         }
     }

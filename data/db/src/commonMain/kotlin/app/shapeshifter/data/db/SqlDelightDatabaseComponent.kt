@@ -41,7 +41,7 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponen
     @Provides
     fun provideDatabaseTransactionRunner(
         runner: SqlDelightTransactionRunner,
-    ) = runner
+    ): DatabaseTransactionRunner = runner
 
     @ApplicationScope
     @Provides

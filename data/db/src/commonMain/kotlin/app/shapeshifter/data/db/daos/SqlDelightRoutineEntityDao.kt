@@ -10,11 +10,13 @@ interface RoutineEntityDao : EntityDao<Routine>
 class SqlDelightRoutineEntityDao(
     override val db: ShapeShifterDatabase,
 ) : SqlDelightEntityDao<Routine>, RoutineEntityDao {
-    override fun insert(entity: Routine) {
+    override fun insert(entity: Routine): Long {
         db.routineQueries.insert(
             id = entity.id,
             name = entity.name,
         )
+
+        return db.routineQueries.lastInsertRowId().executeAsOne()
     }
 
     override fun update(entity: Routine) {

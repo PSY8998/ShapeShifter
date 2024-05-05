@@ -55,6 +55,7 @@ dependencies {
 
     // workout
     implementation(projects.feature.workout.ui)
+    implementation(projects.feature.workout.domain)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

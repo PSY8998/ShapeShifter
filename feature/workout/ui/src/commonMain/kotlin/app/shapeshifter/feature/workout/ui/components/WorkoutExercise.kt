@@ -1,6 +1,9 @@
 package app.shapeshifter.feature.workout.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -11,6 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -34,18 +41,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat.Style
 import app.shapeshifter.common.ui.compose.theme.Procelain
+import app.shapeshifter.data.models.workout.WorkoutExerciseSet
+import app.shapeshifter.data.models.workout.WorkoutExerciseWithSets
 import com.slack.circuit.retained.rememberRetained
 
 @Composable
 fun WorkoutExercise(
-    workoutExercise: WorkoutExercise,
+    exerciseWithSets: WorkoutExerciseWithSets,
+    onAddSet: (workoutExerciseId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var exerciseNote by rememberRetained(key = "exerciseNote") { mutableStateOf("") }
 
     Column(
-        modifier = modifier
-            .padding(vertical = 16.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(
@@ -56,7 +65,7 @@ fun WorkoutExercise(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = workoutExercise.name,
+                text = exerciseWithSets.exercise.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -76,6 +85,7 @@ fun WorkoutExercise(
                 onValueChange = {
                     exerciseNote = it
                 },
+                textStyle = MaterialTheme.typography.bodySmall,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondary,
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
@@ -85,8 +95,8 @@ fun WorkoutExercise(
                 maxLines = 2,
                 placeholder = {
                     Text(
-                        text = "Drop Weight and focus on form",
-                        style = MaterialTheme.typography.titleSmall,
+                        text = "Note: drop Weight and focus on form",
+                        style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray,
                     )
                 },
@@ -132,13 +142,15 @@ fun WorkoutExercise(
                     .weight(1f),
             )
         }
-        for (workoutSet in workoutExercise.sets) {
+        for (workoutSet in exerciseWithSets.sets) {
             WorkoutSet(
                 workoutSet = workoutSet,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
         }
+
+        AddNewSet()
     }
 }
 
@@ -162,7 +174,7 @@ private fun WorkoutSet(
                 .weight(1f),
         )
         Text(
-            text = workoutSet.previousSet.weight.toString() + " x " + workoutSet.previousSet.reps.toString(),
+            text = "",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
@@ -215,6 +227,53 @@ private fun WorkoutSet(
                 .weight(1f)
                 .width(IntrinsicSize.Min)
                 .defaultMinSize(24.dp),
+        )
+    }
+}
+
+@Composable
+private fun AddNewSet(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
+                .background(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clip(shape = MaterialTheme.shapes.small)
+                .clickable {
+
+                }
+                .padding(4.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(1f),
+        )
+
+        Box(
+            modifier = Modifier
+                .weight(1f),
+        )
+
+        Box(
+            modifier = Modifier
+                .weight(1f),
         )
     }
 }

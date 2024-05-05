@@ -1,12 +1,14 @@
-CREATE TABLE IF NOT EXISTS workout_exercise (
+CREATE TABLE IF NOT EXISTS `workout_exercise` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `exercise_id` INTEGER NOT NULL,
     `workout_id` INTEGER NOT NULL,
-    FOREIGN KEY(`workout_id`) REFERENCES `workout`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (`workout_id`) REFERENCES `workout`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- queries
+-- indices
+CREATE INDEX IF NOT EXISTS `index_exercise_workout_id` ON `workout_exercise` (`workout_id`);
 
+-- queries
 insert:
 INSERT INTO workout_exercise (`id`, `exercise_id`,`workout_id`)
 VALUES (
@@ -18,3 +20,6 @@ nullif(:id, 0),
 selectAll:
 SELECT * FROM workout_exercise
 WHERE `workout_id` = :workout_id;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

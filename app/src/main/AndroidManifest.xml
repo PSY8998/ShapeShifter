@@ -20,8 +20,7 @@
             android:name=".MainActivity"
             android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustNothing">
+            android:launchMode="singleTask">
 
             <intent-filter>
                 <!-- MAIN represents that it is the Main Activity-->

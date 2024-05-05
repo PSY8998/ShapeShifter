@@ -13,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.isAtRoot
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.Screen
 import org.jetbrains.compose.resources.DrawableResource
@@ -85,11 +87,16 @@ fun Root(
             }
         },
     ) {
-        NavigableCircuitContent(
-            navigator = navigator,
-            backStack = backStack,
-            modifier = Modifier,
-        )
+        ContentWithOverlays(
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            NavigableCircuitContent(
+                navigator = navigator,
+                backStack = backStack,
+                modifier = Modifier,
+            )
+        }
     }
 }
 

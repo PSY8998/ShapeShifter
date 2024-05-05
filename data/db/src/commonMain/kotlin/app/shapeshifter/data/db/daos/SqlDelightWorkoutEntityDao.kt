@@ -3,6 +3,7 @@ package app.shapeshifter.data.db.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
+import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.SelectWorkoutDetails
 import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.Exercise
@@ -24,20 +25,26 @@ import kotlinx.coroutines.withContext
 
 interface WorkoutEntityDao : EntityDao<Workout> {
     fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutWithExercisesAndSets>
+
+    fun unfinishedWorkout(): Workout?
 }
 
 @Inject
 class SqlDelightWorkoutEntityDao(
     override val db: ShapeShifterDatabase,
+    private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
 ) : SqlDelightEntityDao<Workout>, WorkoutEntityDao {
-    override fun insert(entity: Workout) {
-        db.workoutQueries.insert(
-            id = entity.id,
-            saved_workout_id = entity.savedWorkoutId,
-            start_time = entity.startTimeInMillis,
-            finish_time = entity.finishTimeInMillis,
-        )
+    override fun insert(entity: Workout): Long {
+        return transactionRunner {
+            db.workoutQueries.insert(
+                id = entity.id,
+                saved_workout_id = entity.savedWorkoutId,
+                start_time = entity.startTimeInMillis,
+                finish_time = entity.finishTimeInMillis,
+            )
+            db.workoutQueries.lastInsertRowId().executeAsOne()
+        }
     }
 
     override fun update(entity: Workout) {
@@ -45,7 +52,7 @@ class SqlDelightWorkoutEntityDao(
     }
 
     override fun deleteEntity(entity: Workout) {
-        TODO("Not yet implemented")
+        db.workoutQueries.delete(entity.id)
     }
 
     override fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutWithExercisesAndSets> {
@@ -65,26 +72,32 @@ class SqlDelightWorkoutEntityDao(
                 )
 
                 items.forEach { entry ->
-                    entry.workout_exercise_set_id ?: return@forEach
-                    val set = WorkoutExerciseSet(
-                        id = entry.workout_exercise_set_id,
-                        index = PositiveInt(0), // Consider implications of always setting to 0
-                        weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
-                        reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
-                        completed = false,
-                    )
-                    exerciseMap.getOrPut(entry.exercise_id) { mutableListOf() }.add(set)
+                    if (entry.exercise_id != null) {
+                        exerciseMap.getOrPut(entry.exercise_id) { mutableListOf() }.also {
+                            if (entry.workout_exercise_set_id != null) {
+                                val set = WorkoutExerciseSet(
+                                    id = entry.workout_exercise_set_id,
+                                    index = PositiveInt(0), // Consider implications of always setting to 0
+                                    weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
+                                    reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
+                                    completed = false,
+                                )
+                                it.add(set)
+                            }
+                        }
+                    }
                 }
+
 
                 val exercises = exerciseMap.entries.mapNotNull { (exerciseId, sets) ->
                     items.find { it.exercise_id == exerciseId }?.let {
                         WorkoutExerciseWithSets(
-                            id = it.workout_exercise_id,
+                            id = it.workout_exercise_id!!,
                             exercise = Exercise(
-                                id = it.exercise_id,
-                                primaryMuscle = it.exercise_primary_muscle,
-                                secondaryMuscle = it.exercise_secondary_muscles,
-                                name = it.exercise_name,
+                                id = it.exercise_id!!,
+                                primaryMuscle = it.exercise_primary_muscle!!,
+                                secondaryMuscle = it.exercise_secondary_muscles!!,
+                                name = it.exercise_name!!,
                                 imageUrl = "",
                             ),
                             sets = sets,
@@ -94,6 +107,14 @@ class SqlDelightWorkoutEntityDao(
 
                 WorkoutWithExercisesAndSets(workout, exercises)
             }
+    }
+
+    override fun unfinishedWorkout(): Workout? {
+        return db.workoutQueries.unfinishedWorkout(
+            mapper = { id, saved_workout_id, start_time, finish_time ->
+                Workout(id, saved_workout_id, start_time, finish_time, "")
+            },
+        ).executeAsOneOrNull()
     }
 
 }

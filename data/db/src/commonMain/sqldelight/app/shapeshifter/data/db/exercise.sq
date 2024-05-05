@@ -22,3 +22,6 @@ nullif(:id, 0),
 :secondary_muscles,
 :image_url
 );
+
+lastInsertRowId:
+SELECT last_insert_rowid();

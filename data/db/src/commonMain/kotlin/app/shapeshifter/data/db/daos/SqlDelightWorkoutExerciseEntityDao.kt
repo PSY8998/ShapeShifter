@@ -17,12 +17,14 @@ class SqlDelightWorkoutExerciseEntityDao(
     override val db: ShapeShifterDatabase,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
 ) : SqlDelightEntityDao<WorkoutExercise>, WorkoutExerciseEntityDao {
-    override fun insert(entity: WorkoutExercise) {
+    override fun insert(entity: WorkoutExercise): Long {
         db.workout_exerciseQueries.insert(
             id = entity.id,
             exercise_id = entity.exerciseId,
             workout_id = entity.workoutId,
         )
+
+        return db.workout_exerciseQueries.lastInsertRowId().executeAsOne()
     }
 
     override fun update(entity: WorkoutExercise) {

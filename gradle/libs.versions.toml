@@ -68,6 +68,9 @@ sqldelight-androidDriver = { module = "app.cash.sqldelight:android-driver", vers
 # navigation
 circuit-foundation = { group = "com.slack.circuit", name = "circuit-foundation", version.ref = "circuit" }
 circuit-retained = { module = "com.slack.circuit:circuit-retained", version.ref = "circuit" }
+circuit-effects = { module = "com.slack.circuit:circuitx-effects", version.ref = "circuit" }
+circuit-overlay = { module = "com.slack.circuit:circuit-overlay", version.ref = "circuit" }
+circuitx-overlay = { module = "com.slack.circuit:circuitx-overlays", version.ref = "circuit" }
 
 # dependency injection
 kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }

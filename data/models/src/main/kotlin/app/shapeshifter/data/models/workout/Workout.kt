@@ -14,14 +14,16 @@ data class Workout(
 ) : Entity {
 
     fun isWorkoutFinished() = finishTimeInMillis != UnfinishedWorkoutTimeInMillis
-}
 
-fun Workout.emptyQuickWorkout(): Workout {
-    return Workout(
-        id = 0,
-        savedWorkoutId = SavedWorkout.QuickWorkoutId,
-        startTimeInMillis = System.currentTimeMillis(),
-        finishTimeInMillis = UnfinishedWorkoutTimeInMillis,
-        note = "",
-    )
+    companion object {
+        fun emptyQuickWorkout(): Workout {
+            return Workout(
+                id = 0,
+                savedWorkoutId = SavedWorkout.QuickWorkoutId,
+                startTimeInMillis = System.currentTimeMillis(),
+                finishTimeInMillis = UnfinishedWorkoutTimeInMillis,
+                note = "",
+            )
+        }
+    }
 }
