@@ -1,7 +1,7 @@
 import app.shapeshifter.data.models.Muscles;
 import kotlin.collections.List;
 
-CREATE TABLE `exercise`(
+CREATE TABLE IF NOT EXISTS `exercise`(
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `name` TEXT NOT NULL,
     `primary_muscle` TEXT AS Muscles NOT NULL,

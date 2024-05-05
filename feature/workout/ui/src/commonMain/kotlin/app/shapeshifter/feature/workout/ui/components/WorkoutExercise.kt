@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,6 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -78,6 +82,7 @@ fun WorkoutExercise(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
+                maxLines = 2,
                 placeholder = {
                     Text(
                         text = "Drop Weight and focus on form",
@@ -170,17 +175,22 @@ private fun WorkoutSet(
         BasicTextField(
             value = setWeight,
             onValueChange = {
-                setWeight = it
+                if (pattern.matches(it)) {
+                    setWeight = it
+                }
             },
             textStyle = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurface,
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+            ),
             modifier = Modifier
-                .defaultMinSize(24.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .weight(1f)
-                .width(IntrinsicSize.Min),
+                .width(IntrinsicSize.Min)
+                .defaultMinSize(24.dp),
         )
 
         var setReps by remember { mutableStateOf(workoutSet.reps.toString()) }
@@ -188,17 +198,25 @@ private fun WorkoutSet(
         BasicTextField(
             value = setReps,
             onValueChange = {
-                setReps = it
+                if (pattern.matches(it)) {
+                    setReps = it
+                }
+
             },
             textStyle = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurface,
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+            ),
             modifier = Modifier
-                .defaultMinSize(24.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .weight(1f)
-                .width(IntrinsicSize.Min),
+                .width(IntrinsicSize.Min)
+                .defaultMinSize(24.dp),
         )
     }
 }
+
+val pattern = Regex("^\\d*$")

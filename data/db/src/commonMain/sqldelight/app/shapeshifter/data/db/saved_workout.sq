@@ -1,0 +1,5 @@
+CREATE TABLE saved_workout (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `routine_id` INTEGER NOT NULL,
+    `name` TEXT NOT NULL
+);
