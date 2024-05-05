@@ -31,6 +31,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.feature.workout.ui.components.WorkoutExercise
+import app.shapeshifter.feature.workout.ui.components.sampleWorkoutExercise
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -89,6 +91,11 @@ private fun TrackWorkout(
                 onAddExercise = {
                     state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
                 },
+            )
+            WorkoutExercise(
+                workoutExercise = sampleWorkoutExercise,
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
     }

@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.Color
 
 val VampireBlack = Color(0xFF070707)
 val Coal = Color(0xFF282828)
+val Color.Companion.Procelain
+    get() = Color(0xFFF2F5F6)
 
 val ShapeShifterLightColorScheme = lightColorScheme(
     primary = VampireBlack,
