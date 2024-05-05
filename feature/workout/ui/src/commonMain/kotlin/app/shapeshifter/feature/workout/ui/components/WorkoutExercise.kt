@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,8 +73,8 @@ fun WorkoutExercise(
                     exerciseNote = it
                 },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Procelain,
-                    unfocusedContainerColor = Color.Procelain,
+                    focusedContainerColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
@@ -95,7 +96,7 @@ fun WorkoutExercise(
         ) {
             Text(
                 text = "Set",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -103,7 +104,7 @@ fun WorkoutExercise(
             )
             Text(
                 text = "Prev",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -111,7 +112,7 @@ fun WorkoutExercise(
             )
             Text(
                 text = "Kg",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -119,7 +120,7 @@ fun WorkoutExercise(
             )
             Text(
                 text = "Reps",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -151,16 +152,18 @@ private fun WorkoutSet(
             text = workoutSet.index.toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Black,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
                 .weight(1f),
         )
         Text(
             text = workoutSet.previousSet.weight.toString() + " x " + workoutSet.previousSet.reps.toString(),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
                 .weight(1f),
 
-        )
+            )
 
         var setWeight by remember { mutableStateOf(workoutSet.weight.toString()) }
 
@@ -169,6 +172,10 @@ private fun WorkoutSet(
             onValueChange = {
                 setWeight = it
             },
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             modifier = Modifier
                 .defaultMinSize(24.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
@@ -183,6 +190,10 @@ private fun WorkoutSet(
             onValueChange = {
                 setReps = it
             },
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             modifier = Modifier
                 .defaultMinSize(24.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)

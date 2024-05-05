@@ -33,7 +33,7 @@ fun ShapeShifterContent(
 
     CircuitCompositionLocals(circuit) {
         ShapeShifterTheme(
-            useDarkTheme = false,
+            useDarkTheme = true,
         ) {
             Root(
                 navigator = navigator,

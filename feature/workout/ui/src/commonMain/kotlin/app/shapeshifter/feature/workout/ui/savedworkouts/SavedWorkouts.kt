@@ -174,8 +174,8 @@ private fun QuickWorkout(
                 onStart()
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Procelain,
-                contentColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -237,7 +237,7 @@ private fun Routines(
         Box(
             modifier = Modifier
                 .background(
-                    color = Procelain,
+                    color = MaterialTheme.colorScheme.secondary,
                     shape = MaterialTheme.shapes.small,
                 )
                 .clip(shape = MaterialTheme.shapes.small)
@@ -251,7 +251,7 @@ private fun Routines(
                 contentDescription = "Create a new routine",
                 modifier = Modifier
                     .align(Alignment.Center),
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.onSecondary,
             )
         }
     }
@@ -282,7 +282,7 @@ private fun MyRoutine(
             Box(
                 modifier = Modifier
                     .background(
-                        color = Procelain,
+                        color = MaterialTheme.colorScheme.secondary,
                         shape = MaterialTheme.shapes.small,
                     )
                     .clip(shape = MaterialTheme.shapes.small)
@@ -296,7 +296,7 @@ private fun MyRoutine(
                     contentDescription = "Create a new workout",
                     modifier = Modifier
                         .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                 )
             }
 

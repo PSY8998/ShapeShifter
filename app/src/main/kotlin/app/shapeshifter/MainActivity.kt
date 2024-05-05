@@ -18,7 +18,7 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdgeForTheme(false)
+        enableEdgeToEdgeForTheme(true)
         super.onCreate(savedInstanceState)
         val applicationComponent = ApplicationComponent.from(this)
         val component = ActivityComponent.create(this, applicationComponent)

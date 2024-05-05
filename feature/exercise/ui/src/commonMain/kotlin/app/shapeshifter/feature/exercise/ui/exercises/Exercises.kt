@@ -273,7 +273,7 @@ private fun ExerciseScrollContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.secondary,
                                     shape = MaterialTheme.shapes.medium,
                                 ),
                         ) {
@@ -290,7 +290,7 @@ private fun ExerciseScrollContent(
                             Text(
                                 text = displayIndex,
                                 style = MaterialTheme.typography.labelLarge.merge(
-                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    color = MaterialTheme.colorScheme.onSecondary,
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.CenterEnd)
@@ -487,7 +487,7 @@ private fun ExercisesTopBar(
             Box(
                 modifier = Modifier
                     .background(
-                        color = Procelain,
+                        color = MaterialTheme.colorScheme.secondary,
                         shape = MaterialTheme.shapes.small,
                     )
                     .clip(shape = MaterialTheme.shapes.small)
@@ -502,7 +502,7 @@ private fun ExercisesTopBar(
                     contentDescription = "Create Exercise",
                     modifier = Modifier
                         .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                 )
             }
         }
