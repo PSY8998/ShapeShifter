@@ -15,4 +15,8 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     data object OnAddExercise : TrackWorkoutUiEvent
 
     data object DiscardWorkout : TrackWorkoutUiEvent
+
+    data class OnAddSet(
+        val workoutExerciseId : Long
+    ) : TrackWorkoutUiEvent
 }

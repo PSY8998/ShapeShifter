@@ -81,6 +81,7 @@ class SqlDelightWorkoutEntityDao(
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
                                     completed = false,
+                                    workoutExerciseId = entry.workout_exercise_id!!
                                 )
                                 it.add(set)
                             }

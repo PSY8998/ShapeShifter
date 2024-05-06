@@ -131,8 +131,10 @@ private fun TrackWorkout(
                         key = { _, exercise -> exercise.exerciseLog.id },
                     ) { index, exercise ->
                         WorkoutExercise(
-                            onAddSet = {},
-                            exerciseSession = exercise,
+                            onAddSet = {
+                                state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
+                            },
+                            exerciseWithSets = exercise,
                         )
 
                         HorizontalDivider(

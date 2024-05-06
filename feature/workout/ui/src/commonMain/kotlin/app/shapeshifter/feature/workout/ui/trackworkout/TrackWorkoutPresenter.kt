@@ -48,6 +48,7 @@ class TrackWorkoutPresenter(
     private val observeWorkoutDetailsUseCase: ObserveWorkoutDetailsUseCase,
     private val createWorkoutUseCase: CreateWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
+    private val createSetUseCase: CreateSetUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
     @Composable
@@ -87,6 +88,16 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnAddExercise -> {
                     answeringNavigator.goTo(ExercisesScreen(true))
+                }
+
+                is TrackWorkoutUiEvent.OnAddSet -> {
+                    scope.launch {
+                        createSetUseCase(
+                            params = CreateSetUseCase.Params(
+                                workoutExerciseId = event.workoutExerciseId
+                            )
+                        )
+                    }
                 }
 
                 is TrackWorkoutUiEvent.DiscardWorkout -> {

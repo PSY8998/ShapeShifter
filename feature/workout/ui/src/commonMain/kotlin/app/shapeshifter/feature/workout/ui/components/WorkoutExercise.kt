@@ -145,7 +145,11 @@ fun WorkoutExercise(
             )
         }
 
-        AddNewSet()
+        AddNewSet(
+            onAddSet = {
+                onAddSet(exerciseWithSets.id)
+            }
+        )
     }
 }
 
@@ -161,7 +165,7 @@ private fun WorkoutSet(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = workoutSet.index.toString(),
+            text = workoutSet.index.value.toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Black,
             style = MaterialTheme.typography.bodySmall,
@@ -177,7 +181,7 @@ private fun WorkoutSet(
 
         )
 
-        var setWeight by remember { mutableStateOf(workoutSet.weight.toString()) }
+        var setWeight by remember { mutableStateOf(workoutSet.weight.value.toString()) }
 
         BasicTextField(
             value = setWeight,
@@ -200,7 +204,7 @@ private fun WorkoutSet(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember { mutableStateOf(workoutSet.reps.toString()) }
+        var setReps by remember { mutableStateOf(workoutSet.reps.value.toString()) }
 
         BasicTextField(
             value = setReps,
@@ -227,6 +231,7 @@ private fun WorkoutSet(
 
 @Composable
 private fun AddNewSet(
+    onAddSet:() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -245,6 +250,7 @@ private fun AddNewSet(
                 )
                 .clip(shape = MaterialTheme.shapes.small)
                 .clickable {
+                    onAddSet()
                 }
                 .padding(4.dp),
         ) {
