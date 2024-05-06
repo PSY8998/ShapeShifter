@@ -4,13 +4,13 @@ import app.shapeshifter.data.models.Entity
 
 interface EntityDao<in E : Entity> {
 
-    fun insert(entity: E)
+    fun insert(entity: E): Long
 
     fun insert(entities: List<E>)
 
     fun update(entity: E)
 
-    fun upsert(entity: E): Unit = upsert(entity, ::insert, ::update)
+    fun upsert(entity: E): Long = upsert(entity, ::insert, ::update)
 
     fun upsert(entities: List<E>)
 
@@ -22,13 +22,14 @@ fun <E : Entity> EntityDao<E>.upsert(vararg entities: E) = upsert(entities.toLis
 
 fun <ET : Entity> upsert(
     entity: ET,
-    insert: (ET) -> Unit,
+    insert: (ET) -> Long,
     update: (ET) -> Unit,
-    onConflict: ((ET, Throwable) -> Unit)? = null,
-) {
+    onConflict: ((ET, Throwable) -> Long)? = null,
+): Long {
     return try {
         if (entity.id != 0L) {
             update(entity)
+            entity.id
         } else {
             insert(entity)
         }

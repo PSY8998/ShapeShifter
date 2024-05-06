@@ -16,6 +16,7 @@ kotlin {
                 api(projects.common.ui.compose)
 
                 implementation(libs.circuit.foundation)
+                implementation(libs.circuit.overlay)
 
                 implementation(libs.kotlininject.runtime)
 

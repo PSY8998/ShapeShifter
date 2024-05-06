@@ -40,6 +40,8 @@ dependencies {
     implementation(projects.data.supabase)
     implementation(projects.domain)
 
+    implementation(projects.common.imageloading)
+
     // features
     implementation(projects.feature.root.ui)
 
@@ -53,6 +55,7 @@ dependencies {
 
     // workout
     implementation(projects.feature.workout.ui)
+    implementation(projects.feature.workout.domain)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

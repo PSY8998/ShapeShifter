@@ -8,6 +8,10 @@ import app.shapeshifter.data.db.daos.ExerciseEntityDao
 import app.shapeshifter.data.db.daos.RoutineEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightExerciseEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightRoutineEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightWorkoutEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightWorkoutExerciseEntityDao
+import app.shapeshifter.data.db.daos.WorkoutEntityDao
+import app.shapeshifter.data.db.daos.WorkoutExerciseEntityDao
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 
@@ -21,8 +25,8 @@ class DatabaseFactory(
         driver = driver,
         exerciseAdapter = Exercise.Adapter(
             primary_muscleAdapter = MuscleColumnAdapter,
-            secondary_musclesAdapter = MusclesColumnAdapter
-        )
+            secondary_musclesAdapter = MusclesColumnAdapter,
+        ),
     )
 }
 
@@ -37,7 +41,7 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponen
     @Provides
     fun provideDatabaseTransactionRunner(
         runner: SqlDelightTransactionRunner,
-    ) = runner
+    ): DatabaseTransactionRunner = runner
 
     @ApplicationScope
     @Provides
@@ -50,4 +54,16 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponen
     fun provideRoutineEntityDao(
         dao: SqlDelightRoutineEntityDao,
     ): RoutineEntityDao = dao
+
+    @ApplicationScope
+    @Provides
+    fun provideWorkoutEntityDao(
+        dao: SqlDelightWorkoutEntityDao,
+    ): WorkoutEntityDao = dao
+
+    @ApplicationScope
+    @Provides
+    fun provideWorkoutExerciseEntityDao(
+        dao: SqlDelightWorkoutExerciseEntityDao,
+    ): WorkoutExerciseEntityDao = dao
 }

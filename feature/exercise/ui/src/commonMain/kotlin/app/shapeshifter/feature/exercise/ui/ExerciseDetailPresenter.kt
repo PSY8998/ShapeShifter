@@ -42,6 +42,7 @@ class ExerciseDetailPresenter(
                         name = event.exerciseName,
                         primaryMuscle = Muscles.OTHER,
                         secondaryMuscle = emptyList(),
+                        imageUrl = "",
                     )
                     // exerciseRepository.insert(exercise)
                     navigator.pop()

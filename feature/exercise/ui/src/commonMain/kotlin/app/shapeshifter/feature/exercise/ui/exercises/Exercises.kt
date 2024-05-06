@@ -8,7 +8,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -19,21 +22,35 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -45,7 +62,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -68,7 +88,11 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
+import app.shapeshifter.common.ui.compose.theme.NoIndication
+import app.shapeshifter.common.ui.compose.theme.NoRippleTheme
+import app.shapeshifter.common.ui.compose.theme.Procelain
 import app.shapeshifter.data.models.Exercise
+import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -121,6 +145,7 @@ private fun Exercises(
 
             Box(
                 modifier = Modifier
+                    .padding(top = 16.dp)
                     .weight(1f),
             ) {
                 when (uiState) {
@@ -185,12 +210,17 @@ private fun ExercisesContent(
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier
-                .align(Alignment.BottomCenter),
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
         ) {
             Button(
                 onClick = {
                     onSelectExercises(selectedExerciseIds.toList())
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = MaterialTheme.shapes.small,
             ) {
                 Text("Select Exercises")
             }
@@ -210,7 +240,6 @@ private fun ExerciseScrollContent(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
     ) {
         items(exercises) { exercise ->
             val exerciseSelectedIndex by remember(selectedExerciseIds) {
@@ -230,71 +259,83 @@ private fun ExerciseScrollContent(
                 }
             }
 
-            val scope = rememberCoroutineScope()
-
-            ExerciseAnchorBox(
-                state = state,
-                enabled = canSelect,
-                backgroundContent = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = MaterialTheme.shapes.medium,
-                            ),
-                    ) {
-                        var displayIndex by remember { mutableStateOf("") }
-
-                        LaunchedEffect(exerciseSelectedIndex) {
-                            displayIndex = if (exerciseSelectedIndex != -1) {
-                                (exerciseSelectedIndex + 1).toString()
-                            } else {
-                                ""
-                            }
-                        }
-
-                        Text(
-                            text = displayIndex,
-                            style = MaterialTheme.typography.labelLarge.merge(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(horizontal = Dimens.Spacing.Small),
-                        )
-                    }
-                },
-                content = {
-                    ExerciseCard(
-                        exercise = exercise,
-                        onClick = {
-                            when {
-                                canSelect && state.currentValue == ExerciseAnchors.SELECTED -> {
-                                    scope.launch {
-                                        state.dismiss(ExerciseAnchors.UNSELECTED)
-                                    }
-                                }
-
-                                canSelect && state.currentValue == ExerciseAnchors.UNSELECTED -> {
-                                    scope.launch {
-                                        state.dismiss(ExerciseAnchors.SELECTED)
-                                    }
-                                }
-
-                                else -> {
-                                    // TODO: Open exercise details
-                                }
-                            }
-
-                        },
-                        modifier = Modifier,
-                    )
-                },
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = Dimens.Spacing.Medium)
                     .fillMaxWidth(),
-            )
+            ) {
+                val scope = rememberCoroutineScope()
+
+                ExerciseAnchorBox(
+                    state = state,
+                    enabled = canSelect,
+                    backgroundContent = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    shape = MaterialTheme.shapes.medium,
+                                ),
+                        ) {
+                            var displayIndex by remember { mutableStateOf("") }
+
+                            LaunchedEffect(exerciseSelectedIndex) {
+                                displayIndex = if (exerciseSelectedIndex != -1) {
+                                    (exerciseSelectedIndex + 1).toString()
+                                } else {
+                                    ""
+                                }
+                            }
+
+                            Text(
+                                text = displayIndex,
+                                style = MaterialTheme.typography.labelLarge.merge(
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .padding(horizontal = Dimens.Spacing.Small),
+                            )
+                        }
+                    },
+                    content = {
+                        ExerciseCard(
+                            exercise = exercise,
+                            onClick = {
+                                when {
+                                    canSelect && state.currentValue == ExerciseAnchors.SELECTED -> {
+                                        scope.launch {
+                                            state.dismiss(ExerciseAnchors.UNSELECTED)
+                                        }
+                                    }
+
+                                    canSelect && state.currentValue == ExerciseAnchors.UNSELECTED -> {
+                                        scope.launch {
+                                            state.dismiss(ExerciseAnchors.SELECTED)
+                                        }
+                                    }
+
+                                    else -> {
+                                        // TODO: Open exercise details
+                                    }
+                                }
+
+                            },
+                            modifier = Modifier,
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                )
+            }
         }
     }
 }
@@ -306,59 +347,65 @@ private fun ExerciseCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-    ) {
-        ExerciseMinHeightContent(
-            modifier = Modifier
-                .fillMaxWidth(),
-            exerciseImage = {
-                Image(
-                    painter = painterResource(Res.drawable.exercise_deadlift),
-                    contentDescription = "exercise image",
-                    modifier = Modifier
-                        .fillMaxSize(),
-                )
-            },
-            exerciseDescription = {
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp),
-                ) {
-                    Text(
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp,
+            ),
+            onClick = onClick,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+            shape = RoundedCornerShape(0.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        ) {
+            ExerciseMinHeightContent(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .fillMaxWidth(),
+                exerciseImage = {
+                    AsyncImage(
+                        model = exercise.imageUrl,
+                        contentDescription = "exercise image",
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(Res.drawable.exercise_deadlift),
+                        error = painterResource(Res.drawable.exercise_deadlift),
                         modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        text = exercise.name,
+                            .fillMaxSize()
+                            .aspectRatio(1f),
                     )
+                },
+                exerciseDescription = {
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            text = exercise.name,
+                        )
 
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        text = exercise.primaryMuscle.displayName,
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.labelMedium,
-                        maxLines = 1,
-                    )
+                        Text(
+                            modifier = Modifier,
+                            text = exercise.primaryMuscle.displayName,
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                        )
 
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        text = exercise.secondaryMuscle.joinToString("/ ") {
-                            it.displayName
-                        },
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.labelMedium,
-                        maxLines = 1,
-                    )
-                }
-            },
-        )
+                        Text(
+                            modifier = Modifier,
+                            text = exercise.secondaryMuscle.joinToString("/ ") {
+                                it.displayName
+                            },
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -419,30 +466,53 @@ private fun ExercisesTopBar(
     openCreateExercise: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .fillMaxWidth(),
     ) {
-        Text(
-            "Exercises",
+        Box(
             modifier = Modifier
-                .weight(1f),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-
-        TextButton(
-            onClick = {
-                openCreateExercise()
-            },
-            modifier = Modifier,
+                .fillMaxWidth()
+                .padding(16.dp),
         ) {
             Text(
-                "Create",
-                textDecoration = TextDecoration.Underline,
+                "Exercises",
+                modifier = Modifier
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+                    .align(Alignment.Center),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
             )
+
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = MaterialTheme.shapes.small,
+                    )
+                    .clip(shape = MaterialTheme.shapes.small)
+                    .clickable {
+                        openCreateExercise()
+                    }
+                    .padding(4.dp)
+                    .align(Alignment.CenterEnd),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create Exercise",
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                )
+            }
         }
+
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth(),
+            thickness = 2.dp,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+        )
     }
 }
 

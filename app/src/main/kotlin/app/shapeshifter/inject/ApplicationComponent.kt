@@ -1,6 +1,7 @@
 package app.shapeshifter.inject
 
 import android.app.Application
+import app.shapeshifter.common.imageloading.ImageLoadingComponent
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.core.base.inject.ApplicationCoroutineScope
 import app.shapeshifter.core.base.inject.ApplicationScope
@@ -18,7 +19,8 @@ import kotlinx.coroutines.SupervisorJob
 abstract class ApplicationComponent(
     @get:Provides val application: Application,
 ) : SqlDelightDatabaseComponent,
-    SupabaseComponent {
+    SupabaseComponent,
+    ImageLoadingComponent {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @ApplicationScope
