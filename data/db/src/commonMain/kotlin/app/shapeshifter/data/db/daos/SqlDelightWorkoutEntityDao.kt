@@ -3,25 +3,28 @@ package app.shapeshifter.data.db.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workout.Workout
-import app.shapeshifter.data.models.workout.WorkoutExerciseSet
-import app.shapeshifter.data.models.workout.WorkoutExerciseWithSets
-import app.shapeshifter.data.models.workout.WorkoutWithExercisesAndSets
-import app.shapeshifter.data.models.workout.WorkoutWithSaveInfo
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workoutlog.ExerciseSession
+import app.shapeshifter.data.models.workoutlog.WorkoutLog
+import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import me.tatarka.inject.annotations.Inject
 import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.withTimeoutOrNull
 
-interface WorkoutEntityDao : EntityDao<Workout> {
-    fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutWithExercisesAndSets>
+interface WorkoutEntityDao : EntityDao<WorkoutLog> {
+    fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutSession>
 
-    fun activeWorkout(): Flow<Workout?>
+    fun activeWorkout(): Flow<WorkoutSessionOverview?>
 }
 
 @Inject
@@ -29,12 +32,12 @@ class SqlDelightWorkoutEntityDao(
     override val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
-) : SqlDelightEntityDao<Workout>, WorkoutEntityDao {
-    override fun insert(entity: Workout): Long {
+) : SqlDelightEntityDao<WorkoutLog>, WorkoutEntityDao {
+    override fun insert(entity: WorkoutLog): Long {
         return transactionRunner {
             db.workout_logQueries.insert(
                 id = entity.id,
-                savedWorkoutId = entity.savedWorkoutId,
+                workoutPlanId = entity.workoutPlanId,
                 startTime = entity.startTimeInMillis,
                 finishTime = entity.finishTimeInMillis,
             )
@@ -42,27 +45,27 @@ class SqlDelightWorkoutEntityDao(
         }
     }
 
-    override fun update(entity: Workout) {
+    override fun update(entity: WorkoutLog) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteEntity(entity: Workout) {
+    override fun deleteEntity(entity: WorkoutLog) {
         db.workout_logQueries.delete(entity.id)
     }
 
     override fun observeWorkoutWithExercisesAndSets(
         workoutId: Long,
-    ): Flow<WorkoutWithExercisesAndSets> {
+    ): Flow<WorkoutSession> {
         return db.workout_sessionQueries.selectWorkoutSession(workoutId)
             .asFlow()
             .mapToList(dispatchers.io)
             .mapNotNull { items ->
                 val item = items.firstOrNull() ?: return@mapNotNull null
-                val exerciseMap = mutableMapOf<Long, MutableList<WorkoutExerciseSet>>()
+                val exerciseMap = mutableMapOf<Long, MutableList<SetLog>>()
 
-                val workout = Workout(
-                    id = item.workout_id,
-                    savedWorkoutId = item.saved_workout_id,
+                val workoutLog = WorkoutLog(
+                    id = item.workout_log_id,
+                    workoutPlanId = item.workout_plan_id,
                     startTimeInMillis = item.workout_start_time,
                     finishTimeInMillis = item.workout_finish_time,
                     note = "",
@@ -71,9 +74,9 @@ class SqlDelightWorkoutEntityDao(
                 items.forEach { entry ->
                     if (entry.exercise_id != null) {
                         exerciseMap.getOrPut(entry.exercise_id) { mutableListOf() }.also {
-                            if (entry.workout_exercise_set_id != null) {
-                                val set = WorkoutExerciseSet(
-                                    id = entry.workout_exercise_set_id,
+                            if (entry.set_log_id != null) {
+                                val set = SetLog(
+                                    id = entry.set_log_id,
                                     index = PositiveInt(0),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
@@ -87,10 +90,15 @@ class SqlDelightWorkoutEntityDao(
 
                 val exercises = exerciseMap.entries.mapNotNull { (exerciseId, sets) ->
                     items.find { it.exercise_id == exerciseId }?.let {
-                        WorkoutExerciseWithSets(
-                            id = it.workout_exercise_id!!,
+                        ExerciseSession(
+                            exerciseLog = ExerciseLog(
+                                id = it.exercise_log_id!!,
+                                exerciseId = it.exercise_id!!,
+                                note = "",
+                                workoutId = workoutLog.id,
+                            ),
                             exercise = Exercise(
-                                id = it.exercise_id!!,
+                                id = it.exercise_id,
                                 primaryMuscle = it.exercise_primary_muscle!!,
                                 secondaryMuscle = it.exercise_secondary_muscles!!,
                                 name = it.exercise_name!!,
@@ -101,19 +109,42 @@ class SqlDelightWorkoutEntityDao(
                     }
                 }
 
-                WorkoutWithExercisesAndSets(workout, exercises)
+                WorkoutSession(
+                    workoutLog,
+                    exercises,
+                )
             }
     }
 
-    override fun activeWorkout(): Flow<Workout?> {
-        return db.workout_logQueries.activeWorkoutOverview(
-            mapper = { id, startTime, name ->
-                Workout(
-
-                )
-            },
-        )
+    override fun activeWorkout(): Flow<WorkoutSessionOverview?> {
+        return db.workout_logQueries.activeWorkoutLogOverview {
+                routineId,
+                _,
+                workoutPlanId,
+                name,
+                id,
+                startTime,
+                finishTime,
+            ->
+            WorkoutSessionOverview(
+                routine = WorkoutSessionOverview.RoutineOverview(
+                    id = routineId ?: -1,
+                    name = "",
+                ),
+                plan = WorkoutSessionOverview.WorkoutPlanOverview(
+                    id = workoutPlanId,
+                    name = name ?: "Quick Workout",
+                ),
+                workout = WorkoutLog(
+                    id = id,
+                    workoutPlanId = workoutPlanId,
+                    startTimeInMillis = startTime,
+                    finishTimeInMillis = finishTime,
+                    note = "",
+                ),
+            )
+        }
             .asFlow()
-            .mapToOne(dispatchers.io)
+            .mapToOneOrNull(dispatchers.io)
     }
 }

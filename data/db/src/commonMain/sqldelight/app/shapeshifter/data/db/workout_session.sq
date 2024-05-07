@@ -1,15 +1,15 @@
 selectWorkoutSession:
 SELECT
-    w.id AS workout_id,
-    w.saved_workout_id AS saved_workout_id,
+    w.id AS workout_log_id,
+    w.workout_plan_id AS workout_plan_id,
     w.start_time AS workout_start_time,
     w.finish_time AS workout_finish_time,
     e.id AS exercise_id,
     e.name AS exercise_name,
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
-    we.id AS workout_exercise_id,
-    wes.id AS workout_exercise_set_id,
+    we.id AS exercise_log_id,
+    wes.id AS set_log_id,
     wes.weight,
     wes.reps
 FROM

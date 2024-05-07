@@ -36,13 +36,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import app.shapeshifter.data.models.workout.WorkoutExerciseSet
-import app.shapeshifter.data.models.workout.WorkoutExerciseWithSets
+import app.shapeshifter.data.models.workoutlog.ExerciseSession
+import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
 
 @Composable
 fun WorkoutExercise(
-    exerciseWithSets: WorkoutExerciseWithSets,
+    exerciseSession: ExerciseSession,
     onAddSet: (workoutExerciseId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -60,7 +60,7 @@ fun WorkoutExercise(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = exerciseWithSets.exercise.name,
+                text = exerciseSession.exercise.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -137,7 +137,7 @@ fun WorkoutExercise(
                     .weight(1f),
             )
         }
-        for (workoutSet in exerciseWithSets.sets) {
+        for (workoutSet in exerciseSession.sets) {
             WorkoutSet(
                 workoutSet = workoutSet,
                 modifier = Modifier
@@ -151,7 +151,7 @@ fun WorkoutExercise(
 
 @Composable
 private fun WorkoutSet(
-    workoutSet: WorkoutExerciseSet,
+    workoutSet: SetLog,
     modifier: Modifier = Modifier,
 ) {
     Row(

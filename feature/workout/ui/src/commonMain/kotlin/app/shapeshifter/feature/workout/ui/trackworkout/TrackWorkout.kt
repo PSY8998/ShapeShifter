@@ -87,8 +87,8 @@ private fun TrackWorkout(
         ) {
             val overlayHost = LocalOverlayHost.current
 
-            val startTime by remember(state.workoutDetail?.workout?.startTimeInMillis) {
-                val time = state.workoutDetail?.workout?.startTimeInMillis
+            val startTime by remember(state.workoutSession?.workout?.startTimeInMillis) {
+                val time = state.workoutSession?.workout?.startTimeInMillis
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -125,14 +125,14 @@ private fun TrackWorkout(
                     )
                 }
 
-                if (state.workoutDetail != null) {
+                if (state.workoutSession != null) {
                     itemsIndexed(
-                        state.workoutDetail.exercisesWithSets,
-                        key = { _, exercise -> exercise.id },
+                        state.workoutSession.exercises,
+                        key = { _, exercise -> exercise.exerciseLog.id },
                     ) { index, exercise ->
                         WorkoutExercise(
                             onAddSet = {},
-                            exerciseWithSets = exercise,
+                            exerciseSession = exercise,
                         )
 
                         HorizontalDivider(
@@ -144,7 +144,7 @@ private fun TrackWorkout(
                     }
                 }
 
-                if (state.workoutDetail?.exercisesWithSets.isNullOrEmpty()) {
+                if (state.workoutSession?.exercises.isNullOrEmpty()) {
                     item("empty_exercises_placeholder") {
                         ExerciseLog(
                             modifier = Modifier

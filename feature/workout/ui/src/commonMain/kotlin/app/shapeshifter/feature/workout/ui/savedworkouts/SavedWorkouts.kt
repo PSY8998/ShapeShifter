@@ -1,12 +1,14 @@
-
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,27 +21,37 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
+import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
+import app.shapeshifter.data.models.workoutlog.WorkoutLog
+import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
+import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
+import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
+import com.slack.circuitx.overlays.DialogResult
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.barbell_overhead_empty
+import kotlinx.coroutines.launch
 
 @Inject
 class SavedWorkoutsUiFactory : Ui.Factory {
@@ -68,9 +80,12 @@ internal fun SavedWorkouts(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             WorkoutTopBar(
+                activeWorkout = uiState.activeWorkout,
+                onDiscardWorkout = {
+                    eventSink(SavedWorkoutsUiEvent.DiscardWorkout(it))
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -94,6 +109,7 @@ private fun SavedWorkoutsScrollingContent(
 ) {
     LazyColumn(
         modifier = modifier,
+        contentPadding = PaddingValues(vertical = Dimens.Spacing.Medium),
     ) {
         item("quick_workout") {
             QuickWorkout(
@@ -123,6 +139,7 @@ private fun SavedWorkoutsScrollingContent(
         item("my_routines") {
             MyRoutine(
                 modifier = Modifier
+                    .fillParentMaxHeight()
                     .fillMaxWidth()
                     .padding(top = 16.dp)
                     .padding(horizontal = 16.dp),
@@ -334,25 +351,89 @@ private fun MyRoutine(
 
 @Composable
 private fun WorkoutTopBar(
+    activeWorkout: WorkoutSessionOverview?,
+    onDiscardWorkout: (workoutLog: WorkoutLog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth(),
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp, bottom = 16.dp),
         ) {
             Text(
-                "Workout in progress",
+                text = if (activeWorkout == null) "Start Workout" else "Workout in progress",
                 modifier = Modifier
                     .wrapContentWidth(align = Alignment.CenterHorizontally)
-                    .align(Alignment.Center),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                    .align(Alignment.CenterHorizontally),
             )
+
+            AnimatedVisibility(
+                visible = activeWorkout != null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Dimens.Spacing.ExtraSmall),
+            ) {
+                Column {
+                    Text(
+                        "${activeWorkout?.routine?.name ?: ""} ${activeWorkout?.plan?.name ?: ""}",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    )
+
+                    val overlayHost = LocalOverlayHost.current
+                    val scope = rememberCoroutineScope()
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
+                    ) {
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    if (activeWorkout?.workout?.id != null) {
+                                        val result = overlayHost.showDiscardWorkoutDialog()
+                                        if (result == DialogResult.Confirm) {
+                                            onDiscardWorkout(activeWorkout.workout)
+                                        }
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .weight(1f),
+                        ) {
+                            Text("Discard")
+                        }
+
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .weight(1f),
+                        ) {
+                            Text("Resume")
+                        }
+                    }
+                }
+
+            }
         }
 
         HorizontalDivider(

@@ -2,16 +2,16 @@
 CREATE TABLE IF NOT EXISTS workout_log (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     -- saved_workout_id is primary id of saved_workout table,
-    `saved_workout_id` INTEGER NOT NULL,
+    `workout_plan_id` INTEGER NOT NULL,
     `start_time` INTEGER NOT NULL,
     `finish_time` INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO workout_log (`id`, `saved_workout_id`,`start_time`, `finish_time`)
+INSERT INTO workout_log (`id`, `workout_plan_id`,`start_time`, `finish_time`)
 VALUES (
 nullif(:id, 0),
-:savedWorkoutId,
+:workoutPlanId,
 :startTime,
 :finishTime
 );
@@ -19,10 +19,18 @@ nullif(:id, 0),
 lastInsertRowId:
 SELECT last_insert_rowid();
 
-activeWorkoutOverview:
-SELECT workout_log.id, workout_log.start_time, workout_plan.name
+activeWorkoutLogOverview:
+SELECT
+routine.id,
+routine.name,
+workout_log.workout_plan_id,
+workout_plan.name,
+workout_log.id,
+workout_log.start_time,
+workout_log.finish_time
 FROM workout_log
-INNER JOIN workout_plan ON workout_log.saved_workout_id = workout_plan.id
+LEFT JOIN workout_plan ON workout_log.workout_plan_id = workout_plan.id
+LEFT JOIN routine ON workout_plan.routine_id = routine.id
 WHERE workout_log.finish_time = 0
 LIMIT 1;
 

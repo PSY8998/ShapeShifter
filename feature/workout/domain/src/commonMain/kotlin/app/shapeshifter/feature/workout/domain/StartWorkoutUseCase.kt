@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.WorkoutEntityDao
-import app.shapeshifter.data.models.workout.Workout
+import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,17 +20,17 @@ class StartWorkoutUseCase(
 
         if (activeWorkout != null) {
             return StartWorkoutResult.WorkoutInProgress(
-                workoutId = activeWorkout.id,
-                workoutName = "Empty Workout"
+                workoutId = activeWorkout.workout.id,
+                workoutName = "Empty Workout",
             )
         }
 
         // do not insert
-        val workoutId = withContext(dispatchers.databaseWrite) {
-            workoutEntityDao.insert(Workout.emptyQuickWorkout())
+        val workoutLogId = withContext(dispatchers.databaseWrite) {
+            workoutEntityDao.insert(WorkoutLog.emptyQuickWorkout())
         }
 
-        return StartWorkoutResult.Workout(workoutId)
+        return StartWorkoutResult.Workout(workoutLogId)
     }
 
     sealed interface StartWorkoutResult {
