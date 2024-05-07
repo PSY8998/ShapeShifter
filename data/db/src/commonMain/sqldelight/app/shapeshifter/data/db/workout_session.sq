@@ -1,4 +1,4 @@
-selectWorkoutDetails:
+selectWorkoutSession:
 SELECT
     w.id AS workout_id,
     w.saved_workout_id AS saved_workout_id,
@@ -13,12 +13,12 @@ SELECT
     wes.weight,
     wes.reps
 FROM
-    workout w
+    workout_log w
 LEFT JOIN
-    workout_exercise we ON w.id = we.workout_id
+    exercise_log we ON w.id = we.workout_log_id
 LEFT JOIN
     exercise e ON we.exercise_id = e.id
 LEFT JOIN
-    workout_exercise_set wes ON we.id = wes.workout_exercise_id
+    set_log wes ON we.id = wes.exercise_log_id
 WHERE
     w.id = :workout_id;

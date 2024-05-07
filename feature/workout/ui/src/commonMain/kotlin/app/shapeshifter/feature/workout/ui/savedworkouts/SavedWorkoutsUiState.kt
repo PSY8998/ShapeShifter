@@ -4,6 +4,7 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
 data class SavedWorkoutsUiState(
+    val needStartWorkoutConfirmation: Boolean ,
     val eventSink: (SavedWorkoutsUiEvent) -> Unit,
 ) : CircuitUiState
 

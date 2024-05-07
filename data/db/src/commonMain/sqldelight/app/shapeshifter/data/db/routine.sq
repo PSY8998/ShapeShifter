@@ -1,4 +1,4 @@
--- routine consists a set of exercises
+-- collection of workouts that user can perfrom
 CREATE TABLE IF NOT EXISTS routine (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `name` TEXT NOT NULL

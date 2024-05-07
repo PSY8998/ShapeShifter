@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS workout_exercise_set (
+CREATE TABLE IF NOT EXISTS set_log (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `workout_exercise_id` INTEGER NOT NULL,
+    `exercise_log_id` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL
 );
