@@ -4,24 +4,17 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
-import app.shapeshifter.data.db.SelectWorkoutDetails
 import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.routines.SavedWorkout
 import app.shapeshifter.data.models.workout.Workout
-import app.shapeshifter.data.models.workout.WorkoutExercise
 import app.shapeshifter.data.models.workout.WorkoutExerciseSet
 import app.shapeshifter.data.models.workout.WorkoutExerciseWithSets
 import app.shapeshifter.data.models.workout.WorkoutWithExercisesAndSets
 import me.tatarka.inject.annotations.Inject
 import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.withContext
 
 interface WorkoutEntityDao : EntityDao<Workout> {
     fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutWithExercisesAndSets>
@@ -55,7 +48,9 @@ class SqlDelightWorkoutEntityDao(
         db.workoutQueries.delete(entity.id)
     }
 
-    override fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutWithExercisesAndSets> {
+    override fun observeWorkoutWithExercisesAndSets(
+        workoutId: Long,
+    ): Flow<WorkoutWithExercisesAndSets> {
         return db.workout_detailsQueries.selectWorkoutDetails(workoutId)
             .asFlow()
             .mapToList(dispatchers.io)
@@ -77,7 +72,7 @@ class SqlDelightWorkoutEntityDao(
                             if (entry.workout_exercise_set_id != null) {
                                 val set = WorkoutExerciseSet(
                                     id = entry.workout_exercise_set_id,
-                                    index = PositiveInt(0), // Consider implications of always setting to 0
+                                    index = PositiveInt(0),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
                                     completed = false,
@@ -87,7 +82,6 @@ class SqlDelightWorkoutEntityDao(
                         }
                     }
                 }
-
 
                 val exercises = exerciseMap.entries.mapNotNull { (exerciseId, sets) ->
                     items.find { it.exercise_id == exerciseId }?.let {
@@ -116,5 +110,4 @@ class SqlDelightWorkoutEntityDao(
             },
         ).executeAsOneOrNull()
     }
-
 }

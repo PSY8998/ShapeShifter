@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:filename")
-
 package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.foundation.Image
@@ -74,7 +72,7 @@ class ExerciseDetailUiFactory : Ui.Factory {
 }
 
 @Composable
-fun ExerciseDetail(
+internal fun ExerciseDetail(
     state: ExerciseDetailState,
 ) {
     Scaffold(

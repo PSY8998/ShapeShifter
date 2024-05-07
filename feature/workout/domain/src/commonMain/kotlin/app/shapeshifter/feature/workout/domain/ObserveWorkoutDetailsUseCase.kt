@@ -5,7 +5,6 @@ import app.shapeshifter.data.models.workout.WorkoutWithExercisesAndSets
 import app.shapeshifter.domain.FlowUseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 @Inject
 class ObserveWorkoutDetailsUseCase(

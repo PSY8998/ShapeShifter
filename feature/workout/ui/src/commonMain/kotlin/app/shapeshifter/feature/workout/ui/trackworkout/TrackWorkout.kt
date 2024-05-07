@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,11 +56,8 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuitx.overlays.BasicAlertDialogOverlay
 import com.slack.circuitx.overlays.BasicDialogOverlay
 import com.slack.circuitx.overlays.DialogResult
-import com.slack.circuitx.overlays.OnClick
-import com.slack.circuitx.overlays.alertDialogOverlay
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -284,8 +279,6 @@ private fun TrackWorkoutTopBar(
                 Text("Finish")
             }
         }
-
-
     }
 }
 
@@ -327,11 +320,8 @@ private fun ExerciseLog(
             modifier = Modifier
                 .height(Dimens.Spacing.Medium),
         )
-
-
     }
 }
-
 
 @Composable
 fun AddExercise(
@@ -353,7 +343,6 @@ fun AddExercise(
         Text("+ Add Exercise")
     }
 }
-
 
 @Composable
 fun WorkoutTimer(startTimeInSecs: Long) {
@@ -400,7 +389,6 @@ private fun DiscardWorkout(
         Text("Discard Workout")
     }
 }
-
 
 /** A hypothetical confirmation dialog. */
 @OptIn(ExperimentalMaterial3Api::class)

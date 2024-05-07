@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:filename")
+
 package app.shapeshifter.data.models
 
 @JvmInline

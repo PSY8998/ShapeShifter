@@ -42,7 +42,7 @@ class HomeUiFactory : Ui.Factory {
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Home(
+internal fun Home(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(

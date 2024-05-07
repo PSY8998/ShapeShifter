@@ -13,7 +13,6 @@ kotlin {
                 implementation(projects.data.db)
 
                 implementation(libs.kotlininject.runtime)
-
             }
         }
     }

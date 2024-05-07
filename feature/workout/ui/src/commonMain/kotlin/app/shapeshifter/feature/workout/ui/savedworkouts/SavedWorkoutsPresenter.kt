@@ -33,8 +33,8 @@ class SavedWorkoutsPresenter(
 
     @Composable
     override fun present(): SavedWorkoutsUiState {
-        fun eventSink(savedWorkoutUiEvent: SavedWorkoutsUiEvent){
-            when(savedWorkoutUiEvent){
+        fun eventSink(savedWorkoutUiEvent: SavedWorkoutsUiEvent) {
+            when (savedWorkoutUiEvent) {
                 is SavedWorkoutsUiEvent.OpenQuickWorkout -> {
                     navigator.goTo(TrackWorkoutScreen)
                 }

@@ -22,7 +22,7 @@ public val MoreHorizontal: ImageVector
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
-            viewportHeight = 24f
+            viewportHeight = 24f,
         ).apply {
             group {
                 group {
@@ -35,7 +35,7 @@ public val MoreHorizontal: ImageVector
                         strokeLineCap = StrokeCap.Butt,
                         strokeLineJoin = StrokeJoin.Miter,
                         strokeLineMiter = 1.0f,
-                        pathFillType = PathFillType.NonZero
+                        pathFillType = PathFillType.NonZero,
                     ) {
                         moveTo(0f, 0f)
                         horizontalLineTo(24f)
@@ -53,7 +53,7 @@ public val MoreHorizontal: ImageVector
                         strokeLineCap = StrokeCap.Butt,
                         strokeLineJoin = StrokeJoin.Miter,
                         strokeLineMiter = 1.0f,
-                        pathFillType = PathFillType.NonZero
+                        pathFillType = PathFillType.NonZero,
                     ) {
                         moveTo(14f, 12f)
                         arcTo(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = true, 12f, 14f)
@@ -70,7 +70,7 @@ public val MoreHorizontal: ImageVector
                         strokeLineCap = StrokeCap.Butt,
                         strokeLineJoin = StrokeJoin.Miter,
                         strokeLineMiter = 1.0f,
-                        pathFillType = PathFillType.NonZero
+                        pathFillType = PathFillType.NonZero,
                     ) {
                         moveTo(21f, 12f)
                         arcTo(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = true, 19f, 14f)
@@ -87,7 +87,7 @@ public val MoreHorizontal: ImageVector
                         strokeLineCap = StrokeCap.Butt,
                         strokeLineJoin = StrokeJoin.Miter,
                         strokeLineMiter = 1.0f,
-                        pathFillType = PathFillType.NonZero
+                        pathFillType = PathFillType.NonZero,
                     ) {
                         moveTo(7f, 12f)
                         arcTo(2f, 2f, 0f, isMoreThanHalf = false, isPositiveArc = true, 5f, 14f)
@@ -100,5 +100,3 @@ public val MoreHorizontal: ImageVector
         }.build()
         return _MoreHorizontal!!
     }
-
-

@@ -20,7 +20,8 @@ enum class Muscles(val displayName: String) {
     TRAPS("Traps"),
     TRICEPS("Triceps"),
     UPPER_BACK("UpperBack"),
-    OTHER("Other");
+    OTHER("Other"),
+    ;
 
     companion object {
         fun safeValueOf(name: String): Muscles =

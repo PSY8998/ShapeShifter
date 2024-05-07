@@ -7,4 +7,4 @@ data class WorkoutExercise(
     val workoutId: Long,
     val exerciseId: Long,
     val note: String,
-): Entity
+) : Entity

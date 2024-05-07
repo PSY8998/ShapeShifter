@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.shapeshifter
-import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.ProfileScreen
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
@@ -249,11 +248,11 @@ val hide = fadeOut(
         animationSpec =
         tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
     ) + shrinkHorizontally(
-    animationSpec =
-    tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
-    targetWidth = { (it * .9f).toInt() },
-    shrinkTowards = Alignment.End,
-)
+        animationSpec =
+        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+        targetWidth = { (it * .9f).toInt() },
+        shrinkTowards = Alignment.End,
+    )
 
 @Suppress("unused")
 val show = fadeIn(

@@ -2,7 +2,6 @@ package app.shapeshifter.data.db
 
 import android.app.Application
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteOpenHelper
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import app.shapeshifter.core.base.inject.ApplicationScope

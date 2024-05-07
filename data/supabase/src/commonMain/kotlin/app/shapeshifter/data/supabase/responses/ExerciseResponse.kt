@@ -18,5 +18,5 @@ data class ExerciseResponse(
     val secondaryMuscles: List<String>?,
 
     @SerialName("image_url")
-    val imageUrl: String?
+    val imageUrl: String?,
 )

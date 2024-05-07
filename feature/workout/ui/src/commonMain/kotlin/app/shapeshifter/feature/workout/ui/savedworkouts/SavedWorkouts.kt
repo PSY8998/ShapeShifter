@@ -1,3 +1,4 @@
+
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.foundation.Image
@@ -12,16 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,12 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import  org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
-import app.shapeshifter.common.ui.compose.theme.Procelain
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -42,6 +37,7 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.barbell_overhead_empty
 
@@ -59,7 +55,7 @@ class SavedWorkoutsUiFactory : Ui.Factory {
 }
 
 @Composable
-private fun SavedWorkouts(
+internal fun SavedWorkouts(
     uiState: SavedWorkoutsUiState,
 ) {
     val eventSink = uiState.eventSink
@@ -242,7 +238,6 @@ private fun Routines(
                 )
                 .clip(shape = MaterialTheme.shapes.small)
                 .clickable {
-
                 }
                 .padding(4.dp),
         ) {
@@ -287,7 +282,6 @@ private fun MyRoutine(
                     )
                     .clip(shape = MaterialTheme.shapes.small)
                     .clickable {
-
                     }
                     .padding(4.dp),
             ) {
@@ -336,7 +330,6 @@ private fun MyRoutine(
             )
         }
     }
-
 }
 
 @Composable
@@ -353,7 +346,7 @@ private fun WorkoutTopBar(
                 .padding(16.dp),
         ) {
             Text(
-                "Start Workout",
+                "Workout in progress",
                 modifier = Modifier
                     .wrapContentWidth(align = Alignment.CenterHorizontally)
                     .align(Alignment.Center),
