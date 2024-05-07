@@ -90,9 +90,21 @@ internal fun SavedWorkouts(
                     .fillMaxWidth(),
             )
 
+            val overlayHost = LocalOverlayHost.current
+            val scope = rememberCoroutineScope()
+
             SavedWorkoutsScrollingContent(
-                onStart = {
-                    eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
+                onStartQuickWorkout = {
+                    if (uiState.activeWorkout != null) {
+                        scope.launch {
+                            val result = overlayHost.showDiscardWorkoutDialog()
+                            if (result == DialogResult.Confirm) {
+                                eventSink(SavedWorkoutsUiEvent.DiscardAndStartNewWorkout(uiState.activeWorkout.workout))
+                            }
+                        }
+                    } else {
+                        eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -104,7 +116,7 @@ internal fun SavedWorkouts(
 
 @Composable
 private fun SavedWorkoutsScrollingContent(
-    onStart: () -> Unit,
+    onStartQuickWorkout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -113,7 +125,7 @@ private fun SavedWorkoutsScrollingContent(
     ) {
         item("quick_workout") {
             QuickWorkout(
-                onStart = onStart,
+                onStart = onStartQuickWorkout,
             )
         }
 

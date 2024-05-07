@@ -14,4 +14,6 @@ sealed interface SavedWorkoutsUiEvent : CircuitUiEvent {
     data object OpenQuickWorkout : SavedWorkoutsUiEvent
 
     data class DiscardWorkout(val workoutLog: WorkoutLog) : SavedWorkoutsUiEvent
+
+    data class DiscardAndStartNewWorkout(val workoutLog: WorkoutLog) : SavedWorkoutsUiEvent
 }

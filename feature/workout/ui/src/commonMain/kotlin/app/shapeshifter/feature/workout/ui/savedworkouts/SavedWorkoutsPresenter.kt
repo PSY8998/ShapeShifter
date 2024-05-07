@@ -59,6 +59,15 @@ class SavedWorkoutsPresenter(
                         )
                     }
                 }
+
+                is SavedWorkoutsUiEvent.DiscardAndStartNewWorkout -> {
+                    scope.launch {
+                        discardWorkoutUseCase(
+                            DiscardWorkoutUseCase.Params(event.workoutLog),
+                        )
+                        navigator.goTo(TrackWorkoutScreen)
+                    }
+                }
             }
         }
 
