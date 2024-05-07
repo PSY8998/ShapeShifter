@@ -102,6 +102,7 @@ private fun dialogOverlay(
                 modifier = Modifier
                     .wrapContentSize(),
                 shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.background
             ) {
                 content(navigator)
             }

@@ -355,7 +355,7 @@ fun WorkoutTimer(startTimeInSecs: Long) {
     Text(
         text = minutesAndSeconds,
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         fontWeight = FontWeight.SemiBold,
     )
 }
