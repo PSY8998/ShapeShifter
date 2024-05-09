@@ -4,44 +4,44 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.workout.WorkoutExercise
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 
-interface WorkoutExerciseEntityDao : EntityDao<WorkoutExercise> {
-    fun observeWorkoutExercises(workoutId: Long): Flow<List<WorkoutExercise>>
+interface WorkoutExerciseEntityDao : EntityDao<ExerciseLog> {
+    fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>>
 }
 
 @Inject
 class SqlDelightWorkoutExerciseEntityDao(
     override val db: ShapeShifterDatabase,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-) : SqlDelightEntityDao<WorkoutExercise>, WorkoutExerciseEntityDao {
-    override fun insert(entity: WorkoutExercise): Long {
-        db.workout_exerciseQueries.insert(
+) : SqlDelightEntityDao<ExerciseLog>, WorkoutExerciseEntityDao {
+    override fun insert(entity: ExerciseLog): Long {
+        db.exercise_logQueries.insert(
             id = entity.id,
             exercise_id = entity.exerciseId,
             workout_id = entity.workoutId,
         )
 
-        return db.workout_exerciseQueries.lastInsertRowId().executeAsOne()
+        return db.exercise_logQueries.lastInsertRowId().executeAsOne()
     }
 
-    override fun update(entity: WorkoutExercise) {
+    override fun update(entity: ExerciseLog) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteEntity(entity: WorkoutExercise) {
+    override fun deleteEntity(entity: ExerciseLog) {
         TODO("Not yet implemented")
     }
 
-    override fun observeWorkoutExercises(workoutId: Long): Flow<List<WorkoutExercise>> {
+    override fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>> {
         return db
-            .workout_exerciseQueries
+            .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
                 mapper = { id, exerciseId, wId ->
-                    WorkoutExercise(
+                    ExerciseLog(
                         id = id,
                         exerciseId = exerciseId,
                         workoutId = wId,
@@ -53,4 +53,3 @@ class SqlDelightWorkoutExerciseEntityDao(
             .mapToList(appCoroutineDispatchers.io)
     }
 }
-

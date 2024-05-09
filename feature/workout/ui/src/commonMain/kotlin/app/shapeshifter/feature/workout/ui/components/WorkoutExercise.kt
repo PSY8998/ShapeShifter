@@ -31,23 +31,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationCompat.Style
-import app.shapeshifter.common.ui.compose.theme.Procelain
-import app.shapeshifter.data.models.workout.WorkoutExerciseSet
-import app.shapeshifter.data.models.workout.WorkoutExerciseWithSets
+import app.shapeshifter.data.models.workoutlog.ExerciseSession
+import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
 
 @Composable
 fun WorkoutExercise(
-    exerciseWithSets: WorkoutExerciseWithSets,
+    exerciseSession: ExerciseSession,
     onAddSet: (workoutExerciseId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -65,7 +60,7 @@ fun WorkoutExercise(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = exerciseWithSets.exercise.name,
+                text = exerciseSession.exercise.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -142,7 +137,7 @@ fun WorkoutExercise(
                     .weight(1f),
             )
         }
-        for (workoutSet in exerciseWithSets.sets) {
+        for (workoutSet in exerciseSession.sets) {
             WorkoutSet(
                 workoutSet = workoutSet,
                 modifier = Modifier
@@ -156,7 +151,7 @@ fun WorkoutExercise(
 
 @Composable
 private fun WorkoutSet(
-    workoutSet: WorkoutExerciseSet,
+    workoutSet: SetLog,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -180,7 +175,7 @@ private fun WorkoutSet(
             modifier = Modifier
                 .weight(1f),
 
-            )
+        )
 
         var setWeight by remember { mutableStateOf(workoutSet.weight.toString()) }
 
@@ -213,7 +208,6 @@ private fun WorkoutSet(
                 if (pattern.matches(it)) {
                     setReps = it
                 }
-
             },
             textStyle = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurface,
@@ -251,7 +245,6 @@ private fun AddNewSet(
                 )
                 .clip(shape = MaterialTheme.shapes.small)
                 .clickable {
-
                 }
                 .padding(4.dp),
         ) {

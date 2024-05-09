@@ -13,7 +13,6 @@ kotlin {
                 implementation(projects.feature.exercise.data)
 
                 implementation(libs.kotlininject.runtime)
-
             }
         }
     }

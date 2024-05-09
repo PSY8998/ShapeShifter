@@ -1,11 +1,11 @@
-package app.shapeshifter.data.models.routines
+package app.shapeshifter.data.models.plans
 
 import app.shapeshifter.data.models.Entity
 import app.shapeshifter.data.models.PositiveInt
 
-data class SavedWorkoutExerciseSet(
+data class SetPlan(
     override val id: Long,
-    val workoutExerciseId: Long,
+    val exercisePlanId: Long,
     val index: PositiveInt,
     val weight: PositiveInt,
     val reps: PositiveInt,

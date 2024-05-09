@@ -4,14 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
-import app.shapeshifter.data.models.routines.SavedWorkout
-import app.shapeshifter.data.models.workout.WorkoutWithExercisesAndSets
+import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
@@ -80,24 +78,25 @@ class TrackWorkoutPresenter(
                 }
             }
 
-        val workoutDetail: WorkoutWithExercisesAndSets?
+        val workoutSession: WorkoutSession?
             by observeWorkoutDetailsUseCase.flow.collectAsRetainedState(null)
-
 
         fun eventSink(event: TrackWorkoutUiEvent) {
             when (event) {
                 is TrackWorkoutUiEvent.GoBack -> navigator.pop()
-                is TrackWorkoutUiEvent.OnAddExercise -> answeringNavigator.goTo(ExercisesScreen(true))
+
+                is TrackWorkoutUiEvent.OnAddExercise -> {
+                    answeringNavigator.goTo(ExercisesScreen(true))
+                }
 
                 is TrackWorkoutUiEvent.DiscardWorkout -> {
                     scope.launch {
-                        val result = discardWorkoutUseCase(
+                        discardWorkoutUseCase(
                             params = DiscardWorkoutUseCase.Params(
-                                workout = workoutDetail?.workout ?: return@launch,
+                                workoutLog = workoutSession?.workout ?: return@launch,
                             ),
                         )
 
-                        result
                         navigator.pop()
                     }
                 }
@@ -113,7 +112,7 @@ class TrackWorkoutPresenter(
         }
 
         return TrackWorkoutUiState(
-            workoutDetail = workoutDetail,
+            workoutSession = workoutSession,
             eventSink = ::eventSink,
         )
     }

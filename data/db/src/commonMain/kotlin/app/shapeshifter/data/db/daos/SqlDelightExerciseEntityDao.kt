@@ -1,6 +1,5 @@
 package app.shapeshifter.data.db.daos
 
-import app.cash.sqldelight.ExecutableQuery
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers

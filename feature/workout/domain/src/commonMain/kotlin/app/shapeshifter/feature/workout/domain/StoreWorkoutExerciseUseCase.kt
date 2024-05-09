@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.WorkoutExerciseEntityDao
-import app.shapeshifter.data.models.workout.WorkoutExercise
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -14,15 +14,15 @@ class StoreWorkoutExerciseUseCase(
 ) : UseCase<StoreWorkoutExerciseUseCase.Params, Unit>() {
     override suspend fun doWork(params: Params) {
         withContext(dispatchers.databaseWrite) {
-            val workoutExercises = params.exerciseIds.map {
-                WorkoutExercise(
+            val exerciseLogs = params.exerciseIds.map {
+                ExerciseLog(
                     id = 0,
                     workoutId = params.workoutId,
                     exerciseId = it,
                     note = "",
                 )
             }
-            dao.insert(workoutExercises)
+            dao.insert(exerciseLogs)
         }
     }
 

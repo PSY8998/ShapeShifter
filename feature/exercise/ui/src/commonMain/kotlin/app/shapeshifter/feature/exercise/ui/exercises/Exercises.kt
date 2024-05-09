@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:filename")
-
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.animation.AnimatedVisibility
@@ -8,8 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Indication
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -37,18 +33,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -64,7 +55,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
@@ -78,9 +68,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
@@ -88,9 +76,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.common.ui.compose.theme.NoIndication
 import app.shapeshifter.common.ui.compose.theme.NoRippleTheme
-import app.shapeshifter.common.ui.compose.theme.Procelain
 import app.shapeshifter.data.models.Exercise
 import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
@@ -248,7 +234,6 @@ private fun ExerciseScrollContent(
                 }
             }
 
-
             val state = rememberExerciseAnchorState()
 
             LaunchedEffect(state.targetValue) {
@@ -303,13 +288,15 @@ private fun ExerciseScrollContent(
                             exercise = exercise,
                             onClick = {
                                 when {
-                                    canSelect && state.currentValue == ExerciseAnchors.SELECTED -> {
+                                    canSelect &&
+                                        state.currentValue == ExerciseAnchors.SELECTED -> {
                                         scope.launch {
                                             state.dismiss(ExerciseAnchors.UNSELECTED)
                                         }
                                     }
 
-                                    canSelect && state.currentValue == ExerciseAnchors.UNSELECTED -> {
+                                    canSelect &&
+                                        state.currentValue == ExerciseAnchors.UNSELECTED -> {
                                         scope.launch {
                                             state.dismiss(ExerciseAnchors.SELECTED)
                                         }
@@ -319,7 +306,6 @@ private fun ExerciseScrollContent(
                                         // TODO: Open exercise details
                                     }
                                 }
-
                             },
                             modifier = Modifier,
                         )
@@ -559,12 +545,12 @@ private fun ExercisesEmptyContent(
 
 enum class ExerciseAnchors {
     SELECTED,
-    UNSELECTED
+    UNSELECTED,
 }
 
 @Composable
 @ExperimentalMaterial3Api
-fun rememberExerciseAnchorState(
+private fun rememberExerciseAnchorState(
     initialValue: ExerciseAnchors = ExerciseAnchors.UNSELECTED,
     positionalThreshold: (totalDistance: Float) -> Float = { 42f },
     confirmValueChange: (ExerciseAnchors) -> Boolean = { true },
@@ -582,7 +568,7 @@ fun rememberExerciseAnchorState(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-class ExerciseAnchorState(
+private class ExerciseAnchorState(
     initialValue: ExerciseAnchors,
     density: Density,
     positionalThreshold: (totalDistance: Float) -> Float,
@@ -733,7 +719,9 @@ private class ExerciseAnchorsNode(
             // and post-lookahead will converge.
             val xOffset = if (isLookingAhead) {
                 state.anchoredDraggableState.anchors.positionOf(state.targetValue)
-            } else state.requireOffset()
+            } else {
+                state.requireOffset()
+            }
             placeable.place(xOffset.roundToInt(), 0)
         }
     }

@@ -1,11 +1,11 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
-import app.shapeshifter.data.models.workout.WorkoutWithExercisesAndSets
+import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
 data class TrackWorkoutUiState(
-    val workoutDetail: WorkoutWithExercisesAndSets? = null,
+    val workoutSession: WorkoutSession? = null,
     val eventSink: (TrackWorkoutUiEvent) -> Unit,
 ) : CircuitUiState
 

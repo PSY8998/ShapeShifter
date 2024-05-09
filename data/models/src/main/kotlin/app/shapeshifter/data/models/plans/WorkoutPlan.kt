@@ -1,8 +1,8 @@
-package app.shapeshifter.data.models.routines
+package app.shapeshifter.data.models.plans
 
 import app.shapeshifter.data.models.Entity
 
-data class SavedWorkout(
+data class WorkoutPlan(
     override val id: Long,
     val routineId: Long,
     val name: String,

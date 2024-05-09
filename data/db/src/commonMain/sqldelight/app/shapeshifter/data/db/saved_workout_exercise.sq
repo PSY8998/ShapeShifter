@@ -1,8 +1,0 @@
--- routine_exercise has many to one relationship with routine
--- many to many relationship between routine and exercise
-CREATE TABLE IF NOT EXISTS saved_workout_exercise (
-    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `exercise_id` INTEGER NOT NULL,
-    `saved_workout_id` INTEGER NOT NULL
-);
-

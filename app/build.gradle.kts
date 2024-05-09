@@ -15,16 +15,33 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
+            isMinifyEnabled = true
+            isDebuggable = false
+            isShrinkResources = true
+            proguardFiles("proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
     buildFeatures {
         buildConfig = true
+    }
+
+    packaging {
+        resources.excludes += setOf(
+            // Exclude AndroidX version files
+            "META-INF/*.version",
+            // Exclude consumer proguard files
+            "META-INF/proguard/*",
+            // Exclude the Firebase/Fabric/other random properties files
+            "/*.properties",
+            "fabric/*.properties",
+            "META-INF/*.properties",
+            // License files
+            "LICENSE*",
+            // Exclude Kotlin unused files
+            "META-INF/**/previous-compilation-data.bin",
+        )
     }
 }
 

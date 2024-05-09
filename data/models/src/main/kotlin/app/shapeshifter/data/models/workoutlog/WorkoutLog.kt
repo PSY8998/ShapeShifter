@@ -1,13 +1,13 @@
-package app.shapeshifter.data.models.workout
+package app.shapeshifter.data.models.workoutlog
 
 import app.shapeshifter.data.models.Entity
-import app.shapeshifter.data.models.routines.SavedWorkout
+import app.shapeshifter.data.models.plans.WorkoutPlan
 
 private const val UnfinishedWorkoutTimeInMillis = 0L
 
-data class Workout(
+data class WorkoutLog(
     override val id: Long,
-    val savedWorkoutId: Long,
+    val workoutPlanId: Long,
     val startTimeInMillis: Long,
     val finishTimeInMillis: Long,
     val note: String,
@@ -16,10 +16,10 @@ data class Workout(
     fun isWorkoutFinished() = finishTimeInMillis != UnfinishedWorkoutTimeInMillis
 
     companion object {
-        fun emptyQuickWorkout(): Workout {
-            return Workout(
+        fun emptyQuickWorkout(): WorkoutLog {
+            return WorkoutLog(
                 id = 0,
-                savedWorkoutId = SavedWorkout.QuickWorkoutId,
+                workoutPlanId = WorkoutPlan.QuickWorkoutId,
                 startTimeInMillis = System.currentTimeMillis(),
                 finishTimeInMillis = UnfinishedWorkoutTimeInMillis,
                 note = "",

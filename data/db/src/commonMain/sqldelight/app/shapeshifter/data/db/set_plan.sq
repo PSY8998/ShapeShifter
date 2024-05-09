@@ -1,0 +1,7 @@
+-- set_plan has many to one relationship with exercise_plan
+CREATE TABLE IF NOT EXISTS set_plan (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `exercise_plan_id` INTEGER NOT NULL,
+    `weight` INTEGER NOT NULL,
+    `reps` INTEGER NOT NULL
+);

@@ -1,7 +1,0 @@
--- routine_set has many to one relationship with routine_exercise
-CREATE TABLE IF NOT EXISTS saved_workout_exercise_set (
-    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `routine_exercise_id` INTEGER NOT NULL,
-    `weight` INTEGER NOT NULL,
-    `reps` INTEGER NOT NULL
-);
