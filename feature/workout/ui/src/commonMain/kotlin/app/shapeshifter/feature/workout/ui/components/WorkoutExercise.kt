@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -136,6 +137,11 @@ fun WorkoutExercise(
                 modifier = Modifier
                     .weight(1f),
             )
+            Box(
+                modifier = Modifier
+                    .weight(1f),
+            )
+
         }
         for (workoutSet in exerciseSession.sets) {
             WorkoutSet(
@@ -148,7 +154,7 @@ fun WorkoutExercise(
         AddNewSet(
             onAddSet = {
                 onAddSet(exerciseWithSets.id)
-            }
+            },
         )
     }
 }
@@ -226,12 +232,24 @@ private fun WorkoutSet(
                 .width(IntrinsicSize.Min)
                 .defaultMinSize(24.dp),
         )
+
+        var isCompleted by remember { mutableStateOf(false) }
+
+        Checkbox(
+            checked = isCompleted,
+            onCheckedChange = {
+                isCompleted = it
+            },
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth(),
+        )
     }
 }
 
 @Composable
 private fun AddNewSet(
-    onAddSet:() -> Unit,
+    onAddSet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -259,6 +277,11 @@ private fun AddNewSet(
                 contentDescription = null,
             )
         }
+
+        Box(
+            modifier = Modifier
+                .weight(1f),
+        )
 
         Box(
             modifier = Modifier
