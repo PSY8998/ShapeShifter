@@ -134,7 +134,7 @@ private fun TrackWorkout(
                             onAddSet = {
                                 state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
                             },
-                            exerciseWithSets = exercise,
+                            exerciseSession = exercise,
                         )
 
                         HorizontalDivider(

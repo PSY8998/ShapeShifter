@@ -2,34 +2,34 @@ package app.shapeshifter.data.db.daos
 
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.workout.WorkoutExerciseSet
+import app.shapeshifter.data.models.workoutlog.SetLog
 import me.tatarka.inject.annotations.Inject
 
-interface WorkoutExerciseSetEntityDao: EntityDao<WorkoutExerciseSet>
+interface WorkoutExerciseSetEntityDao: EntityDao<SetLog>
 
 @Inject
 class SqlDelightWorkoutExerciseSetEntityDao(
     override val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner
-) : SqlDelightEntityDao<WorkoutExerciseSet>, WorkoutExerciseSetEntityDao {
-    override fun insert(entity: WorkoutExerciseSet): Long {
+) : SqlDelightEntityDao<SetLog>, WorkoutExerciseSetEntityDao {
+    override fun insert(entity: SetLog): Long {
         return transactionRunner {
-            db.workout_exercise_setQueries.insert(
+            db.set_logQueries.insert(
                 id = entity.id,
-                workoutExerciseId = entity.workoutExerciseId,
+                exerciseLogId = entity.workoutExerciseId,
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong()
             )
 
-            db.workout_exercise_setQueries.lastInsertRowId().executeAsOne()
+            db.set_logQueries.lastInsertRowId().executeAsOne()
         }
     }
 
-    override fun update(entity: WorkoutExerciseSet) {
+    override fun update(entity: SetLog) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteEntity(entity: WorkoutExerciseSet) {
+    override fun deleteEntity(entity: SetLog) {
         TODO("Not yet implemented")
     }
 }

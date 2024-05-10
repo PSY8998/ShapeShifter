@@ -153,7 +153,7 @@ fun WorkoutExercise(
 
         AddNewSet(
             onAddSet = {
-                onAddSet(exerciseWithSets.id)
+                onAddSet(exerciseSession.exerciseLog.id)
             },
         )
     }

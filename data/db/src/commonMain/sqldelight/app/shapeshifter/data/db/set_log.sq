@@ -6,15 +6,15 @@ CREATE TABLE IF NOT EXISTS set_log (
 );
 
 insert:
-INSERT INTO workout_exercise_set(
+INSERT INTO set_log(
 id,
-workout_exercise_id,
+exercise_log_id,
 weight,
 reps
 )
 VALUES (
 nullif(:id, 0),
-:workoutExerciseId,
+:exerciseLogId,
 :weight,
 :reps
 );
