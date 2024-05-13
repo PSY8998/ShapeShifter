@@ -95,7 +95,7 @@ class TrackWorkoutPresenter(
                     scope.launch {
                         createSetUseCase(
                             params = CreateSetUseCase.Params(
-                                workoutExerciseId = event.workoutExerciseId
+                                exerciseLogId = event.exerciseLogId
                             )
                         )
                     }

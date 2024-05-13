@@ -16,7 +16,7 @@ class SqlDelightWorkoutExerciseSetEntityDao(
         return transactionRunner {
             db.set_logQueries.insert(
                 id = entity.id,
-                exerciseLogId = entity.workoutExerciseId,
+                exerciseLogId = entity.exerciseLogId,
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong()
             )

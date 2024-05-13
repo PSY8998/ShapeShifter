@@ -16,7 +16,7 @@ class CreateSetUseCase(
     override suspend fun doWork(params: Params): Long {
         val setLog = SetLog(
             id = 0L,
-            workoutExerciseId = params.workoutExerciseId ,
+            exerciseLogId = params.exerciseLogId ,
             index = PositiveInt(1),
             weight = PositiveInt(0),
             reps = PositiveInt(0),
@@ -28,7 +28,7 @@ class CreateSetUseCase(
     }
 
     data class Params(
-        val workoutExerciseId: Long
+        val exerciseLogId: Long
     )
 
 }

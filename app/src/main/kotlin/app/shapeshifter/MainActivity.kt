@@ -8,6 +8,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.inject.ActivityComponent
 import app.shapeshifter.inject.ApplicationComponent
@@ -18,6 +19,7 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdgeForTheme(true)
         super.onCreate(savedInstanceState)
         val applicationComponent = ApplicationComponent.from(this)
