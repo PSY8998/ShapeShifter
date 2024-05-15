@@ -17,6 +17,7 @@ import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import me.tatarka.inject.annotations.Inject
 import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
 interface WorkoutEntityDao : EntityDao<WorkoutLog> {
@@ -114,6 +115,7 @@ class SqlDelightWorkoutEntityDao(
                     exercises,
                 )
             }
+            .flowOn(dispatchers.io)
     }
 
     override fun activeWorkout(): Flow<WorkoutSessionOverview?> {
