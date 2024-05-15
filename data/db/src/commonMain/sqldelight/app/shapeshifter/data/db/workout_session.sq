@@ -1,24 +1,25 @@
 selectWorkoutSession:
 SELECT
-    w.id AS workout_log_id,
-    w.workout_plan_id AS workout_plan_id,
-    w.start_time AS workout_start_time,
-    w.finish_time AS workout_finish_time,
+    wlog.id AS workout_log_id,
+    wlog.workout_plan_id AS workout_plan_id,
+    wlog.start_time AS workout_start_time,
+    wlog.finish_time AS workout_finish_time,
     e.id AS exercise_id,
     e.name AS exercise_name,
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
-    we.id AS exercise_log_id,
-    wes.id AS set_log_id,
-    wes.weight,
-    wes.reps
+    elog.id AS exercise_log_id,
+    slog.id AS set_log_id,
+    slog.finish_time AS set_finish_time,
+    slog.weight,
+    slog.reps
 FROM
-    workout_log w
+    workout_log wlog
 LEFT JOIN
-    exercise_log we ON w.id = we.workout_log_id
+    exercise_log elog ON wlog.id = elog.workout_log_id
 LEFT JOIN
-    exercise e ON we.exercise_id = e.id
+    exercise e ON elog.exercise_id = e.id
 LEFT JOIN
-    set_log wes ON we.id = wes.exercise_log_id
+    set_log slog ON elog.id = slog.exercise_log_id
 WHERE
-    w.id = :workout_id;
+    wlog.id = :workout_id;

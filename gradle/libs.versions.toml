@@ -23,6 +23,7 @@ coroutines = "1.8.0"
 paging-multiplatform = "3.3.0-alpha02-0.5.1"
 supabase = "2.3.1"
 coil = "3.0.0-alpha06"
+splashscreen = "1.2.0-alpha01"
 
 # test
 junit = "4.13.2"
@@ -102,3 +103,6 @@ android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref 
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
 compose-multiplatformPlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "compose-multiplatform" }
+
+#splash screen
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }

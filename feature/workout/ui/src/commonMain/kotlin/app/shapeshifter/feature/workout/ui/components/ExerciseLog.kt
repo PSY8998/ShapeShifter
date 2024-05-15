@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
@@ -44,13 +48,13 @@ import com.slack.circuit.retained.rememberRetained
 fun WorkoutExercise(
     exerciseSession: ExerciseSession,
     onAddSet: (workoutExerciseId: Long) -> Unit,
+    onCompleteSet: (isCompleted: Boolean, set: SetLog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var exerciseNote by rememberRetained(key = "exerciseNote") { mutableStateOf("") }
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(
             modifier = Modifier
@@ -71,7 +75,8 @@ fun WorkoutExercise(
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = Dimens.Spacing.Small),
         ) {
             TextField(
                 modifier = Modifier
@@ -100,7 +105,8 @@ fun WorkoutExercise(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = Dimens.Spacing.Small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -136,32 +142,59 @@ fun WorkoutExercise(
                 modifier = Modifier
                     .weight(1f),
             )
+            Box(
+                modifier = Modifier
+                    .weight(1f),
+            )
+
         }
         for (workoutSet in exerciseSession.sets) {
             WorkoutSet(
                 workoutSet = workoutSet,
+                onComplete = onCompleteSet,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
         }
 
-        AddNewSet()
+        AddNewSet(
+            modifier = Modifier
+                .padding(vertical = Dimens.Spacing.Small),
+            onAddSet = {
+                onAddSet(exerciseSession.exerciseLog.id)
+            },
+        )
     }
 }
 
 @Composable
 private fun WorkoutSet(
     workoutSet: SetLog,
+    onComplete: (
+        isCompleted: Boolean,
+        set: SetLog,
+    ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var isCompleted by remember(workoutSet.finishTime) {
+        mutableStateOf(workoutSet.finishTime > 0)
+    }
+
     Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .then(
+                if (isCompleted) {
+                    Modifier.background(MaterialTheme.colorScheme.secondary)
+                } else
+                    Modifier,
+            )
+            .padding(vertical = Dimens.Spacing.Small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = workoutSet.index.toString(),
+            text = workoutSet.index.value.toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Black,
             style = MaterialTheme.typography.bodySmall,
@@ -175,9 +208,9 @@ private fun WorkoutSet(
             modifier = Modifier
                 .weight(1f),
 
-        )
+            )
 
-        var setWeight by remember { mutableStateOf(workoutSet.weight.toString()) }
+        var setWeight by remember { mutableStateOf(workoutSet.weight.value.toString()) }
 
         BasicTextField(
             value = setWeight,
@@ -200,7 +233,7 @@ private fun WorkoutSet(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember { mutableStateOf(workoutSet.reps.toString()) }
+        var setReps by remember { mutableStateOf(workoutSet.reps.value.toString()) }
 
         BasicTextField(
             value = setReps,
@@ -222,11 +255,39 @@ private fun WorkoutSet(
                 .width(IntrinsicSize.Min)
                 .defaultMinSize(24.dp),
         )
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
+                .background(
+                    color = if (isCompleted) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clip(MaterialTheme.shapes.small)
+                .toggleable(
+                    value = isCompleted,
+                    onValueChange = {
+                        isCompleted = it
+                        onComplete(it, workoutSet)
+                    },
+                )
+                .padding(Dimens.Spacing.ExtraSmall),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Complete Set",
+                tint = if (isCompleted) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onSecondary,
+            )
+        }
     }
 }
 
 @Composable
 private fun AddNewSet(
+    onAddSet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -245,6 +306,7 @@ private fun AddNewSet(
                 )
                 .clip(shape = MaterialTheme.shapes.small)
                 .clickable {
+                    onAddSet()
                 }
                 .padding(4.dp),
         ) {
@@ -253,6 +315,11 @@ private fun AddNewSet(
                 contentDescription = null,
             )
         }
+
+        Box(
+            modifier = Modifier
+                .weight(1f),
+        )
 
         Box(
             modifier = Modifier

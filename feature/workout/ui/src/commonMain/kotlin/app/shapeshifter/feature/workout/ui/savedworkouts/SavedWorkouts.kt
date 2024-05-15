@@ -86,6 +86,9 @@ internal fun SavedWorkouts(
                 onDiscardWorkout = {
                     eventSink(SavedWorkoutsUiEvent.DiscardWorkout(it))
                 },
+                onResumeWorkout = {
+                    eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -365,6 +368,7 @@ private fun MyRoutine(
 private fun WorkoutTopBar(
     activeWorkout: WorkoutSessionOverview?,
     onDiscardWorkout: (workoutLog: WorkoutLog) -> Unit,
+    onResumeWorkout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -431,7 +435,9 @@ private fun WorkoutTopBar(
                         }
 
                         Button(
-                            onClick = {},
+                            onClick = {
+                                onResumeWorkout()
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary,

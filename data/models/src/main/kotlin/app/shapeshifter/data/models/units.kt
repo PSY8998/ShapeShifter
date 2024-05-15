@@ -11,4 +11,8 @@ value class PositiveInt(
             "$value should be greater than 0"
         }
     }
+
+    override fun toString(): String {
+        return value.toString()
+    }
 }

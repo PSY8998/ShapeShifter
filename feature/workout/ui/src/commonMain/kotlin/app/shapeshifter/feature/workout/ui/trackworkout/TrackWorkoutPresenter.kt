@@ -9,9 +9,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
+import app.shapeshifter.feature.workout.domain.FinishedSetUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.StoreWorkoutExerciseUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
@@ -48,6 +51,8 @@ class TrackWorkoutPresenter(
     private val observeWorkoutDetailsUseCase: ObserveWorkoutDetailsUseCase,
     private val createWorkoutUseCase: CreateWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
+    private val createSetUseCase: CreateSetUseCase,
+    private val finishedSetUseCase: FinishedSetUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
     @Composable
@@ -89,6 +94,16 @@ class TrackWorkoutPresenter(
                     answeringNavigator.goTo(ExercisesScreen(true))
                 }
 
+                is TrackWorkoutUiEvent.OnAddSet -> {
+                    scope.launch {
+                        createSetUseCase(
+                            params = CreateSetUseCase.Params(
+                                exerciseLogId = event.exerciseLogId,
+                            ),
+                        )
+                    }
+                }
+
                 is TrackWorkoutUiEvent.DiscardWorkout -> {
                     scope.launch {
                         discardWorkoutUseCase(
@@ -98,6 +113,17 @@ class TrackWorkoutPresenter(
                         )
 
                         navigator.pop()
+                    }
+                }
+
+                is TrackWorkoutUiEvent.OnSetCompleted -> {
+                    scope.launch {
+                        finishedSetUseCase(
+                            params = FinishedSetUseCase.Params(
+                                setLog = event.set,
+                                isCompleted = event.isSetCompleted,
+                            ),
+                        )
                     }
                 }
             }

@@ -2,5 +2,34 @@ CREATE TABLE IF NOT EXISTS set_log (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `exercise_log_id` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
-    `reps` INTEGER NOT NULL
+    `reps` INTEGER NOT NULL,
+    `finish_time` INTEGER NOT NULL,
+    FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+insert:
+INSERT INTO set_log(
+id,
+exercise_log_id,
+weight,
+reps,
+finish_time
+)
+VALUES (
+nullif(:id, 0),
+:exerciseLogId,
+:weight,
+:reps,
+:finishTime
+);
+
+update:
+UPDATE set_log SET
+exercise_log_id = :exerciseLogId,
+weight = :weight,
+reps = :reps,
+finish_time = :finishTime
+WHERE id = :id;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
