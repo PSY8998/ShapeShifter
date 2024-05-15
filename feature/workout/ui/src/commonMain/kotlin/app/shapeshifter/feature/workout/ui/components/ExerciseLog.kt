@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
@@ -52,7 +55,6 @@ fun WorkoutExercise(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(
             modifier = Modifier
@@ -73,7 +75,8 @@ fun WorkoutExercise(
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = Dimens.Spacing.Small),
         ) {
             TextField(
                 modifier = Modifier
@@ -102,7 +105,8 @@ fun WorkoutExercise(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = Dimens.Spacing.Small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -154,6 +158,8 @@ fun WorkoutExercise(
         }
 
         AddNewSet(
+            modifier = Modifier
+                .padding(vertical = Dimens.Spacing.Small),
             onAddSet = {
                 onAddSet(exerciseSession.exerciseLog.id)
             },
@@ -166,13 +172,24 @@ private fun WorkoutSet(
     workoutSet: SetLog,
     onComplete: (
         isCompleted: Boolean,
-        set : SetLog,
-        ) -> Unit,
+        set: SetLog,
+    ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var isCompleted by remember(workoutSet.finishTime) {
+        mutableStateOf(workoutSet.finishTime > 0)
+    }
+
     Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .then(
+                if (isCompleted) {
+                    Modifier.background(MaterialTheme.colorScheme.secondary)
+                } else
+                    Modifier,
+            )
+            .padding(vertical = Dimens.Spacing.Small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -239,18 +256,32 @@ private fun WorkoutSet(
                 .defaultMinSize(24.dp),
         )
 
-        var isCompleted by remember(workoutSet.finishTime) { mutableStateOf(workoutSet.finishTime>0) }
-
-        Checkbox(
-            checked = isCompleted,
-            onCheckedChange = {
-                isCompleted = it
-                onComplete(it, workoutSet)
-            },
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .wrapContentWidth(),
-        )
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
+                .background(
+                    color = if (isCompleted) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clip(MaterialTheme.shapes.small)
+                .toggleable(
+                    value = isCompleted,
+                    onValueChange = {
+                        isCompleted = it
+                        onComplete(it, workoutSet)
+                    },
+                )
+                .padding(Dimens.Spacing.ExtraSmall),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Complete Set",
+                tint = if (isCompleted) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onSecondary,
+            )
+        }
     }
 }
 
