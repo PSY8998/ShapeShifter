@@ -88,7 +88,7 @@ dependencies {
     implementation(libs.supabase.database)
 
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.test.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.splashscreen)

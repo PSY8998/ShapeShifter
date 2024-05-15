@@ -3,22 +3,20 @@ minSdk = "24"
 compileSdk = "34"
 targetSdk = "34"
 
-agp = "8.2.2"
-kotlin = "1.9.23"
+agp = "8.4.0"
+kotlin = "2.0.0-RC3"
+ksp = "2.0.0-RC3-1.0.20"
 ktlint = "0.48.2"
 coreKtx = "1.13.0"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
 activity = "1.9.0"
 circuit = "0.20.0"
-ksp = "1.9.23-1.0.20"
 tatarka = "0.6.3"
 spotless = "6.25.0"
 desugaring = "2.0.4"
 sqlDelight = "2.0.2"
-compose-multiplatform = "1.6.2"
+compose-multiplatform = "1.6.10-rc02"
 coroutines = "1.8.0"
 paging-multiplatform = "3.3.0-alpha02-0.5.1"
 supabase = "2.3.1"
@@ -26,6 +24,7 @@ coil = "3.0.0-alpha06"
 splashscreen = "1.2.0-alpha01"
 
 # test
+espressoCore = "3.5.1"
 junit = "4.13.2"
 test-junit = "1.1.5"
 test-runner = "1.5.2"
@@ -39,7 +38,8 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 
@@ -47,12 +47,12 @@ buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 
 # android target
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+
 
 # multiplatform
 
@@ -95,6 +95,7 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "c
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 test-junit = { module = "androidx.test.ext:junit", version.ref = "test-junit" }
 test-runner = { module = "androidx.test:runner", version.ref = "test-runner" }
 
@@ -102,7 +103,5 @@ test-runner = { module = "androidx.test:runner", version.ref = "test-runner" }
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
-compose-multiplatformPlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "compose-multiplatform" }
-
-#splash screen
-androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+compose-gradlePlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "compose-multiplatform" }
+composeCompiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
