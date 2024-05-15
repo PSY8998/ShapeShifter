@@ -45,6 +45,7 @@ import com.slack.circuit.retained.rememberRetained
 fun WorkoutExercise(
     exerciseSession: ExerciseSession,
     onAddSet: (workoutExerciseId: Long) -> Unit,
+    onCompleteSet: (isCompleted: Boolean, set: SetLog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var exerciseNote by rememberRetained(key = "exerciseNote") { mutableStateOf("") }
@@ -146,6 +147,7 @@ fun WorkoutExercise(
         for (workoutSet in exerciseSession.sets) {
             WorkoutSet(
                 workoutSet = workoutSet,
+                onComplete = onCompleteSet,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -162,6 +164,10 @@ fun WorkoutExercise(
 @Composable
 private fun WorkoutSet(
     workoutSet: SetLog,
+    onComplete: (
+        isCompleted: Boolean,
+        set : SetLog,
+        ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -185,7 +191,7 @@ private fun WorkoutSet(
             modifier = Modifier
                 .weight(1f),
 
-        )
+            )
 
         var setWeight by remember { mutableStateOf(workoutSet.weight.value.toString()) }
 
@@ -233,12 +239,13 @@ private fun WorkoutSet(
                 .defaultMinSize(24.dp),
         )
 
-        var isCompleted by remember { mutableStateOf(false) }
+        var isCompleted by remember(workoutSet.finishTime) { mutableStateOf(workoutSet.finishTime>0) }
 
         Checkbox(
             checked = isCompleted,
             onCheckedChange = {
                 isCompleted = it
+                onComplete(it, workoutSet)
             },
             modifier = Modifier
                 .weight(1f)

@@ -10,10 +10,10 @@ import app.shapeshifter.data.db.daos.SqlDelightExerciseEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightRoutineEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightWorkoutEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightWorkoutExerciseEntityDao
-import app.shapeshifter.data.db.daos.SqlDelightWorkoutExerciseSetEntityDao
 import app.shapeshifter.data.db.daos.WorkoutEntityDao
 import app.shapeshifter.data.db.daos.WorkoutExerciseEntityDao
-import app.shapeshifter.data.db.daos.WorkoutExerciseSetEntityDao
+import app.shapeshifter.data.db.daos.SetLogEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightSetLogEntityDao
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 
@@ -72,6 +72,6 @@ interface SqlDelightDatabaseComponent : SqlDelightDatabasePlatformDriverComponen
     @ApplicationScope
     @Provides
     fun provideWorkoutExerciseSetEntityDao(
-        dao: SqlDelightWorkoutExerciseSetEntityDao
-    ) : WorkoutExerciseSetEntityDao = dao
+        dao: SqlDelightSetLogEntityDao
+    ) : SetLogEntityDao = dao
 }

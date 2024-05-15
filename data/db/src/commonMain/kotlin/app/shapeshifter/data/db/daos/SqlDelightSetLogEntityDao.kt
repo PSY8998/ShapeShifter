@@ -5,20 +5,21 @@ import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.workoutlog.SetLog
 import me.tatarka.inject.annotations.Inject
 
-interface WorkoutExerciseSetEntityDao: EntityDao<SetLog>
+interface SetLogEntityDao: EntityDao<SetLog>
 
 @Inject
-class SqlDelightWorkoutExerciseSetEntityDao(
+class SqlDelightSetLogEntityDao(
     override val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner
-) : SqlDelightEntityDao<SetLog>, WorkoutExerciseSetEntityDao {
+) : SqlDelightEntityDao<SetLog>, SetLogEntityDao {
     override fun insert(entity: SetLog): Long {
         return transactionRunner {
             db.set_logQueries.insert(
                 id = entity.id,
                 exerciseLogId = entity.exerciseLogId,
                 weight = entity.weight.value.toLong(),
-                reps = entity.reps.value.toLong()
+                reps = entity.reps.value.toLong(),
+                finishTime = entity.finishTime
             )
 
             db.set_logQueries.lastInsertRowId().executeAsOne()
@@ -26,7 +27,13 @@ class SqlDelightWorkoutExerciseSetEntityDao(
     }
 
     override fun update(entity: SetLog) {
-        TODO("Not yet implemented")
+        db.set_logQueries.update(
+            exerciseLogId = entity.exerciseLogId,
+            weight = entity.weight.value.toLong(),
+            reps = entity.reps.value.toLong(),
+            finishTime = entity.finishTime,
+            id = entity.id
+        )
     }
 
     override fun deleteEntity(entity: SetLog) {

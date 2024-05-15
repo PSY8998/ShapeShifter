@@ -2,7 +2,6 @@ package app.shapeshifter.data.db.daos
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
@@ -19,7 +18,6 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.withTimeoutOrNull
 
 interface WorkoutEntityDao : EntityDao<WorkoutLog> {
     fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutSession>
@@ -81,7 +79,8 @@ class SqlDelightWorkoutEntityDao(
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
                                     completed = false,
-                                    exerciseLogId = entry.exercise_log_id!!
+                                    exerciseLogId = entry.exercise_log_id!!,
+                                    finishTime = entry.set_finish_time ?: 0,
                                 )
                                 it.add(set)
                             }

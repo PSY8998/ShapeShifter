@@ -9,27 +9,25 @@ import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
 
 @Inject
-class CreateSetUseCase(
+class FinishedSetUseCase(
     private val dispatchers: AppCoroutineDispatchers,
-    private val dao : SetLogEntityDao
-) : UseCase<CreateSetUseCase.Params, Long>() {
+    private val dao: SetLogEntityDao,
+) : UseCase<FinishedSetUseCase.Params, Long>() {
     override suspend fun doWork(params: Params): Long {
-        val setLog = SetLog(
-            id = 0L,
-            exerciseLogId = params.exerciseLogId ,
-            index = PositiveInt(1),
-            weight = PositiveInt(0),
-            reps = PositiveInt(0),
-            completed = false,
-            finishTime = 0
-        )
-        return withContext(dispatchers.databaseWrite){
-            dao.insert(setLog)
+
+        val setLog = params.setLog
+            .copy(
+                finishTime = if (params.isCompleted) System.currentTimeMillis()
+                else 0,
+            )
+
+        return withContext(dispatchers.databaseWrite) {
+            dao.upsert(setLog)
         }
     }
 
     data class Params(
-        val exerciseLogId: Long
+        val setLog: SetLog,
+        val isCompleted: Boolean,
     )
-
 }
