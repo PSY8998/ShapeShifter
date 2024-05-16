@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
+import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
@@ -159,7 +160,6 @@ fun SetColumnTitles(
 fun SetLog(
     setLog: SetLog,
     onComplete: (
-        isCompleted: Boolean,
         set: SetLog,
     ) -> Unit,
     modifier: Modifier = Modifier,
@@ -198,7 +198,7 @@ fun SetLog(
 
             )
 
-        var setWeight by remember { mutableStateOf(setLog.weight.value.toString()) }
+        var setWeight by remember { mutableStateOf(setLog.weight.toString()) }
 
         BasicTextField(
             value = setWeight,
@@ -223,7 +223,7 @@ fun SetLog(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember { mutableStateOf(setLog.reps.value.toString()) }
+        var setReps by remember { mutableStateOf(setLog.reps.toString()) }
 
         BasicTextField(
             value = setReps,
@@ -282,7 +282,13 @@ fun SetLog(
                     value = isCompleted,
                     onValueChange = {
                         isCompleted = it
-                        onComplete(it, setLog)
+                        onComplete(
+                            setLog.copy(
+                                weight = PositiveInt(setWeight.toIntOrNull() ?: 0),
+                                reps = PositiveInt(setReps.toIntOrNull() ?: 0),
+                                finishTime = if (it) System.currentTimeMillis() else 0,
+                            ),
+                        )
                     },
                 )
                 .padding(Dimens.Spacing.ExtraSmall),

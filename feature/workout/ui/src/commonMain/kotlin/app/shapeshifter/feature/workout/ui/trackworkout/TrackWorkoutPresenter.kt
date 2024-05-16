@@ -121,7 +121,6 @@ class TrackWorkoutPresenter(
                         finishedSetUseCase(
                             params = FinishedSetUseCase.Params(
                                 setLog = event.set,
-                                isCompleted = event.isSetCompleted,
                             ),
                         )
                     }

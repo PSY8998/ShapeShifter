@@ -133,8 +133,8 @@ private fun TrackWorkout(
                 state.workoutSession?.exercises?.forEach { exerciseSession ->
                     exerciseLog(
                         exerciseSession = exerciseSession,
-                        onCompleteSet = { isComplete, setLog ->
-                            state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(isComplete, setLog))
+                        onCompleteSet = {
+                            state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(it))
                         },
                         onAddSet = {
                             state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
@@ -191,7 +191,7 @@ private fun TrackWorkout(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.exerciseLog(
     exerciseSession: ExerciseSession,
-    onCompleteSet: (Boolean, SetLog) -> Unit,
+    onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
 ) {
     val exerciseLog = exerciseSession.exerciseLog

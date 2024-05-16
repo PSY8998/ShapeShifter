@@ -23,7 +23,6 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     ) : TrackWorkoutUiEvent
 
     data class OnSetCompleted(
-        val isSetCompleted: Boolean,
         val set: SetLog,
     ) : TrackWorkoutUiEvent
 }

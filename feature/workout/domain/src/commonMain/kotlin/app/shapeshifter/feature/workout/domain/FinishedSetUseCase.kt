@@ -15,19 +15,12 @@ class FinishedSetUseCase(
 ) : UseCase<FinishedSetUseCase.Params, Long>() {
     override suspend fun doWork(params: Params): Long {
 
-        val setLog = params.setLog
-            .copy(
-                finishTime = if (params.isCompleted) System.currentTimeMillis()
-                else 0,
-            )
-
         return withContext(dispatchers.databaseWrite) {
-            dao.upsert(setLog)
+            dao.upsert(params.setLog)
         }
     }
 
     data class Params(
         val setLog: SetLog,
-        val isCompleted: Boolean,
     )
 }
