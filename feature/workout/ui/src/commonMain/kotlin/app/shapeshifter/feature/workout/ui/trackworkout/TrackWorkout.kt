@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
@@ -41,7 +41,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
-import app.shapeshifter.feature.workout.ui.components.WorkoutExercise
+import app.shapeshifter.data.models.workoutlog.ExerciseSession
+import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.feature.workout.ui.components.AddNewSet
+import app.shapeshifter.feature.workout.ui.components.ExerciseLog
+import app.shapeshifter.feature.workout.ui.components.SetColumnTitles
+import app.shapeshifter.feature.workout.ui.components.SetLog
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
@@ -50,7 +55,6 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuitx.overlays.DialogResult
 import me.tatarka.inject.annotations.Inject
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
@@ -125,38 +129,22 @@ private fun TrackWorkout(
                     )
                 }
 
-                if (state.workoutSession != null) {
-                    itemsIndexed(
-                        state.workoutSession.exercises,
-                        key = { _, exercise -> exercise.exerciseLog.id },
-                    ) { index, exercise ->
-                        WorkoutExercise(
-                            onAddSet = {
-                                state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
-                            },
-                            exerciseSession = exercise,
-                            onCompleteSet = { isCompleted, set ->
-                                state.eventSink(
-                                    TrackWorkoutUiEvent.OnSetCompleted(
-                                        isSetCompleted = isCompleted,
-                                        set = set,
-                                    ),
-                                )
-                            },
-                        )
 
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            modifier = Modifier
-                                .padding(vertical = Dimens.Spacing.Medium)
-                                .fillParentMaxWidth(),
-                        )
-                    }
+                state.workoutSession?.exercises?.forEach { exerciseSession ->
+                    exerciseLog(
+                        exerciseSession = exerciseSession,
+                        onCompleteSet = { isComplete, setLog ->
+                            state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(isComplete, setLog))
+                        },
+                        onAddSet = {
+                            state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
+                        },
+                    )
                 }
 
                 if (state.workoutSession?.exercises.isNullOrEmpty()) {
                     item("empty_exercises_placeholder") {
-                        ExerciseLog(
+                        ExerciseEmpty(
                             modifier = Modifier
                                 .padding(top = Dimens.Spacing.Medium)
                                 .fillMaxWidth()
@@ -200,11 +188,74 @@ private fun TrackWorkout(
     }
 }
 
-private fun LazyListScope.itemDivider(key: Any? = null) {
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.exerciseLog(
+    exerciseSession: ExerciseSession,
+    onCompleteSet: (Boolean, SetLog) -> Unit,
+    onAddSet: (exerciseLogId: Long) -> Unit,
+) {
+    val exerciseLog = exerciseSession.exerciseLog
+    item(
+        key = exerciseLog.id,
+        contentType = "exercise",
+    ) {
+        ExerciseLog(
+            name = exerciseSession.exercise.name,
+        )
+    }
+
+    item(
+        key = "${exerciseLog.id}_set_titles",
+        contentType = "${exerciseLog.id}_set_titles",
+    ) {
+        SetColumnTitles(
+            modifier = Modifier
+                .fillMaxWidth(),
+        )
+    }
+
+    items(
+        items = exerciseSession.sets,
+        contentType = { "set" },
+        key = { it.id },
+    ) { set ->
+        SetLog(
+            setLog = set,
+            onComplete = onCompleteSet,
+            modifier = Modifier
+                .animateItemPlacement(),
+        )
+    }
+
+    item(
+        key = "${exerciseLog.id}_new_set",
+        contentType = "new_set",
+    ) {
+        AddNewSet(
+            onAddSet = {
+                onAddSet(exerciseLog.id)
+            },
+            modifier = Modifier
+                .animateItemPlacement()
+                .padding(vertical = Dimens.Spacing.Small),
+        )
+    }
+
+    itemDivider(
+        key = "${exerciseLog.id}_divider",
+        modifier = Modifier
+            .padding(vertical = Dimens.Spacing.Medium),
+    )
+}
+
+private fun LazyListScope.itemDivider(
+    key: Any? = null,
+    modifier: Modifier = Modifier,
+) {
     item(key) {
         HorizontalDivider(
             thickness = 1.dp,
-            modifier = Modifier
+            modifier = modifier
                 .fillParentMaxWidth(),
         )
     }
@@ -283,9 +334,8 @@ private fun TrackWorkoutTopBar(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun ExerciseLog(
+private fun ExerciseEmpty(
     modifier: Modifier = Modifier,
     onAddExercise: () -> Unit,
 ) {

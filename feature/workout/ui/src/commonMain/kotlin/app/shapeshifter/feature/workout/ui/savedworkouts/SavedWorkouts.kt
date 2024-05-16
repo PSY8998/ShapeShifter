@@ -1,7 +1,13 @@
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
@@ -388,69 +396,75 @@ private fun WorkoutTopBar(
                     .align(Alignment.CenterHorizontally),
             )
 
-            AnimatedVisibility(
-                visible = activeWorkout != null,
+
+            AnimatedContent(
+                targetState = activeWorkout,
+                contentKey = { it?.workout?.id },
+                label = "resume_workout_transition",
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimens.Spacing.ExtraSmall),
-            ) {
-                Column {
-                    Text(
-                        "${activeWorkout?.routine?.name ?: ""} ${activeWorkout?.plan?.name ?: ""}",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.Gray,
+                    .fillMaxWidth(),
+            ) { workoutSession ->
+                if (workoutSession != null) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                    )
-
-                    val overlayHost = LocalOverlayHost.current
-                    val scope = rememberCoroutineScope()
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
+                            .fillMaxWidth()
+                            .padding(top = Dimens.Spacing.ExtraSmall),
                     ) {
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    if (activeWorkout?.workout?.id != null) {
+                        Text(
+                            "${workoutSession.routine.name} ${workoutSession.plan.name}",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                        )
+
+                        val overlayHost = LocalOverlayHost.current
+                        val scope = rememberCoroutineScope()
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
+                        ) {
+                            Button(
+                                onClick = {
+                                    scope.launch {
                                         val result = overlayHost.showDiscardWorkoutDialog()
                                         if (result == DialogResult.Confirm) {
-                                            onDiscardWorkout(activeWorkout.workout)
+                                            onDiscardWorkout(workoutSession.workout)
                                         }
                                     }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.error,
-                            ),
-                            shape = MaterialTheme.shapes.small,
-                            modifier = Modifier
-                                .weight(1f),
-                        ) {
-                            Text("Discard")
-                        }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.error,
+                                ),
+                                shape = MaterialTheme.shapes.small,
+                                modifier = Modifier
+                                    .weight(1f),
+                            ) {
+                                Text("Discard")
+                            }
 
-                        Button(
-                            onClick = {
-                                onResumeWorkout()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                            shape = MaterialTheme.shapes.small,
-                            modifier = Modifier
-                                .weight(1f),
-                        ) {
-                            Text("Resume")
+                            Button(
+                                onClick = {
+                                    onResumeWorkout()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
+                                shape = MaterialTheme.shapes.small,
+                                modifier = Modifier
+                                    .weight(1f),
+                            ) {
+                                Text("Resume")
+                            }
                         }
                     }
                 }
-
             }
         }
 
