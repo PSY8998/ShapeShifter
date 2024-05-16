@@ -196,7 +196,7 @@ private fun LazyListScope.exerciseLog(
 ) {
     val exerciseLog = exerciseSession.exerciseLog
     item(
-        key = exerciseLog.id,
+        key = "exercise_${exerciseLog.id}",
         contentType = "exercise",
     ) {
         ExerciseLog(
@@ -205,8 +205,8 @@ private fun LazyListScope.exerciseLog(
     }
 
     item(
-        key = "${exerciseLog.id}_set_titles",
-        contentType = "${exerciseLog.id}_set_titles",
+        key = "set_titles_${exerciseLog.id}",
+        contentType = "set_titles",
     ) {
         SetColumnTitles(
             modifier = Modifier
@@ -217,7 +217,7 @@ private fun LazyListScope.exerciseLog(
     items(
         items = exerciseSession.sets,
         contentType = { "set" },
-        key = { it.id },
+        key = { "set_${it.id}" },
     ) { set ->
         SetLog(
             setLog = set,
@@ -242,7 +242,7 @@ private fun LazyListScope.exerciseLog(
     }
 
     itemDivider(
-        key = "${exerciseLog.id}_divider",
+        key = "divider_${exerciseLog.id}",
         modifier = Modifier
             .padding(vertical = Dimens.Spacing.Medium),
     )
