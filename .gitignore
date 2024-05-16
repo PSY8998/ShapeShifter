@@ -17,6 +17,7 @@ captures
 .idea/compiler.xml
 .idea/jarRepositories.xml
 .idea/deploymentTargetDropDown.xml
+.idea/deploymentTargetSelector.xml
 .idea/androidTestResultsUserPreferences.xml
 .idea/appInsightsSettings.xml
 .idea/artifacts
@@ -79,6 +80,7 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+.kotlin/
 
 # fastlane
 #
@@ -93,5 +95,3 @@ screenshots/**/*.png
 test_output
 
 *.env*
-/.idea/assetWizardSettings.xml
-/.idea/deploymentTargetSelector.xml
