@@ -2,6 +2,8 @@ package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,8 +19,10 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,8 +50,10 @@ import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
+import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
 import app.shapeshifter.feature.workout.ui.components.SetColumnTitles
 import app.shapeshifter.feature.workout.ui.components.SetLog
+import app.shapeshifter.feature.workout.ui.components.rememberSetAnchorState
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
@@ -219,12 +226,42 @@ private fun LazyListScope.exerciseLog(
         contentType = { "set" },
         key = { "set_${it.id}" },
     ) { set ->
-        SetLog(
-            setLog = set,
-            onComplete = onCompleteSet,
+        val setLogAnchorState = rememberSetAnchorState()
+        SetAnchorBox(
+            state = setLogAnchorState,
+            backgroundContent = {
+                Box(
+                    contentAlignment = Alignment.CenterEnd,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = MaterialTheme.colorScheme.errorContainer),
+                ){
+                    IconButton(
+                        modifier = Modifier
+                            .padding(horizontal = Dimens.Spacing.Medium),
+                        onClick = {}
+                    ){
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Remove Set",
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            },
+            content = {
+                SetLog(
+                    setLog = set,
+                    onComplete = onCompleteSet,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .animateItemPlacement(),
+                )
+            },
             modifier = Modifier
-                .animateItemPlacement(),
-        )
+                .fillMaxWidth(),
+
+            )
     }
 
     item(
