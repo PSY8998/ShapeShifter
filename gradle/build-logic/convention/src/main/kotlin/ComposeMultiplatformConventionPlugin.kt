@@ -1,39 +1,36 @@
-import app.shapeshifter.buildComposeMetricsParameters
-import app.shapeshifter.buildComposeStabilityConfigurationParameters
-import app.shapeshifter.compilerOptions
-import app.shapeshifter.kotlin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 class ComposeMultiplatformConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("org.jetbrains.compose")
+        pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
         configureCompose()
     }
 }
 
 fun Project.configureCompose() {
-    compose {
-        // The Compose Compiler for 1.9.22 works for 1.9.23
-        kotlinCompilerPlugin.set(dependencies.compiler.forKotlin(libs.versions.kotlin.get()))
+    composeCompiler {
+        // Enable 'strong skipping'
+        // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
+        enableStrongSkippingMode.set(true)
 
-        kotlinCompilerPluginArgs.addAll(
-            // Enable 'strong skipping'
-            // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
-            "experimentalStrongSkipping=true",
-        )
-    }
+        // Needed for Layout Inspector to be able to see all of the nodes in the component tree:
+        //https://issuetracker.google.com/issues/338842143
+        includeSourceInformation.set(true)
 
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.addAll(buildComposeStabilityConfigurationParameters())
-            freeCompilerArgs.addAll(buildComposeMetricsParameters())
+        if (project.providers.gradleProperty("enableComposeCompilerReports").isPresent) {
+            val composeReports = layout.buildDirectory.map { it.dir("reports").dir("compose") }
+            reportsDestination.set(composeReports)
+            metricsDestination.set(composeReports)
         }
+
+        stabilityConfigurationFile.set(rootProject.file("compose-stability.conf"))
     }
 }
 
-fun Project.compose(block: ComposeExtension.() -> Unit) {
-    extensions.configure<ComposeExtension>(block)
+fun Project.composeCompiler(block: ComposeCompilerGradlePluginExtension.() -> Unit) {
+    extensions.configure<ComposeCompilerGradlePluginExtension>(block)
 }

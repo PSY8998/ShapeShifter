@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,12 +42,11 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import com.slack.circuit.retained.rememberRetained
+import shapeshifter.feature.workout.ui.generated.resources.Res
 
 @Composable
-fun WorkoutExercise(
-    exerciseSession: ExerciseSession,
-    onAddSet: (workoutExerciseId: Long) -> Unit,
-    onCompleteSet: (isCompleted: Boolean, set: SetLog) -> Unit,
+fun ExerciseLog(
+    name: String,
     modifier: Modifier = Modifier,
 ) {
     var exerciseNote by rememberRetained(key = "exerciseNote") { mutableStateOf("") }
@@ -64,7 +62,7 @@ fun WorkoutExercise(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = exerciseSession.exercise.name,
+                text = name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -73,6 +71,7 @@ fun WorkoutExercise(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,82 +101,71 @@ fun WorkoutExercise(
                 },
             )
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = Dimens.Spacing.Small),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Text(
-                text = "Set",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f),
-            )
-            Text(
-                text = "Prev",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f),
-            )
-            Text(
-                text = "Kg",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f),
-            )
-            Text(
-                text = "Reps",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f),
-            )
-            Box(
-                modifier = Modifier
-                    .weight(1f),
-            )
-
-        }
-        for (workoutSet in exerciseSession.sets) {
-            WorkoutSet(
-                workoutSet = workoutSet,
-                onComplete = onCompleteSet,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            )
-        }
-
-        AddNewSet(
-            modifier = Modifier
-                .padding(vertical = Dimens.Spacing.Small),
-            onAddSet = {
-                onAddSet(exerciseSession.exerciseLog.id)
-            },
-        )
     }
 }
 
 @Composable
-private fun WorkoutSet(
-    workoutSet: SetLog,
+fun SetColumnTitles(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = Dimens.Spacing.Small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text(
+            text = "Set",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Text(
+            text = "Prev",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Text(
+            text = "Kg",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Text(
+            text = "Reps",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f),
+        )
+
+    }
+}
+
+@Composable
+fun SetLog(
+    setLog: SetLog,
     onComplete: (
         isCompleted: Boolean,
         set: SetLog,
     ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isCompleted by remember(workoutSet.finishTime) {
-        mutableStateOf(workoutSet.finishTime > 0)
+    var isCompleted by remember(setLog.finishTime) {
+        mutableStateOf(setLog.finishTime > 0)
     }
 
     Row(
@@ -194,23 +182,23 @@ private fun WorkoutSet(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = workoutSet.index.value.toString(),
+            text = setLog.index.value.toString(),
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Black,
-            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(1f),
         )
         Text(
             text = "",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(1f),
 
             )
 
-        var setWeight by remember { mutableStateOf(workoutSet.weight.value.toString()) }
+        var setWeight by remember { mutableStateOf(setLog.weight.value.toString()) }
 
         BasicTextField(
             value = setWeight,
@@ -219,8 +207,10 @@ private fun WorkoutSet(
                     setWeight = it
                 }
             },
-            textStyle = MaterialTheme.typography.bodySmall.copy(
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Black,
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -233,7 +223,7 @@ private fun WorkoutSet(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember { mutableStateOf(workoutSet.reps.value.toString()) }
+        var setReps by remember { mutableStateOf(setLog.reps.value.toString()) }
 
         BasicTextField(
             value = setReps,
@@ -242,9 +232,31 @@ private fun WorkoutSet(
                     setReps = it
                 }
             },
-            textStyle = MaterialTheme.typography.bodySmall.copy(
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Black,
             ),
+            decorationBox = { internalField ->
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    internalField()
+
+                    if (setReps.isBlank()) {
+                        Text(
+                            text = "0",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Black,
+                            ),
+                        )
+                    }
+                }
+            },
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -270,7 +282,7 @@ private fun WorkoutSet(
                     value = isCompleted,
                     onValueChange = {
                         isCompleted = it
-                        onComplete(it, workoutSet)
+                        onComplete(it, setLog)
                     },
                 )
                 .padding(Dimens.Spacing.ExtraSmall),
@@ -286,7 +298,7 @@ private fun WorkoutSet(
 }
 
 @Composable
-private fun AddNewSet(
+fun AddNewSet(
     onAddSet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
