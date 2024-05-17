@@ -37,6 +37,6 @@ class SqlDelightSetLogEntityDao(
     }
 
     override fun deleteEntity(entity: SetLog) {
-        TODO("Not yet implemented")
+        db.set_logQueries.delete(entity.id)
     }
 }

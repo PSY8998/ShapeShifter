@@ -146,6 +146,9 @@ private fun TrackWorkout(
                         onAddSet = {
                             state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
                         },
+                        onDeleteSet = {
+                            state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
+                        }
                     )
                 }
 
@@ -200,6 +203,7 @@ private fun LazyListScope.exerciseLog(
     exerciseSession: ExerciseSession,
     onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
+    onDeleteSet: (setLog: SetLog) -> Unit
 ) {
     val exerciseLog = exerciseSession.exerciseLog
     item(
@@ -239,7 +243,9 @@ private fun LazyListScope.exerciseLog(
                     IconButton(
                         modifier = Modifier
                             .padding(horizontal = Dimens.Spacing.Medium),
-                        onClick = {}
+                        onClick = {
+                            onDeleteSet(set)
+                        }
                     ){
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -254,13 +260,12 @@ private fun LazyListScope.exerciseLog(
                     setLog = set,
                     onComplete = onCompleteSet,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .animateItemPlacement(),
+                        .background(MaterialTheme.colorScheme.background),
                 )
             },
             modifier = Modifier
-                .fillMaxWidth(),
-
+                .fillMaxWidth()
+                .animateItemPlacement()
             )
     }
 

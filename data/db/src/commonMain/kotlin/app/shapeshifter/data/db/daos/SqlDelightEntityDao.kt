@@ -21,4 +21,7 @@ interface SqlDelightEntityDao<in E : Entity> : EntityDao<E> {
             }
         }
     }
+
+
+
 }

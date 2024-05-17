@@ -31,5 +31,11 @@ reps = :reps,
 finish_time = :finishTime
 WHERE id = :id;
 
+
+delete:
+DELETE FROM set_log
+WHERE id = :id
+;
+
 lastInsertRowId:
 SELECT last_insert_rowid();
