@@ -66,6 +66,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SetLog(
     setLog: SetLog,
+    index: Int,
     onComplete: (
         set: SetLog,
     ) -> Unit,
@@ -89,7 +90,7 @@ fun SetLog(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = setLog.index.value.toString(),
+            text = (index + 1).toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodyMedium,

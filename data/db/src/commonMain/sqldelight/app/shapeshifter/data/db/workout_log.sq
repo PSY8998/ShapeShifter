@@ -16,6 +16,13 @@ nullif(:id, 0),
 :finishTime
 );
 
+update:
+UPDATE workout_log SET
+workout_plan_id = :workoutPlanId,
+start_time = :startTime,
+finish_time = :finishTime
+WHERE id = :id;
+
 lastInsertRowId:
 SELECT last_insert_rowid();
 

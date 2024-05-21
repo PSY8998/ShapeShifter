@@ -15,11 +15,11 @@ class SqlDelightSetLogEntityDao(
     override fun insert(entity: SetLog): Long {
         return transactionRunner {
             db.set_logQueries.insert(
-                id = entity.id,
                 exerciseLogId = entity.exerciseLogId,
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
-                finishTime = entity.finishTime
+                finishTime = entity.finishTime,
+                id = entity.id
             )
 
             db.set_logQueries.lastInsertRowId().executeAsOne()

@@ -10,5 +10,9 @@ data class SetLog(
     val weight: PositiveInt,
     val reps: PositiveInt,
     val completed: Boolean,
-    val finishTime: Long
-) : Entity
+    val finishTime: Long,
+) : Entity {
+    fun isValid(): Boolean {
+        return true
+    }
+}

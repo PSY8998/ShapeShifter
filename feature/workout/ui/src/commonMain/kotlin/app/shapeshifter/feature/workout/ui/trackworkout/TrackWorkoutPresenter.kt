@@ -15,6 +15,7 @@ import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.DeleteSetUseCase
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
+import app.shapeshifter.feature.workout.domain.FinishWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FinishedSetUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.StoreWorkoutExerciseUseCase
@@ -55,6 +56,7 @@ class TrackWorkoutPresenter(
     private val createSetUseCase: CreateSetUseCase,
     private val finishedSetUseCase: FinishedSetUseCase,
     private val deleteSetUseCase: DeleteSetUseCase,
+    private val finishWorkoutUseCase: FinishWorkoutUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
     @Composable
@@ -133,6 +135,16 @@ class TrackWorkoutPresenter(
                         deleteSetUseCase(
                             params = DeleteSetUseCase.Params(
                                 setLog = event.set,
+                            )
+                        )
+                    }
+                }
+
+                is TrackWorkoutUiEvent.OnFinishWorkout ->{
+                    scope.launch {
+                        val result = finishWorkoutUseCase(
+                            params = FinishWorkoutUseCase.Params(
+                                workoutLog = event.workout
                             )
                         )
                     }

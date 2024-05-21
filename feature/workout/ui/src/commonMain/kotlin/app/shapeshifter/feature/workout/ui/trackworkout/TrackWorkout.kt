@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Delete
@@ -48,6 +49,7 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
@@ -116,6 +118,9 @@ private fun TrackWorkout(
                 onBack = {
                     state.eventSink(TrackWorkoutUiEvent.GoBack)
                 },
+                onFinish = {
+                    state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(it))
+                }
             )
 
             HorizontalDivider(
@@ -148,7 +153,7 @@ private fun TrackWorkout(
                         },
                         onDeleteSet = {
                             state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
-                        }
+                        },
                     )
                 }
 
@@ -203,7 +208,7 @@ private fun LazyListScope.exerciseLog(
     exerciseSession: ExerciseSession,
     onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
-    onDeleteSet: (setLog: SetLog) -> Unit
+    onDeleteSet: (setLog: SetLog) -> Unit,
 ) {
     val exerciseLog = exerciseSession.exerciseLog
     item(
@@ -225,11 +230,11 @@ private fun LazyListScope.exerciseLog(
         )
     }
 
-    items(
+    itemsIndexed(
         items = exerciseSession.sets,
-        contentType = { "set" },
-        key = { "set_${it.id}" },
-    ) { set ->
+        contentType = { _, _ -> "set" },
+        key = { _, set -> "set_${set.id}" },
+    ) { index, set ->
         val setLogAnchorState = rememberSetAnchorState()
         SetAnchorBox(
             state = setLogAnchorState,
@@ -239,18 +244,18 @@ private fun LazyListScope.exerciseLog(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = MaterialTheme.colorScheme.errorContainer),
-                ){
+                ) {
                     IconButton(
                         modifier = Modifier
                             .padding(horizontal = Dimens.Spacing.Medium),
                         onClick = {
                             onDeleteSet(set)
-                        }
-                    ){
+                        },
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Remove Set",
-                            tint = MaterialTheme.colorScheme.onErrorContainer
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
                         )
                     }
                 }
@@ -258,6 +263,7 @@ private fun LazyListScope.exerciseLog(
             content = {
                 SetLog(
                     setLog = set,
+                    index = index,
                     onComplete = onCompleteSet,
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),
@@ -265,8 +271,8 @@ private fun LazyListScope.exerciseLog(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .animateItemPlacement()
-            )
+                .animateItemPlacement(),
+        )
     }
 
     item(
@@ -308,6 +314,7 @@ private fun TrackWorkoutTopBar(
     modifier: Modifier = Modifier,
     startTimeInSecs: Long,
     onBack: () -> Unit,
+    onFinish: (workout: WorkoutLog) ->Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     Column(
@@ -359,7 +366,7 @@ private fun TrackWorkoutTopBar(
 
             Button(
                 onClick = {
-                    onBack()
+                    onFinish(WorkoutLog.emptyQuickWorkout())
                 },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier

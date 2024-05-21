@@ -45,7 +45,12 @@ class SqlDelightWorkoutEntityDao(
     }
 
     override fun update(entity: WorkoutLog) {
-        TODO("Not yet implemented")
+        db.workout_logQueries.update(
+            workoutPlanId = entity.workoutPlanId,
+            startTime = entity.startTimeInMillis,
+            finishTime = entity.finishTimeInMillis,
+            id = entity.id
+        )
     }
 
     override fun deleteEntity(entity: WorkoutLog) {
