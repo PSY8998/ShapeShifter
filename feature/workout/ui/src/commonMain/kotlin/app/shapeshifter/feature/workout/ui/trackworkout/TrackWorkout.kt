@@ -51,6 +51,7 @@ import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
+import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
@@ -120,7 +121,9 @@ private fun TrackWorkout(
                     state.eventSink(TrackWorkoutUiEvent.GoBack)
                 },
                 onFinish = {
-                    state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(it))
+                    if (state.workoutSession != null) {
+                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(state.workoutSession.workout))
+                    }
                 },
             )
 
@@ -315,7 +318,7 @@ private fun TrackWorkoutTopBar(
     modifier: Modifier = Modifier,
     startTimeInSecs: Long,
     onBack: () -> Unit,
-    onFinish: (workout: WorkoutLog) -> Unit,
+    onFinish: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     Column(
@@ -367,7 +370,7 @@ private fun TrackWorkoutTopBar(
 
             Button(
                 onClick = {
-                    onFinish(WorkoutLog.emptyQuickWorkout())
+                    onFinish()
                 },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier

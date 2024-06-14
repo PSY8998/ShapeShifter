@@ -15,7 +15,7 @@ class FinishWorkoutUseCase(
     override suspend fun doWork(params: Params): Long {
 
         return withContext(dispatchers.databaseWrite) {
-            dao.upsert(params.workoutLog)
+            dao.upsert(params.workoutLog.copy(finishTimeInMillis = System.currentTimeMillis()))
         }
     }
 

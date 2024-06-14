@@ -39,8 +39,8 @@ class AddExerciseLogUseCase(
                             index = PositiveInt(1),
                             weight = PositiveInt(0),
                             reps = PositiveInt(0),
-                            prevReps = setLog.prevReps,
-                            prevWeight = setLog.prevWeight,
+                            prevReps = setLog.reps,
+                            prevWeight = setLog.weight,
                             completed = false,
                             finishTime = 0,
                         )

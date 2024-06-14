@@ -98,7 +98,7 @@ fun SetLog(
                 .weight(1f),
         )
         Text(
-            text = "",
+            text = "${setLog.prevWeight}" + "x" + "${setLog.prevReps}",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
