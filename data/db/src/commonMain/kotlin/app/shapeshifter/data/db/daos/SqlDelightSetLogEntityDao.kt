@@ -18,6 +18,8 @@ class SqlDelightSetLogEntityDao(
                 exerciseLogId = entity.exerciseLogId,
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
+                prevReps = entity.prevReps.value.toLong(),
+                prevWeight = entity.prevWeight.value.toLong(),
                 finishTime = entity.finishTime,
                 id = entity.id
             )

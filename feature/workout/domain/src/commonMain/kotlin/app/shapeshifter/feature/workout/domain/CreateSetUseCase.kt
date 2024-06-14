@@ -20,6 +20,8 @@ class CreateSetUseCase(
             index = PositiveInt(1),
             weight = PositiveInt(0),
             reps = PositiveInt(0),
+            prevWeight = PositiveInt(0),
+            prevReps = PositiveInt(0),
             completed = false,
             finishTime = 0
         )

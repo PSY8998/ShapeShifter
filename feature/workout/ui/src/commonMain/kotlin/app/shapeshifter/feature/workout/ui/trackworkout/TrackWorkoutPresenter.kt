@@ -9,7 +9,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
-import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
@@ -18,7 +17,7 @@ import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FinishWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FinishedSetUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
-import app.shapeshifter.feature.workout.domain.StoreWorkoutExerciseUseCase
+import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
@@ -49,7 +48,7 @@ class TrackWorkoutPresenterFactory(
 @Inject
 class TrackWorkoutPresenter(
     @Assisted private val navigator: Navigator,
-    private val storeWorkoutExerciseUseCase: StoreWorkoutExerciseUseCase,
+    private val storeWorkoutExerciseUseCase: AddExerciseLogUseCase,
     private val observeWorkoutDetailsUseCase: ObserveWorkoutDetailsUseCase,
     private val createWorkoutUseCase: CreateWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
@@ -78,7 +77,7 @@ class TrackWorkoutPresenter(
                 scope.launch {
                     if (workoutId != 0L) {
                         storeWorkoutExerciseUseCase(
-                            StoreWorkoutExerciseUseCase.Params(
+                            AddExerciseLogUseCase.Params(
                                 workoutId = workoutId,
                                 exerciseIds = selectedExerciseIds,
                             ),

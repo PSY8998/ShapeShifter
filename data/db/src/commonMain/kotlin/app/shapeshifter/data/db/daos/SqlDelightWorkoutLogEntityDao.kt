@@ -49,7 +49,7 @@ class SqlDelightWorkoutEntityDao(
             workoutPlanId = entity.workoutPlanId,
             startTime = entity.startTimeInMillis,
             finishTime = entity.finishTimeInMillis,
-            id = entity.id
+            id = entity.id,
         )
     }
 
@@ -84,6 +84,13 @@ class SqlDelightWorkoutEntityDao(
                                     index = PositiveInt(0),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
+                                    prevReps = PositiveInt(max(entry.prev_reps?.toInt() ?: 0, 0)),
+                                    prevWeight = PositiveInt(
+                                        max(
+                                            entry.prev_weight?.toInt() ?: 0,
+                                            0,
+                                        ),
+                                    ),
                                     completed = false,
                                     exerciseLogId = entry.exercise_log_id!!,
                                     finishTime = entry.set_finish_time ?: 0,

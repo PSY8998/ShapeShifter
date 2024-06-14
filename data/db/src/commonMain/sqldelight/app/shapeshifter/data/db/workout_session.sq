@@ -12,7 +12,9 @@ SELECT
     slog.id AS set_log_id,
     slog.finish_time AS set_finish_time,
     slog.weight,
-    slog.reps
+    slog.reps,
+    slog.prev_weight,
+    slog.prev_reps
 FROM
     workout_log wlog
 LEFT JOIN

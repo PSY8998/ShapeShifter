@@ -9,6 +9,8 @@ data class SetLog(
     val index: PositiveInt,
     val weight: PositiveInt,
     val reps: PositiveInt,
+    val prevReps: PositiveInt,
+    val prevWeight: PositiveInt,
     val completed: Boolean,
     val finishTime: Long,
 ) : Entity {

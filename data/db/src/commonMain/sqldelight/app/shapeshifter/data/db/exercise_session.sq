@@ -1,0 +1,26 @@
+selectExerciseSession:
+SELECT
+    elog.id AS exercise_log_id,
+    elog.exercise_id AS exercise_id,
+    elog.workout_log_id AS workout_log_id,
+    slog.id AS set_log_id,
+    slog.reps AS set_log_reps,
+    slog.weight AS set_log_weight,
+    slog.prev_reps AS set_prev_reps,
+    slog.prev_weight AS set_prev_weight,
+    slog.finish_time AS set_finish_time,
+    e.name AS exercise_name,
+    e.image_url AS exercise_image_url,
+    e.primary_muscle AS exercise_primary_muscle,
+    e.secondary_muscles AS exercise_secondary_muscles
+FROM
+    exercise_log AS elog
+JOIN
+    set_log AS slog ON slog.exercise_log_id = elog.id
+JOIN
+    exercise AS e ON e.id = elog.exercise_id
+WHERE
+    elog.exercise_id = :exercise_id
+ORDER BY elog.id DESC
+LIMIT 1
+;
