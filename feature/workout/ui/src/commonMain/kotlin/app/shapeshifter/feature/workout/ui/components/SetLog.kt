@@ -1,7 +1,5 @@
 package app.shapeshifter.feature.workout.ui.components
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -16,6 +14,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -25,7 +24,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -98,15 +96,17 @@ fun SetLog(
                 .weight(1f),
         )
         Text(
-            text = "${setLog.prevWeight}" + "x" + "${setLog.prevReps}",
+            text = "${setLog.prevWeight}kg" + " x " + "${setLog.prevReps}",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
             modifier = Modifier
                 .weight(1f),
+        )
 
-            )
-
-        var setWeight by remember { mutableStateOf(setLog.weight.toString()) }
+        var setWeight: String by remember {
+            mutableStateOf(setLog.weight.takeIf { it.value != 0 }?.toString() ?: "")
+        }
 
         BasicTextField(
             value = setWeight,
@@ -124,6 +124,28 @@ fun SetLog(
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
             ),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    innerTextField()
+
+                    if (setWeight.isBlank()) {
+                        Text(
+                            text = setLog.prevWeight.toString(),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Black,
+                            ),
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        )
+                    }
+                }
+            },
             modifier = Modifier
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .weight(1f)
@@ -131,7 +153,9 @@ fun SetLog(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember { mutableStateOf(setLog.reps.toString()) }
+        var setReps by remember {
+            mutableStateOf(setLog.reps.takeIf { it.value != 0 }?.toString() ?: "")
+        }
 
         BasicTextField(
             value = setReps,
@@ -145,22 +169,24 @@ fun SetLog(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Black,
             ),
-            decorationBox = { internalField ->
+            decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier
                         .wrapContentWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    internalField()
+                    innerTextField()
 
                     if (setReps.isBlank()) {
                         Text(
-                            text = "0",
+                            text = setLog.prevReps.toString(),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Black,
                             ),
+                            modifier = Modifier
+                                .fillMaxSize(),
                         )
                     }
                 }
@@ -192,8 +218,8 @@ fun SetLog(
                         isCompleted = it
                         onComplete(
                             setLog.copy(
-                                weight = PositiveInt(setWeight.toIntOrNull() ?: 0),
-                                reps = PositiveInt(setReps.toIntOrNull() ?: 0),
+                                weight = PositiveInt(setWeight?.toIntOrNull() ?: 0),
+                                reps = PositiveInt(setReps?.toIntOrNull() ?: 0),
                                 finishTime = if (it) System.currentTimeMillis() else 0,
                             ),
                         )
