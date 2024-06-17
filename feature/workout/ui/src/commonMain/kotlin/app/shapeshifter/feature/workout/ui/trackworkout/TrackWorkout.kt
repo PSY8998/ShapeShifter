@@ -55,6 +55,7 @@ import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
+import app.shapeshifter.feature.workout.ui.components.SetAnchors
 import app.shapeshifter.feature.workout.ui.components.SetColumnTitles
 import app.shapeshifter.feature.workout.ui.components.SetLog
 import app.shapeshifter.feature.workout.ui.components.rememberSetAnchorState
@@ -253,7 +254,9 @@ private fun LazyListScope.exerciseLog(
                         modifier = Modifier
                             .padding(horizontal = Dimens.Spacing.Medium),
                         onClick = {
-                            onDeleteSet(set)
+                            if (setLogAnchorState.currentValue == SetAnchors.SELECTED) {
+                                onDeleteSet(set)
+                            }
                         },
                     ) {
                         Icon(
