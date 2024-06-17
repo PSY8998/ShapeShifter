@@ -47,6 +47,8 @@ import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
+import app.shapeshifter.feature.workout.ui.createworkoutplan.WorkoutPlanNameResult
+import app.shapeshifter.feature.workout.ui.createworkoutplan.showWorkoutPlanName
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
@@ -117,6 +119,9 @@ internal fun SavedWorkouts(
                         eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
                     }
                 },
+                onCreateWorkoutPlan = {
+                    eventSink(SavedWorkoutsUiEvent.CreateWorkoutPlan(it))
+                },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize(),
@@ -128,6 +133,7 @@ internal fun SavedWorkouts(
 @Composable
 private fun SavedWorkoutsScrollingContent(
     onStartQuickWorkout: () -> Unit,
+    onCreateWorkoutPlan: (planName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -161,6 +167,7 @@ private fun SavedWorkoutsScrollingContent(
 
         item("my_routines") {
             MyRoutine(
+                onCreateWorkoutPlan = onCreateWorkoutPlan,
                 modifier = Modifier
                     .fillParentMaxHeight()
                     .fillMaxWidth()
@@ -292,15 +299,18 @@ private fun Routines(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun MyRoutine(
+    onCreateWorkoutPlan: (planName: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth(),
     ) {
+        val overlayHost = LocalOverlayHost.current
+        val scope = rememberCoroutineScope()
+
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -322,6 +332,12 @@ private fun MyRoutine(
                     )
                     .clip(shape = MaterialTheme.shapes.small)
                     .clickable {
+                        scope.launch {
+                            val result = overlayHost.showWorkoutPlanName()
+                            if (result is WorkoutPlanNameResult.AddExercisesToPlan) {
+                                onCreateWorkoutPlan(result.name)
+                            }
+                        }
                     }
                     .padding(4.dp),
             ) {
