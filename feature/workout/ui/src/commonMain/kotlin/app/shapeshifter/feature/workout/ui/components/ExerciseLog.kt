@@ -119,15 +119,15 @@ fun SetColumnTitles(
         Text(
             text = "Set",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            color = Color.Gray,
             modifier = Modifier
                 .weight(1f),
         )
         Text(
             text = "Prev",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
+            color = Color.Gray,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f),
@@ -135,7 +135,7 @@ fun SetColumnTitles(
         Text(
             text = "Kg",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
+            color = Color.Gray,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f),
@@ -143,7 +143,7 @@ fun SetColumnTitles(
         Text(
             text = "Reps",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
+            color = Color.Gray,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f),
