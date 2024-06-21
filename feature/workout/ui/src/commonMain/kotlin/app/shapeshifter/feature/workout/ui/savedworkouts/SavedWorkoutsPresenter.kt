@@ -71,7 +71,12 @@ class SavedWorkoutsPresenter(
                 }
 
                 is SavedWorkoutsUiEvent.CreateWorkoutPlan -> {
-                    navigator.goTo(CreateWorkoutPlanScreen(event.planName))
+                    navigator.goTo(
+                        CreateWorkoutPlanScreen(
+                            planName = event.planName,
+                            routineId = event.routineId
+                        ),
+                    )
                 }
             }
         }

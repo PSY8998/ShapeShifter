@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExerciseEntityDao : EntityDao<Exercise> {
     fun observeExercises(): Flow<List<Exercise>>
+    fun select(ids: List<Long>): List<Exercise>
 }
 
 @Inject
@@ -55,5 +56,20 @@ class SqlDelightExerciseEntityDao(
         )
             .asFlow()
             .mapToList(dispatchers.io)
+    }
+
+    override fun select(ids: List<Long>): List<Exercise> {
+        return db.exerciseQueries.select(
+            ids = ids,
+            mapper = { id, name, primary_muscle, secondary_muscle, image_url ->
+                Exercise(
+                    id = id,
+                    name = name,
+                    primaryMuscle = primary_muscle,
+                    secondaryMuscle = secondary_muscle,
+                    imageUrl = image_url
+                )
+            }
+        ).executeAsList()
     }
 }

@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,10 +62,28 @@ internal fun CreateWorkoutPlan(
                 .fillMaxSize(),
         ) {
             CreateWorkoutPlanTopBar(
-                planName = uiState.planName,
+                planName = uiState.workoutPlanSession.workoutPlan.name,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
+
+            LazyColumn {
+                items(uiState.workoutPlanSession.exercisePlanSessions){
+                    ExercisePlan(it.exercise.name)
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = paddingValues.calculateBottomPadding())
+            ){
+                AddExercise(
+                    onAddExercise = {
+                        uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
+                    }
+                )
+            }
         }
     }
 }
@@ -129,5 +150,35 @@ private fun CreateWorkoutPlanTopBar(
                 Text("Save")
             }
         }
+    }
+}
+
+@Composable
+fun AddExercise(
+    onAddExercise: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        onClick = {
+            onAddExercise()
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
+        ),
+    ) {
+        Text("+ Add Exercise")
+    }
+}
+
+@Composable
+fun ExercisePlan(
+    name : String
+){
+    Column {
+        Text(name)
     }
 }

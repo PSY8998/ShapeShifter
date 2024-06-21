@@ -119,8 +119,8 @@ internal fun SavedWorkouts(
                         eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
                     }
                 },
-                onCreateWorkoutPlan = {
-                    eventSink(SavedWorkoutsUiEvent.CreateWorkoutPlan(it))
+                onCreateWorkoutPlan = { routineId, planName ->
+                    eventSink(SavedWorkoutsUiEvent.CreateWorkoutPlan(routineId, planName))
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -133,7 +133,10 @@ internal fun SavedWorkouts(
 @Composable
 private fun SavedWorkoutsScrollingContent(
     onStartQuickWorkout: () -> Unit,
-    onCreateWorkoutPlan: (planName: String) -> Unit,
+    onCreateWorkoutPlan: (
+        routineId: Long,
+        planName: String,
+    ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -301,7 +304,10 @@ private fun Routines(
 
 @Composable
 private fun MyRoutine(
-    onCreateWorkoutPlan: (planName: String) -> Unit,
+    onCreateWorkoutPlan: (
+        routineId: Long,
+        planName: String,
+    ) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -335,7 +341,7 @@ private fun MyRoutine(
                         scope.launch {
                             val result = overlayHost.showWorkoutPlanName()
                             if (result is WorkoutPlanNameResult.AddExercisesToPlan) {
-                                onCreateWorkoutPlan(result.name)
+                                onCreateWorkoutPlan(-1, result.name)
                             }
                         }
                     }

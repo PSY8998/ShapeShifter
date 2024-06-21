@@ -17,5 +17,8 @@ sealed interface SavedWorkoutsUiEvent : CircuitUiEvent {
 
     data class DiscardAndStartNewWorkout(val workoutLog: WorkoutLog) : SavedWorkoutsUiEvent
 
-    data class CreateWorkoutPlan(val planName: String): SavedWorkoutsUiEvent
+    data class CreateWorkoutPlan(
+        val routineId: Long,
+        val planName: String,
+    ) : SavedWorkoutsUiEvent
 }

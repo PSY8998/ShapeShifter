@@ -6,4 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CreateWorkoutPlanScreen(
     val planName: String,
+    val routineId: Long,
 ) : Screen
