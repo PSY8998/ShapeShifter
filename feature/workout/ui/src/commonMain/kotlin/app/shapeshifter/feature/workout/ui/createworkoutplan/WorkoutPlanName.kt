@@ -89,7 +89,7 @@ suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
                         .align(Alignment.CenterHorizontally)
                         .padding(
                             top = Dimens.Padding.Medium,
-                            bottom = Dimens.Padding.Large,
+                            bottom = Dimens.Padding.ExtraMedium,
                         ),
                     shape = MaterialTheme.shapes.small,
                     enabled = planName.isNotBlank(),
