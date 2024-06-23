@@ -83,7 +83,7 @@ fun SetLog(
                 } else
                     Modifier,
             )
-            .padding(vertical = Dimens.Spacing.Small),
+            .padding(vertical = Dimens.Padding.Small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -225,7 +225,7 @@ fun SetLog(
                         )
                     },
                 )
-                .padding(Dimens.Spacing.ExtraSmall),
+                .padding(Dimens.Padding.ExtraSmall),
         ) {
             Icon(
                 imageVector = Icons.Default.Check,

@@ -80,11 +80,11 @@ private fun CreateWorkoutPlanTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    vertical = Dimens.Spacing.Medium,
+                    vertical = Dimens.Padding.Medium,
                 )
                 .padding(
-                    end = Dimens.Spacing.Medium,
-                    start = Dimens.Spacing.Small,
+                    end = Dimens.Padding.Medium,
+                    start = Dimens.Padding.Small,
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {

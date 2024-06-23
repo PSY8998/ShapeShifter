@@ -1,13 +1,6 @@
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,8 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
@@ -57,7 +47,6 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuitx.overlays.DialogResult
 import me.tatarka.inject.annotations.Inject
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.barbell_overhead_empty
@@ -138,7 +127,7 @@ private fun SavedWorkoutsScrollingContent(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = Dimens.Spacing.Medium),
+        contentPadding = PaddingValues(vertical = Dimens.Padding.Medium),
     ) {
         item("quick_workout") {
             QuickWorkout(
@@ -425,7 +414,7 @@ private fun WorkoutTopBar(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = Dimens.Spacing.ExtraSmall),
+                            .padding(top = Dimens.Padding.ExtraSmall),
                     ) {
                         Text(
                             "${workoutSession.routine.name} ${workoutSession.plan.name}",
@@ -442,7 +431,7 @@ private fun WorkoutTopBar(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.Padding.Medium),
                         ) {
                             Button(
                                 onClick = {

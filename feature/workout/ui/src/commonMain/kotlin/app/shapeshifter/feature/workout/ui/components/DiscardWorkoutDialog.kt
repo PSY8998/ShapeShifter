@@ -32,7 +32,7 @@ suspend fun OverlayHost.showDiscardWorkoutDialog(): DialogResult {
         dialogOverlay { navigator ->
             Column(
                 modifier = Modifier
-                    .padding(Dimens.Spacing.Medium)
+                    .padding(Dimens.Padding.Medium)
                     .fillMaxWidth(),
             ) {
                 Text(
@@ -44,15 +44,15 @@ suspend fun OverlayHost.showDiscardWorkoutDialog(): DialogResult {
                     text = "Are you sure you want to discard this workout?",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
-                        .padding(top = Dimens.Spacing.Small),
+                        .padding(top = Dimens.Padding.Small),
                 )
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = Dimens.Spacing.Medium),
+                        .padding(top = Dimens.Padding.Medium),
                     horizontalArrangement = Arrangement.spacedBy(
-                        space = Dimens.Spacing.Medium,
+                        space = Dimens.Padding.Medium,
                         alignment = Alignment.End,
                     ),
                 ) {

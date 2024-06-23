@@ -17,23 +17,22 @@ import androidx.compose.ui.unit.dp
  */
 object Dimens {
 
-    val Grid = 4.dp
-
     val Hairline = 1.dp
 
-    object Spacing {
-        val Smallest: Dp = Grid.div(0.5f)
+    // define spacing as relation between components
+    object Padding {
+        val Smallest: Dp = 2.dp
 
-        val ExtraSmall: Dp = Grid
+        val ExtraSmall: Dp = 4.dp
 
-        val Small: Dp = Grid.times(2)
+        val Small: Dp = 8.dp
 
-        val Medium: Dp = Grid.times(4)
+        val Medium: Dp = 16.dp
 
-        val Large: Dp = Grid.times(6)
+        val Large: Dp = 24.dp
 
-        val ExtraLarge: Dp = Grid.times(8)
+        val ExtraLarge: Dp = 32.dp
 
-        val Largest: Dp = Grid.times(16)
+        val Largest: Dp = 64.dp
     }
 }

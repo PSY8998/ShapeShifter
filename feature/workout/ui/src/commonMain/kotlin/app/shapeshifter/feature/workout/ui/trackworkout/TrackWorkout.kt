@@ -1,12 +1,8 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
-import androidx.compose.animation.defaultDecayAnimationSpec
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -50,8 +46,6 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
@@ -166,7 +160,7 @@ private fun TrackWorkout(
                     item("empty_exercises_placeholder") {
                         ExerciseEmpty(
                             modifier = Modifier
-                                .padding(top = Dimens.Spacing.Medium)
+                                .padding(top = Dimens.Padding.Medium)
                                 .fillMaxWidth()
                                 .animateItemPlacement(),
                             onAddExercise = {
@@ -182,7 +176,7 @@ private fun TrackWorkout(
                             state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
                         },
                         modifier = Modifier
-                            .padding(horizontal = Dimens.Spacing.Medium),
+                            .padding(horizontal = Dimens.Padding.Medium),
                     )
                 }
 
@@ -199,8 +193,8 @@ private fun TrackWorkout(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Dimens.Spacing.Medium)
-                            .padding(vertical = Dimens.Spacing.Medium),
+                            .padding(horizontal = Dimens.Padding.Medium)
+                            .padding(vertical = Dimens.Padding.Medium),
                     )
                 }
             }
@@ -252,7 +246,7 @@ private fun LazyListScope.exerciseLog(
                 ) {
                     IconButton(
                         modifier = Modifier
-                            .padding(horizontal = Dimens.Spacing.Medium),
+                            .padding(horizontal = Dimens.Padding.Medium),
                         onClick = {
                             if (setLogAnchorState.currentValue == SetAnchors.SELECTED) {
                                 onDeleteSet(set)
@@ -292,14 +286,14 @@ private fun LazyListScope.exerciseLog(
             },
             modifier = Modifier
                 .animateItemPlacement()
-                .padding(vertical = Dimens.Spacing.Small),
+                .padding(vertical = Dimens.Padding.Small),
         )
     }
 
     itemDivider(
         key = "divider_${exerciseLog.id}",
         modifier = Modifier
-            .padding(vertical = Dimens.Spacing.Medium),
+            .padding(vertical = Dimens.Padding.Medium),
     )
 }
 
@@ -333,11 +327,11 @@ private fun TrackWorkoutTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    vertical = Dimens.Spacing.Medium,
+                    vertical = Dimens.Padding.Medium,
                 )
                 .padding(
-                    end = Dimens.Spacing.Medium,
-                    start = Dimens.Spacing.Small,
+                    end = Dimens.Padding.Medium,
+                    start = Dimens.Padding.Small,
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -415,7 +409,7 @@ private fun ExerciseEmpty(
 
         Spacer(
             modifier = Modifier
-                .height(Dimens.Spacing.Medium),
+                .height(Dimens.Padding.Medium),
         )
 
         Text(
@@ -425,7 +419,7 @@ private fun ExerciseEmpty(
 
         Spacer(
             modifier = Modifier
-                .height(Dimens.Spacing.Medium),
+                .height(Dimens.Padding.Medium),
         )
     }
 }

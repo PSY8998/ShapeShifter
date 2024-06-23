@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -279,7 +278,7 @@ private fun ExerciseScrollContent(
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.CenterEnd)
-                                    .padding(horizontal = Dimens.Spacing.Small),
+                                    .padding(horizontal = Dimens.Padding.Small),
                             )
                         }
                     },

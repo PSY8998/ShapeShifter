@@ -44,7 +44,7 @@ suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Dimens.Spacing.Medium),
+                    .padding(horizontal = Dimens.Padding.Medium),
             ) {
                 Text(
                     text = "What do you want to name this plan?",
@@ -54,7 +54,7 @@ suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
 
                 TextField(
                     modifier = Modifier
-                        .padding(top = Dimens.Spacing.Small)
+                        .padding(top = Dimens.Padding.Small)
                         .fillMaxWidth(),
                     value = planName,
                     onValueChange = {
@@ -88,8 +88,8 @@ suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(
-                            top = Dimens.Spacing.Medium,
-                            bottom = Dimens.Spacing.Large,
+                            top = Dimens.Padding.Medium,
+                            bottom = Dimens.Padding.Large,
                         ),
                     shape = MaterialTheme.shapes.small,
                     enabled = planName.isNotBlank(),
