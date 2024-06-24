@@ -23,5 +23,10 @@ nullif(:id, 0),
 :image_url
 );
 
+select:
+SELECT *
+FROM exercise
+WHERE id IN :ids;
+
 lastInsertRowId:
 SELECT last_insert_rowid();
