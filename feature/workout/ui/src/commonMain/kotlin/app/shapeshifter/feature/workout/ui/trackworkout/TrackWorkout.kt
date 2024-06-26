@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
@@ -263,9 +264,19 @@ private fun LazyListScope.exerciseLog(
             },
             content = {
                 SetLog(
-                    setLog = set,
                     index = index,
-                    onComplete = onCompleteSet,
+                    weight = set.weight.value,
+                    reps = set.reps.value,
+                    isChecked = set.finishTime > 0,
+                    onCheckChanged = { weight, reps ->
+                        onCompleteSet(
+                            set.copy(
+                                weight = PositiveInt(weight),
+                                reps = PositiveInt(reps)
+                            )
+                        )
+                    },
+                    isBeingTracked = true,
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),
                 )

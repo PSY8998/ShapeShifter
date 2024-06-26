@@ -1,17 +1,27 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -19,12 +29,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
+import app.shapeshifter.data.models.plans.SetPlan
+import app.shapeshifter.feature.workout.ui.components.pattern
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -68,20 +90,34 @@ internal fun CreateWorkoutPlan(
             )
 
             LazyColumn {
-                items(uiState.workoutPlanSession.exercisePlanSessions){
+                items(uiState.workoutPlanSession.exercisePlanSessions) {
                     ExercisePlan(it.exercise.name)
+
+                    for (setPlan in it.setPlans) {
+                        SetPlanUi(
+                            index = setPlan.index.value,
+                            weight = setPlan.weight.value,
+                            reps = setPlan.reps.value,
+                            modifier = Modifier,
+                        )
+                    }
+                    AddNewSet(
+                        onAddSet = {
+                            
+                        },
+                    )
                 }
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = paddingValues.calculateBottomPadding())
-            ){
+                    .padding(bottom = paddingValues.calculateBottomPadding()),
+            ) {
                 AddExercise(
                     onAddExercise = {
                         uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
-                    }
+                    },
                 )
             }
         }
@@ -176,9 +212,133 @@ fun AddExercise(
 
 @Composable
 fun ExercisePlan(
-    name : String
-){
+    name: String,
+) {
     Column {
-        Text(name)
+        Text(
+            text = name,
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
+}
+
+@Composable
+fun SetPlanUi(
+    index: Int,
+    weight: Int,
+    reps: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = Dimens.Spacing.Small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text(
+            text = (index + 1).toString(),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(1f),
+        )
+
+        var setWeight: String by remember {
+            mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "")
+        }
+
+        BasicTextField(
+            value = setWeight,
+            onValueChange = {
+                if (pattern.matches(it)) {
+                    setWeight = it
+                }
+            },
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Black,
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+            ),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    innerTextField()
+                }
+            },
+            modifier = Modifier
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .weight(1f)
+                .width(IntrinsicSize.Min)
+                .defaultMinSize(24.dp),
+        )
+
+        var setReps by remember {
+            mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "")
+        }
+
+        BasicTextField(
+            value = setReps,
+            onValueChange = {
+                if (pattern.matches(it)) {
+                    setReps = it
+                }
+            },
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Black,
+            ),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    innerTextField()
+                }
+            },
+        )
+    }
+}
+
+@Composable
+fun AddNewSet(
+    onAddSet: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
+                .background(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clip(shape = MaterialTheme.shapes.small)
+                .clickable {
+                    onAddSet()
+                }
+                .padding(4.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+            )
+        }
     }
 }

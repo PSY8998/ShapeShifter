@@ -63,15 +63,21 @@ import kotlin.math.roundToInt
 
 @Composable
 fun SetLog(
-    setLog: SetLog,
     index: Int,
-    onComplete: (
-        set: SetLog,
+    weight: Int,
+    reps: Int,
+    isBeingTracked: Boolean,
+    isChecked: Boolean,
+    onCheckChanged: (
+        weight: Int,
+        reps: Int,
     ) -> Unit,
     modifier: Modifier = Modifier,
+    prevWeight: Int? = null,
+    prevReps: Int? = null,
 ) {
-    var isCompleted by remember(setLog.finishTime) {
-        mutableStateOf(setLog.finishTime > 0)
+    var isCompleted by remember(isChecked) {
+        mutableStateOf(isChecked)
     }
 
     Row(
@@ -95,17 +101,20 @@ fun SetLog(
             modifier = Modifier
                 .weight(1f),
         )
-        Text(
-            text = "${setLog.prevWeight}kg" + " x " + "${setLog.prevReps}",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
-            modifier = Modifier
-                .weight(1f),
-        )
+
+        if (isBeingTracked) {
+            Text(
+                text = "${prevWeight ?: 0}kg" + " x " + "${prevReps ?: 0}",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier
+                    .weight(1f),
+            )
+        }
 
         var setWeight: String by remember {
-            mutableStateOf(setLog.weight.takeIf { it.value != 0 }?.toString() ?: "")
+            mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "")
         }
 
         BasicTextField(
@@ -134,7 +143,7 @@ fun SetLog(
 
                     if (setWeight.isBlank()) {
                         Text(
-                            text = setLog.prevWeight.toString(),
+                            text = prevWeight.toString(),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center,
@@ -154,7 +163,7 @@ fun SetLog(
         )
 
         var setReps by remember {
-            mutableStateOf(setLog.reps.takeIf { it.value != 0 }?.toString() ?: "")
+            mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "")
         }
 
         BasicTextField(
@@ -179,7 +188,7 @@ fun SetLog(
 
                     if (setReps.isBlank()) {
                         Text(
-                            text = setLog.prevReps.toString(),
+                            text = prevReps.toString(),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center,
@@ -216,12 +225,9 @@ fun SetLog(
                     value = isCompleted,
                     onValueChange = {
                         isCompleted = it
-                        onComplete(
-                            setLog.copy(
-                                weight = PositiveInt(setWeight?.toIntOrNull() ?: 0),
-                                reps = PositiveInt(setReps?.toIntOrNull() ?: 0),
-                                finishTime = if (it) System.currentTimeMillis() else 0,
-                            ),
+                        onCheckChanged(
+                            setWeight.toIntOrNull() ?: 0,
+                            setReps.toIntOrNull() ?: 0,
                         )
                     },
                 )

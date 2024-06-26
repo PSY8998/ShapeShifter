@@ -92,6 +92,15 @@ class CreateWorkoutPlanPresenter(
                 is CreateWorkoutPlanUiEvent.OnAddExercise -> {
                     answeringNavigator.goTo(ExercisesScreen(true))
                 }
+                is CreateWorkoutPlanUiEvent.OnAddSet -> {
+                    setPlans.value += SetPlan(
+                        id = 0,
+                        exercisePlanId = 0,
+                        index = PositiveInt(0),
+                        weight = PositiveInt(0),
+                        reps = PositiveInt(0),
+                    )
+                }
             }
         }
         return CreateWorkoutPlanUiState(
