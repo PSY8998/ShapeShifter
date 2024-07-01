@@ -10,9 +10,11 @@ data class CreateWorkoutPlanUiState(
     val eventSink: (CreateWorkoutPlanUiEvent) -> Unit,
 ) : CircuitUiState
 
-sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent{
+sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
 
-    data object OnAddExercise: CreateWorkoutPlanUiEvent
+    data object OnAddExercise : CreateWorkoutPlanUiEvent
 
-    data object OnAddSet: CreateWorkoutPlanUiEvent
+    data class OnAddSet(
+        val exerciseId: Long,
+    ) : CreateWorkoutPlanUiEvent
 }

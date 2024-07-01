@@ -1,5 +1,6 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -45,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
+import app.shapeshifter.data.models.plans.ExercisePlanSession
 import app.shapeshifter.data.models.plans.SetPlan
 import app.shapeshifter.feature.workout.ui.components.pattern
 import com.slack.circuit.runtime.CircuitContext
@@ -89,39 +93,60 @@ internal fun CreateWorkoutPlan(
                     .fillMaxWidth(),
             )
 
-            LazyColumn {
-                items(uiState.workoutPlanSession.exercisePlanSessions) {
-                    ExercisePlan(it.exercise.name)
-
-                    for (setPlan in it.setPlans) {
-                        SetPlanUi(
-                            index = setPlan.index.value,
-                            weight = setPlan.weight.value,
-                            reps = setPlan.reps.value,
-                            modifier = Modifier,
-                        )
-                    }
-                    AddNewSet(
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                uiState.workoutPlanSession.exercisePlanSessions.forEach{exercisePlanSession ->
+                    exercisePlan(
+                        exercisePlanSession = exercisePlanSession,
                         onAddSet = {
-                            
-                        },
+                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercise.id))
+                        }
                     )
                 }
-            }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = paddingValues.calculateBottomPadding()),
-            ) {
-                AddExercise(
-                    onAddExercise = {
-                        uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
-                    },
-                )
+                item {
+                    AddExercise(
+                        onAddExercise = {
+                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
+                        }
+                    )
+                }
+
             }
         }
     }
+}
+
+
+private fun LazyListScope.exercisePlan(
+    exercisePlanSession: ExercisePlanSession,
+    onAddSet: () -> Unit,
+){
+    item {
+        ExercisePlan(exercisePlanSession.exercise.name)
+    }
+
+    itemsIndexed(
+        items = exercisePlanSession.setPlans
+    ) { _, setPlan ->
+        SetPlanUi(
+            index = setPlan.index.value,
+            weight = setPlan.weight.value,
+            reps = setPlan.reps.value,
+            modifier = Modifier,
+        )
+    }
+
+    item {
+        AddNewSet(
+            onAddSet = {
+                onAddSet()
+            }
+        )
+    }
+
 }
 
 @Composable

@@ -28,6 +28,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import kotlinx.collections.immutable.persistentHashMapOf
+import kotlinx.collections.immutable.toPersistentHashMap
 import kotlinx.coroutines.launch
 
 @Inject
@@ -67,7 +69,7 @@ class CreateWorkoutPlanPresenter(
         }
         val exercisePlans = remember { mutableStateOf<List<ExercisePlan>>(emptyList()) }
         val exercises = remember { mutableStateOf<List<Exercise>>(emptyList()) }
-        val setPlans = remember { mutableStateOf<List<SetPlan>>(emptyList()) }
+        val setPlans = remember { mutableStateOf<Map<Long, SetPlan>>(mapOf()) }
 
         val scope = rememberCoroutineScope()
 
@@ -92,13 +94,17 @@ class CreateWorkoutPlanPresenter(
                 is CreateWorkoutPlanUiEvent.OnAddExercise -> {
                     answeringNavigator.goTo(ExercisesScreen(true))
                 }
+
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
-                    setPlans.value += SetPlan(
-                        id = 0,
-                        exercisePlanId = 0,
-                        index = PositiveInt(0),
-                        weight = PositiveInt(0),
-                        reps = PositiveInt(0),
+                    setPlans.value = setPlans.value.toPersistentHashMap().put(
+                        event.exerciseId,
+                        SetPlan(
+                            id = 0,
+                            exercisePlanId = 0,
+                            index = PositiveInt(0),
+                            weight = PositiveInt(0),
+                            reps = PositiveInt(0),
+                        ),
                     )
                 }
             }
@@ -111,7 +117,7 @@ class CreateWorkoutPlanPresenter(
                     ExercisePlanSession(
                         exercisePlan = plan,
                         exercise = exercises.value.find { exercise -> exercise.id == plan.exerciseId }!!,
-                        setPlans = emptyList(),
+                        setPlans = setPlans.value.filter { it.key == plan.exerciseId }.values.toList(),
                     )
                 },
             ),
