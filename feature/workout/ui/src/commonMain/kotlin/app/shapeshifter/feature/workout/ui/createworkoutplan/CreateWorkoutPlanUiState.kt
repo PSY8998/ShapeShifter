@@ -15,6 +15,6 @@ sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
     data object OnAddExercise : CreateWorkoutPlanUiEvent
 
     data class OnAddSet(
-        val exerciseId: Long,
+        val exercisePlanId: Long,
     ) : CreateWorkoutPlanUiEvent
 }

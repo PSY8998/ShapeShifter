@@ -30,6 +30,8 @@ kotlin {
             implementation(libs.circuit.effects)
             implementation(libs.circuit.overlay)
             implementation(libs.circuitx.overlay)
+
+            implementation(libs.kotlinx.serialization)
         }
     }
 }

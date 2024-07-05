@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,14 +96,14 @@ internal fun CreateWorkoutPlan(
 
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
-                uiState.workoutPlanSession.exercisePlanSessions.forEach{exercisePlanSession ->
+                uiState.workoutPlanSession.exercisePlanSessions.forEach { exercisePlanSession ->
                     exercisePlan(
                         exercisePlanSession = exercisePlanSession,
                         onAddSet = {
-                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercise.id))
-                        }
+                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercisePlan.id))
+                        },
                     )
                 }
 
@@ -110,7 +111,7 @@ internal fun CreateWorkoutPlan(
                     AddExercise(
                         onAddExercise = {
                             uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
-                        }
+                        },
                     )
                 }
 
@@ -123,13 +124,20 @@ internal fun CreateWorkoutPlan(
 private fun LazyListScope.exercisePlan(
     exercisePlanSession: ExercisePlanSession,
     onAddSet: () -> Unit,
-){
+
+    ) {
     item {
         ExercisePlan(exercisePlanSession.exercise.name)
     }
 
+    item {
+        SetColumnTitles(
+            modifier = Modifier,
+        )
+    }
+
     itemsIndexed(
-        items = exercisePlanSession.setPlans
+        items = exercisePlanSession.setPlans,
     ) { _, setPlan ->
         SetPlanUi(
             index = setPlan.index.value,
@@ -143,7 +151,7 @@ private fun LazyListScope.exercisePlan(
         AddNewSet(
             onAddSet = {
                 onAddSet()
-            }
+            },
         )
     }
 
@@ -248,6 +256,44 @@ fun ExercisePlan(
 }
 
 @Composable
+fun SetColumnTitles(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = Dimens.Padding.Small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text(
+            text = "Set",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Text(
+            text = "Kg",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+        Text(
+            text = "Reps",
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1f),
+        )
+    }
+}
+
+@Composable
 fun SetPlanUi(
     index: Int,
     weight: Int,
@@ -257,7 +303,7 @@ fun SetPlanUi(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = Dimens.Spacing.Small),
+            .padding(vertical = Dimens.Padding.Small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -270,8 +316,8 @@ fun SetPlanUi(
                 .weight(1f),
         )
 
-        var setWeight: String by remember {
-            mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "")
+        var setWeight: String by rememberSaveable {
+            mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "0")
         }
 
         BasicTextField(
@@ -306,8 +352,8 @@ fun SetPlanUi(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember {
-            mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "")
+        var setReps by rememberSaveable {
+            mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "0")
         }
 
         BasicTextField(

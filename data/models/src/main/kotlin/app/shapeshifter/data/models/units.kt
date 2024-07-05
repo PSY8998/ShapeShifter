@@ -2,7 +2,10 @@
 
 package app.shapeshifter.data.models
 
+import kotlinx.serialization.Serializable
+
 @JvmInline
+@Serializable
 value class PositiveInt(
     val value: Int,
 ) {

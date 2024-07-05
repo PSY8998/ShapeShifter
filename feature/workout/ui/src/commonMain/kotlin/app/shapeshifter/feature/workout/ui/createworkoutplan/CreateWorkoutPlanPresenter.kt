@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
@@ -21,6 +23,8 @@ import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FetchExercisesUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
+import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -28,9 +32,12 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.collections.immutable.persistentHashMapOf
 import kotlinx.collections.immutable.toPersistentHashMap
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Inject
 class CreateWorkoutPlanPresenterFactory(
@@ -67,21 +74,23 @@ class CreateWorkoutPlanPresenter(
                 ),
             )
         }
-        val exercisePlans = remember { mutableStateOf<List<ExercisePlan>>(emptyList()) }
-        val exercises = remember { mutableStateOf<List<Exercise>>(emptyList()) }
-        val setPlans = remember { mutableStateOf<Map<Long, SetPlan>>(mapOf()) }
+        val exercisePlans = rememberSaveable { mutableStateOf<List<ExercisePlan>>(emptyList()) }
+        val exercises = rememberSaveable { mutableStateOf<List<Exercise>>(emptyList()) }
+        val setPlans = rememberSaveable { mutableStateOf<List<SetPlan>>(emptyList()) }
+
+        val currentExercisePlanId = rememberSaveable { AtomicInteger(0) }
 
         val scope = rememberCoroutineScope()
 
         val answeringNavigator =
             rememberAnsweringNavigator<ExercisesScreen.Result>(navigator) { result ->
                 val selectedExerciseIds = result.exerciseIds
-                exercises.value =
+                exercises.value +=
                     fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
 
-                exercisePlans.value = selectedExerciseIds.map {
+                exercisePlans.value += selectedExerciseIds.map {
                     ExercisePlan(
-                        id = 0,
+                        id = currentExercisePlanId.incrementAndGet().toLong(),
                         workoutPlanId = 0,
                         exerciseId = it,
                         index = PositiveInt(0),
@@ -96,15 +105,12 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
-                    setPlans.value = setPlans.value.toPersistentHashMap().put(
-                        event.exerciseId,
-                        SetPlan(
-                            id = 0,
-                            exercisePlanId = 0,
-                            index = PositiveInt(0),
-                            weight = PositiveInt(0),
-                            reps = PositiveInt(0),
-                        ),
+                    setPlans.value += SetPlan(
+                        id = 0,
+                        exercisePlanId = event.exercisePlanId,
+                        index = PositiveInt(0),
+                        weight = PositiveInt(0),
+                        reps = PositiveInt(0),
                     )
                 }
             }
@@ -117,7 +123,7 @@ class CreateWorkoutPlanPresenter(
                     ExercisePlanSession(
                         exercisePlan = plan,
                         exercise = exercises.value.find { exercise -> exercise.id == plan.exerciseId }!!,
-                        setPlans = setPlans.value.filter { it.key == plan.exerciseId }.values.toList(),
+                        setPlans = setPlans.value.filter { it.exercisePlanId == plan.id },
                     )
                 },
             ),
