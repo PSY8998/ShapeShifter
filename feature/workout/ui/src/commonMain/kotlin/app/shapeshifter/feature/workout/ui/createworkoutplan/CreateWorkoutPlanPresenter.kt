@@ -80,6 +80,8 @@ class CreateWorkoutPlanPresenter(
 
         val currentExercisePlanId = rememberSaveable { AtomicInteger(0) }
 
+        val currentSetPlanId = rememberSaveable {AtomicInteger(0)}
+
         val scope = rememberCoroutineScope()
 
         val answeringNavigator =
@@ -106,12 +108,30 @@ class CreateWorkoutPlanPresenter(
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
                     setPlans.value += SetPlan(
-                        id = 0,
+                        id = currentSetPlanId.incrementAndGet().toLong(),
                         exercisePlanId = event.exercisePlanId,
                         index = PositiveInt(0),
                         weight = PositiveInt(0),
                         reps = PositiveInt(0),
                     )
+                }
+
+                is CreateWorkoutPlanUiEvent.OnSetWeightChanged -> {
+                    setPlans.value = setPlans.value.map { plan ->
+                        if(plan.id == event.setId){
+                            plan.copy(weight = PositiveInt(event.setWeight))
+                        } else
+                            plan
+                    }
+                }
+
+                is CreateWorkoutPlanUiEvent.OnSetRepsChanged -> {
+                    setPlans.value = setPlans.value.map { plan ->
+                        if(plan.id == event.setId){
+                            plan.copy(reps = PositiveInt(event.setReps))
+                        } else
+                            plan
+                    }
                 }
             }
         }

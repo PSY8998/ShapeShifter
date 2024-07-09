@@ -17,4 +17,14 @@ sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
     data class OnAddSet(
         val exercisePlanId: Long,
     ) : CreateWorkoutPlanUiEvent
+
+    data class OnSetWeightChanged(
+        val setId : Long,
+        val setWeight: Int,
+    ) : CreateWorkoutPlanUiEvent
+
+    data class OnSetRepsChanged(
+        val setId: Long,
+        val setReps: Int,
+    ) : CreateWorkoutPlanUiEvent
 }

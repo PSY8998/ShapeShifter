@@ -57,6 +57,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
+import kotlin.math.absoluteValue
 
 @Inject
 class CreateWorkoutPlanUiFactory : Ui.Factory {
@@ -104,6 +105,22 @@ internal fun CreateWorkoutPlan(
                         onAddSet = {
                             uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercisePlan.id))
                         },
+                        onSetWeightChanged = { id, weight ->
+                            uiState.eventSink(
+                                CreateWorkoutPlanUiEvent.OnSetWeightChanged(
+                                    setId = id,
+                                    setWeight = weight,
+                                ),
+                            )
+                        },
+                        onSetRepsChanged = { id, reps ->
+                            uiState.eventSink(
+                                CreateWorkoutPlanUiEvent.OnSetRepsChanged(
+                                    setId = id,
+                                    setReps = reps,
+                                ),
+                            )
+                        },
                     )
                 }
 
@@ -124,8 +141,9 @@ internal fun CreateWorkoutPlan(
 private fun LazyListScope.exercisePlan(
     exercisePlanSession: ExercisePlanSession,
     onAddSet: () -> Unit,
-
-    ) {
+    onSetWeightChanged: (id: Long, weight: Int) -> Unit,
+    onSetRepsChanged: (id: Long, reps: Int) -> Unit,
+) {
     item {
         ExercisePlan(exercisePlanSession.exercise.name)
     }
@@ -138,11 +156,18 @@ private fun LazyListScope.exercisePlan(
 
     itemsIndexed(
         items = exercisePlanSession.setPlans,
-    ) { _, setPlan ->
+    ) { index, setPlan ->
         SetPlanUi(
-            index = setPlan.index.value,
+            index = index,
+            id = setPlan.id,
             weight = setPlan.weight.value,
             reps = setPlan.reps.value,
+            onSetRepsChanged = {
+                onSetRepsChanged(setPlan.id, it)
+            },
+            onSetWeightChanged = {
+                onSetWeightChanged(setPlan.id, it)
+            },
             modifier = Modifier,
         )
     }
@@ -296,8 +321,11 @@ fun SetColumnTitles(
 @Composable
 fun SetPlanUi(
     index: Int,
+    id: Long,
     weight: Int,
     reps: Int,
+    onSetWeightChanged: (weight: Int) -> Unit,
+    onSetRepsChanged: (reps: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -308,7 +336,7 @@ fun SetPlanUi(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = (index + 1).toString(),
+            text = index.toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodyMedium,
@@ -316,7 +344,7 @@ fun SetPlanUi(
                 .weight(1f),
         )
 
-        var setWeight: String by rememberSaveable {
+        var setWeight: String by remember {
             mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "0")
         }
 
@@ -325,6 +353,7 @@ fun SetPlanUi(
             onValueChange = {
                 if (pattern.matches(it)) {
                     setWeight = it
+                    onSetWeightChanged(it.toInt())
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
@@ -352,7 +381,7 @@ fun SetPlanUi(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by rememberSaveable {
+        var setReps by remember {
             mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "0")
         }
 
@@ -361,6 +390,7 @@ fun SetPlanUi(
             onValueChange = {
                 if (pattern.matches(it)) {
                     setReps = it
+                    onSetRepsChanged(it.toInt())
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
