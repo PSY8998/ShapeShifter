@@ -91,6 +91,9 @@ internal fun CreateWorkoutPlan(
         ) {
             CreateWorkoutPlanTopBar(
                 planName = uiState.workoutPlanSession.workoutPlan.name,
+                onSave = {
+                    uiState.eventSink(CreateWorkoutPlanUiEvent.OnSaveWorkout)
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -185,6 +188,7 @@ private fun LazyListScope.exercisePlan(
 @Composable
 private fun CreateWorkoutPlanTopBar(
     planName: String,
+    onSave: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -231,6 +235,7 @@ private fun CreateWorkoutPlanTopBar(
 
             Button(
                 onClick = {
+                    onSave()
                 },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier

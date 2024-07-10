@@ -27,4 +27,6 @@ sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
         val setId: Long,
         val setReps: Int,
     ) : CreateWorkoutPlanUiEvent
+
+    data object OnSaveWorkout : CreateWorkoutPlanUiEvent
 }

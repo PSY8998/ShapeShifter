@@ -3,3 +3,14 @@ CREATE TABLE workout_plan (
     `routine_id` INTEGER NOT NULL,
     `name` TEXT NOT NULL
 );
+
+insert:
+INSERT INTO workout_plan (`id`, `routine_id`, `name`)
+VALUES (
+nullif(:id, 0),
+:routineId,
+:name
+);
+
+lastInsertRowId:
+SELECT last_insert_rowid();
