@@ -38,7 +38,6 @@ fun KotlinProjectExtension.setProjectToolChainVersion() {
 fun KotlinProjectExtension.compilerOptions(
     action: KotlinCommonCompilerOptions.() -> Unit,
 ) {
-
     targets.forEach { target ->
         target.compilations.configureEach {
             compilerOptions.configure(action)

@@ -1,5 +1,6 @@
 package app.shapeshifter.feature.workout.ui.components
 
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -275,7 +276,8 @@ class SetAnchorState(
 ) {
     internal val anchoredDraggableState = AnchoredDraggableState(
         initialValue = initialValue,
-        animationSpec = tween(),
+        snapAnimationSpec = tween(),
+        decayAnimationSpec = exponentialDecay(),
         confirmValueChange = confirmValueChange,
         positionalThreshold = positionalThreshold,
         velocityThreshold = { with(density) { 148.dp.toPx() } },

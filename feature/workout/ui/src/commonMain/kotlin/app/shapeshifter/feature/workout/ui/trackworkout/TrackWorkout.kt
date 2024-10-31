@@ -163,7 +163,7 @@ private fun TrackWorkout(
                             modifier = Modifier
                                 .padding(top = Dimens.Padding.Medium)
                                 .fillMaxWidth()
-                                .animateItemPlacement(),
+                                .animateItem(),
                             onAddExercise = {
                                 state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
                             },
@@ -272,8 +272,8 @@ private fun LazyListScope.exerciseLog(
                         onCompleteSet(
                             set.copy(
                                 weight = PositiveInt(weight),
-                                reps = PositiveInt(reps)
-                            )
+                                reps = PositiveInt(reps),
+                            ),
                         )
                     },
                     isBeingTracked = true,
@@ -283,7 +283,7 @@ private fun LazyListScope.exerciseLog(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .animateItemPlacement(),
+                .animateItem(),
         )
     }
 
@@ -296,7 +296,7 @@ private fun LazyListScope.exerciseLog(
                 onAddSet(exerciseLog.id)
             },
             modifier = Modifier
-                .animateItemPlacement()
+                .animateItem()
                 .padding(vertical = Dimens.Padding.Small),
         )
     }

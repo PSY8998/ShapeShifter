@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.exercise.ui.exercises
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -75,7 +76,6 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.common.ui.compose.theme.NoRippleTheme
 import app.shapeshifter.data.models.Exercise
 import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
@@ -325,72 +325,69 @@ private fun ExerciseScrollContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ExerciseCard(
     exercise: Exercise,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp,
-            ),
-            onClick = onClick,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-            shape = RoundedCornerShape(0.dp),
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-        ) {
-            ExerciseMinHeightContent(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .fillMaxWidth(),
-                exerciseImage = {
-                    AsyncImage(
-                        model = exercise.imageUrl,
-                        contentDescription = "exercise image",
-                        contentScale = ContentScale.Crop,
-                        placeholder = painterResource(Res.drawable.exercise_deadlift),
-                        error = painterResource(Res.drawable.exercise_deadlift),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .aspectRatio(1f),
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp,
+        ),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        shape = RoundedCornerShape(0.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+    ) {
+        ExerciseMinHeightContent(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxWidth(),
+            exerciseImage = {
+                AsyncImage(
+                    model = exercise.imageUrl,
+                    contentDescription = "exercise image",
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(Res.drawable.exercise_deadlift),
+                    error = painterResource(Res.drawable.exercise_deadlift),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .aspectRatio(1f),
+                )
+            },
+            exerciseDescription = {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = exercise.name,
                     )
-                },
-                exerciseDescription = {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp, horizontal = 16.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier,
-                            text = exercise.name,
-                        )
 
-                        Text(
-                            modifier = Modifier,
-                            text = exercise.primaryMuscle.displayName,
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.labelMedium,
-                            maxLines = 1,
-                        )
+                    Text(
+                        modifier = Modifier,
+                        text = exercise.primaryMuscle.displayName,
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
 
-                        Text(
-                            modifier = Modifier,
-                            text = exercise.secondaryMuscle.joinToString("/ ") {
-                                it.displayName
-                            },
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.labelMedium,
-                            maxLines = 1,
-                        )
-                    }
-                },
-            )
-        }
+                    Text(
+                        modifier = Modifier,
+                        text = exercise.secondaryMuscle.joinToString("/ ") {
+                            it.displayName
+                        },
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
+                }
+            },
+        )
     }
 }
 
@@ -575,7 +572,8 @@ private class ExerciseAnchorState(
 ) {
     internal val anchoredDraggableState = AnchoredDraggableState(
         initialValue = initialValue,
-        animationSpec = tween(),
+        decayAnimationSpec = exponentialDecay(),
+        snapAnimationSpec = tween(),
         confirmValueChange = confirmValueChange,
         positionalThreshold = positionalThreshold,
         velocityThreshold = { with(density) { 148.dp.toPx() } },
