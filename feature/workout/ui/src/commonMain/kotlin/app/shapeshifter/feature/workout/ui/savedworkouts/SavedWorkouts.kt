@@ -130,7 +130,10 @@ private fun SavedWorkoutsScrollingContent(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = Dimens.Padding.Medium),
+        contentPadding = PaddingValues(
+            top = Dimens.Padding.Medium,
+            bottom = Dimens.Padding.Largest,
+        ),
     ) {
         item("quick_workout") {
             QuickWorkout(
@@ -161,23 +164,22 @@ private fun SavedWorkoutsScrollingContent(
             MyRoutine(
                 onCreateWorkoutPlan = onCreateWorkoutPlan,
                 modifier = Modifier
-                    .fillParentMaxHeight()
                     .fillMaxWidth()
                     .padding(top = 16.dp)
                     .padding(horizontal = 16.dp),
             )
         }
 
-        item("workout_divider") {
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-            )
-        }
+//        item("workout_divider") {
+//            HorizontalDivider(
+//                modifier = Modifier
+//                    .padding(top = 16.dp)
+//                    .padding(horizontal = 16.dp)
+//                    .fillMaxWidth(),
+//                thickness = 1.dp,
+//                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+//            )
+//        }
     }
 }
 

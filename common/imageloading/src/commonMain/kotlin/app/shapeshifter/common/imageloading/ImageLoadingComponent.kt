@@ -16,5 +16,6 @@ interface ImageLoadingComponent : ImageLoadingPlatformComponent {
     ): ImageLoader = newImageLoader(
         context = context,
         interceptors = emptySet(),
+        debug = true,
     )
 }

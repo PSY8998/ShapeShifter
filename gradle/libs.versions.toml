@@ -3,7 +3,7 @@ minSdk = "24"
 compileSdk = "35"
 targetSdk = "35"
 
-agp = "8.7.1"
+agp = "8.7.2"
 kotlin = "2.0.20"
 ksp = "2.0.20-1.0.25"
 ktlint = "0.48.2"
@@ -19,7 +19,7 @@ sqlDelight = "2.0.2"
 compose-multiplatform = "1.6.11"
 coroutines = "1.9.0"
 paging-multiplatform = "3.3.0-alpha02-0.5.1"
-supabase = "2.3.1"
+supabase = "3.0.1"
 coil = "3.0.0-rc02"
 splashscreen = "1.2.0-alpha02"
 
@@ -58,8 +58,8 @@ androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", v
 
 # kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.25.0"
-kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
+kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.26.0"
+kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
 
 # databse
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
@@ -91,7 +91,7 @@ ktor-cio = { module = "io.ktor:ktor-client-cio", version = "3.0.1" }
 # image loading
 coil-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-network = { module = "io.coil-kt.coil3:coil-network-ktor2", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 # test
 junit = { module = "junit:junit", version.ref = "junit" }

@@ -22,7 +22,9 @@ internal fun newImageLoader(
         }
         // TODO: add cache directory
         .apply {
-            logger(DebugLogger())
+            if (debug) {
+                logger(DebugLogger())
+            }
         }
         .build()
 }
