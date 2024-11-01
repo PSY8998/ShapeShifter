@@ -197,4 +197,4 @@ fun AddNewSet(
     }
 }
 
-val pattern = Regex("^\\d*$")
+val pattern = Regex("^\\d*\$")

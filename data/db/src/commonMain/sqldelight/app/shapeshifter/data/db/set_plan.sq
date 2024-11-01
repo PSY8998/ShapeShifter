@@ -5,3 +5,17 @@ CREATE TABLE IF NOT EXISTS set_plan (
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL
 );
+
+insert:
+INSERT INTO set_plan(
+id,
+exercise_plan_id,
+weight,
+reps
+)
+VALUES (
+nullIf(:id, 0),
+:exercisePlanId,
+:weight,
+:reps
+);

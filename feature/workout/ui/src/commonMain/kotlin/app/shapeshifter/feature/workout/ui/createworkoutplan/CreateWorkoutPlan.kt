@@ -163,8 +163,8 @@ private fun LazyListScope.exercisePlan(
         SetPlanUi(
             index = index,
             id = setPlan.id,
-            weight = setPlan.weight.value,
-            reps = setPlan.reps.value,
+            weight = setPlan.weight,
+            reps = setPlan.reps,
             onSetRepsChanged = {
                 onSetRepsChanged(setPlan.id, it)
             },
@@ -350,7 +350,7 @@ fun SetPlanUi(
         )
 
         var setWeight: String by remember {
-            mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "0")
+            mutableStateOf(weight.takeIf { it != -1 }?.toString() ?: "")
         }
 
         BasicTextField(
@@ -358,7 +358,7 @@ fun SetPlanUi(
             onValueChange = {
                 if (pattern.matches(it)) {
                     setWeight = it
-                    onSetWeightChanged(it.toInt())
+                    onSetWeightChanged(it.toIntOrNull() ?: SetPlan.Undefined)
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
@@ -377,7 +377,18 @@ fun SetPlanUi(
                     contentAlignment = Alignment.Center,
                 ) {
                     innerTextField()
+
+                    if (setWeight.isEmpty()) {
+                        Text(
+                            text = "0",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+                    }
                 }
+
             },
             modifier = Modifier
                 .wrapContentWidth(Alignment.CenterHorizontally)

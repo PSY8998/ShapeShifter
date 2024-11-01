@@ -7,6 +7,11 @@ data class SetPlan(
     override val id: Long,
     val exercisePlanId: Long,
     val index: PositiveInt,
-    val weight: PositiveInt,
-    val reps: PositiveInt,
-) : Entity
+    val weight: Int,
+    val reps: Int,
+) : Entity {
+
+    companion object {
+        const val Undefined = -1
+    }
+}

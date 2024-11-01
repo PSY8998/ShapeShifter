@@ -111,15 +111,15 @@ class CreateWorkoutPlanPresenter(
                         id = currentSetPlanId.incrementAndGet().toLong(),
                         exercisePlanId = event.exercisePlanId,
                         index = PositiveInt(0),
-                        weight = PositiveInt(0),
-                        reps = PositiveInt(0),
+                        weight = SetPlan.Undefined,
+                        reps = SetPlan.Undefined,
                     )
                 }
 
                 is CreateWorkoutPlanUiEvent.OnSetWeightChanged -> {
                     setPlans.value = setPlans.value.map { plan ->
                         if(plan.id == event.setId){
-                            plan.copy(weight = PositiveInt(event.setWeight))
+                            plan.copy(weight = event.setWeight)
                         } else
                             plan
                     }
@@ -128,14 +128,14 @@ class CreateWorkoutPlanPresenter(
                 is CreateWorkoutPlanUiEvent.OnSetRepsChanged -> {
                     setPlans.value = setPlans.value.map { plan ->
                         if(plan.id == event.setId){
-                            plan.copy(reps = PositiveInt(event.setReps))
+                            plan.copy(reps = event.setReps)
                         } else
                             plan
                     }
                 }
 
                 is CreateWorkoutPlanUiEvent.OnSaveWorkout ->{
-
+                    navigator.pop()
                 }
             }
         }

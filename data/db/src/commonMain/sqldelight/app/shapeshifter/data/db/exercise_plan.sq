@@ -6,3 +6,15 @@ CREATE TABLE IF NOT EXISTS exercise_plan (
     `workout_plan_id` INTEGER NOT NULL
 );
 
+insert:
+INSERT INTO exercise_plan(
+id,
+exercise_id,
+workout_plan_id
+)
+VALUES (
+nullIf(:id, 0),
+:exerciseId,
+:workoutPlanId
+);
+

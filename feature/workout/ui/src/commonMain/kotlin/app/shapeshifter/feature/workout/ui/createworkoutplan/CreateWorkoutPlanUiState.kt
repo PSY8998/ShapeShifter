@@ -1,6 +1,5 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
-import app.shapeshifter.data.models.plans.ExercisePlanSession
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -28,5 +27,5 @@ sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
         val setReps: Int,
     ) : CreateWorkoutPlanUiEvent
 
-    data object OnSaveWorkout : CreateWorkoutPlanUiEvent
+    data object OnSaveWorkout: CreateWorkoutPlanUiEvent
 }
