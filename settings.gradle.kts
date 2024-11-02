@@ -51,6 +51,9 @@ include(":app")
 include(":feature:root:ui")
 include(":feature:home:ui")
 
+//profile
+include(":feature:profile:ui")
+
 // feature
 // exercise
 include(":feature:exercise:ui")

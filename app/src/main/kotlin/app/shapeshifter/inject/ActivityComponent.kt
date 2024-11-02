@@ -5,6 +5,7 @@ import app.shapeshifter.core.base.inject.ActivityScope
 import app.shapeshifter.feature.exercise.ui.ExerciseDetailComponent
 import app.shapeshifter.feature.exercise.ui.exercises.ExercisesComponent
 import app.shapeshifter.feature.home.ui.HomeComponent
+import app.shapeshifter.feature.profile.ui.ProfileComponent
 import app.shapeshifter.feature.root.ui.ShapeShifterContent
 import app.shapeshifter.feature.workout.ui.createworkoutplan.CreateWorkoutPlanComponent
 import app.shapeshifter.feature.workout.ui.savedworkouts.SavedWorkoutsComponent
@@ -25,7 +26,8 @@ abstract class ActivityComponent(
     ExercisesComponent,
     SavedWorkoutsComponent,
     TrackWorkoutComponent,
-    CreateWorkoutPlanComponent {
+    CreateWorkoutPlanComponent,
+    ProfileComponent{
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope

@@ -74,6 +74,9 @@ dependencies {
     implementation(projects.feature.workout.ui)
     implementation(projects.feature.workout.domain)
 
+    //profile
+    implementation(projects.feature.profile.ui)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
