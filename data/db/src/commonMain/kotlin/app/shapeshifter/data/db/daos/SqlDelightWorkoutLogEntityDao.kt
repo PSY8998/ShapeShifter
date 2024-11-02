@@ -84,10 +84,15 @@ class SqlDelightWorkoutEntityDao(
                                     index = PositiveInt(0),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
-                                    prevReps = PositiveInt(max(entry.prev_reps?.toInt() ?: 0, 0)),
+                                    prevReps = PositiveInt(
+                                        max(
+                                            entry.set_prev_reps?.toInt() ?: 0,
+                                            0,
+                                        ),
+                                    ),
                                     prevWeight = PositiveInt(
                                         max(
-                                            entry.prev_weight?.toInt() ?: 0,
+                                            entry.set_prev_weight?.toInt() ?: 0,
                                             0,
                                         ),
                                     ),

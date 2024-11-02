@@ -3,8 +3,6 @@ CREATE TABLE IF NOT EXISTS set_log (
     `exercise_log_id` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL,
-    `prev_reps` INTEGER NOT NULL,
-    `prev_weight` INTEGER NOT NULL,
     `finish_time` INTEGER NOT NULL,
     FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -15,8 +13,6 @@ id,
 exercise_log_id,
 weight,
 reps,
-prev_reps,
-prev_weight,
 finish_time
 )
 VALUES (
@@ -24,8 +20,6 @@ nullIf(:id, 0),
 :exerciseLogId,
 :weight,
 :reps,
-:prevReps,
-:prevWeight,
 :finishTime
 );
 

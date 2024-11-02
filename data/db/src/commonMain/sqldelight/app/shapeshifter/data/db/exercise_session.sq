@@ -6,13 +6,37 @@ SELECT
     slog.id AS set_log_id,
     slog.reps AS set_log_reps,
     slog.weight AS set_log_weight,
-    slog.prev_reps AS set_prev_reps,
-    slog.prev_weight AS set_prev_weight,
     slog.finish_time AS set_finish_time,
     e.name AS exercise_name,
     e.image_url AS exercise_image_url,
     e.primary_muscle AS exercise_primary_muscle,
-    e.secondary_muscles AS exercise_secondary_muscles
+    e.secondary_muscles AS exercise_secondary_muscles,
+    (
+        SELECT NULLIF(slog_sub.reps, slog_sub.reps)
+            FROM set_log AS slog_sub
+            LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
+            WHERE elog_sub.exercise_id = elog.exercise_id
+            AND (
+                elog.workout_log_id = -1
+                OR elog_sub.workout_log_id = elog.workout_log_id
+            )
+            AND slog_sub.id < slog.id
+            ORDER BY slog_sub.id DESC
+            LIMIT 1
+    ) AS set_prev_reps,
+    (
+        SELECT NULLIF(slog_sub.weight, slog_sub.weight)
+            FROM set_log AS slog_sub
+            LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
+            WHERE elog_sub.exercise_id = elog.exercise_id
+            AND (
+                elog.workout_log_id = -1
+                OR elog_sub.workout_log_id = elog.workout_log_id
+            )
+            AND slog_sub.id < slog.id
+            ORDER BY slog_sub.id DESC
+            LIMIT 1
+    ) AS set_prev_weight
 FROM
     exercise_log AS elog
 JOIN
@@ -20,7 +44,6 @@ JOIN
 JOIN
     exercise AS e ON e.id = elog.exercise_id
 WHERE
-    elog.exercise_id = :exercise_id
+    elog.exercise_id = ?
 ORDER BY elog.id DESC
-LIMIT 1
-;
+LIMIT 1;

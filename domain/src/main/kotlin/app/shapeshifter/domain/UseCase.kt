@@ -36,11 +36,13 @@ abstract class UseCase<in P, R> {
         timeout: Duration = DefaultTimeout,
     ): Result<R> = try {
         addLoader()
-        runCatching {
+        val result = runCatching {
             withTimeout(timeout) {
                 doWork(params)
             }
         }
+
+        result
     } finally {
         removeLoader()
     }
