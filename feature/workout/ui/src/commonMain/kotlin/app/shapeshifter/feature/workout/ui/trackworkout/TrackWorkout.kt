@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -70,6 +71,8 @@ import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.animation.core.KeyframesSpecBaseConfig
+import androidx.compose.ui.unit.IntOffset
 
 @Inject
 class TrackWorkoutUiFactory : Ui.Factory {
@@ -300,7 +303,10 @@ private fun LazyListScope.exerciseLog(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .animateItem(),
+                .animateItem(
+                    fadeInSpec = null,
+                    fadeOutSpec = null,
+                ),
         )
     }
 

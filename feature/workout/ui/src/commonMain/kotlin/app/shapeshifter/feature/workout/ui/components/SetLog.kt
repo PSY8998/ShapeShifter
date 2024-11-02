@@ -140,11 +140,9 @@ fun SetLog(
                         .wrapContentWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    innerTextField()
-
                     if (setWeight.isBlank()) {
                         Text(
-                            text = prevWeight.toString(),
+                            text = prevWeight?.toString() ?: "0",
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center,
@@ -154,6 +152,8 @@ fun SetLog(
                                 .fillMaxSize(),
                         )
                     }
+
+                    innerTextField()
                 }
             },
             modifier = Modifier
@@ -185,11 +185,9 @@ fun SetLog(
                         .wrapContentWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    innerTextField()
-
                     if (setReps.isBlank()) {
                         Text(
-                            text = prevReps.toString(),
+                            text = prevReps?.toString() ?: "0",
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center,
@@ -199,6 +197,8 @@ fun SetLog(
                                 .fillMaxSize(),
                         )
                     }
+
+                    innerTextField()
                 }
             },
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
