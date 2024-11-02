@@ -4,7 +4,9 @@ import app.shapeshifter.data.models.Entity
 
 data class ExerciseLog(
     override val id: Long,
-    val workoutId: Long,
+    val workoutLogId: Long,
+    val workoutPlanId: Long,
     val exerciseId: Long,
+    val exercisePlanId: Long?,
     val note: String,
 ) : Entity

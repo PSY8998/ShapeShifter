@@ -26,8 +26,10 @@ class SqlDelightExerciseLogEntityDao(
     override fun insert(entity: ExerciseLog): Long {
         db.exercise_logQueries.insert(
             id = entity.id,
-            exercise_id = entity.exerciseId,
-            workout_id = entity.workoutId,
+            workoutLogId = entity.workoutLogId,
+            workoutPlanId = entity.workoutPlanId,
+            exerciseId = entity.exerciseId,
+            exercisePlanId = entity.exercisePlanId,
         )
 
         return db.exercise_logQueries.lastInsertRowId().executeAsOne()
@@ -46,11 +48,13 @@ class SqlDelightExerciseLogEntityDao(
             .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
-                mapper = { id, exerciseId, wId ->
+                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId ->
                     ExerciseLog(
                         id = id,
                         exerciseId = exerciseId,
-                        workoutId = wId,
+                        workoutPlanId = workoutPlanId,
+                        workoutLogId = workoutLogId,
+                        exercisePlanId = exercisePlanId,
                         note = "",
                     )
                 },
@@ -71,8 +75,10 @@ class SqlDelightExerciseLogEntityDao(
 
         val exerciseLog = ExerciseLog(
             id = firstSession.exercise_log_id,
-            workoutId = firstSession.workout_log_id,
+            workoutLogId = firstSession.workout_log_id,
+            workoutPlanId = firstSession.workout_plan_id,
             exerciseId = firstSession.exercise_id,
+            exercisePlanId = firstSession.exercise_plan_id,
             note = "",
         )
 
@@ -87,21 +93,25 @@ class SqlDelightExerciseLogEntityDao(
         val setLogs = sessions.map { session ->
             SetLog(
                 id = session.set_log_id,
-                index = PositiveInt(0),
+                setTypeIndex = PositiveInt(0),
                 prevReps = PositiveInt(session.set_prev_reps?.toInt() ?: 0),
                 prevWeight = PositiveInt(session.set_prev_weight?.toInt() ?: 0),
                 reps = PositiveInt(session.set_log_reps.toInt()),
                 weight = PositiveInt(session.set_log_weight.toInt()),
                 completed = true,
                 finishTime = session.set_finish_time,
-                exerciseLogId = session.exercise_log_id
+                exerciseLogId = session.exercise_log_id,
+                workoutLogId = session.workout_log_id,
+                workoutPlanId = session.workout_plan_id,
+                exerciseId = session.exercise_id,
+                exercisePlanId = exerciseLog.id,
             )
         }
 
         return ExerciseSession(
             exerciseLog = exerciseLog,
             exercise = exercise,
-            sets = setLogs
+            sets = setLogs,
         )
     }
 

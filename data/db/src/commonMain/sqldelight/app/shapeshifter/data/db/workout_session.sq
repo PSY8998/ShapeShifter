@@ -9,6 +9,7 @@ SELECT
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
     elog.id AS exercise_log_id,
+    elog.exercise_plan_id AS exercise_plan_id,
     slog.id AS set_log_id,
     slog.finish_time AS set_finish_time,
     slog.weight,

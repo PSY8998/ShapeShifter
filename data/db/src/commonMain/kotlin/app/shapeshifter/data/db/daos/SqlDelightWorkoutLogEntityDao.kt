@@ -21,7 +21,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
 interface WorkoutEntityDao : EntityDao<WorkoutLog> {
-    fun observeWorkoutWithExercisesAndSets(workoutId: Long): Flow<WorkoutSession>
+    fun observeWorkoutWithExercisesAndSets(
+        workoutPlanId: Long,
+        workoutLogId: Long,
+    ): Flow<WorkoutSession>
 
     fun activeWorkout(): Flow<WorkoutSessionOverview?>
 }
@@ -58,11 +61,12 @@ class SqlDelightWorkoutEntityDao(
     }
 
     override fun observeWorkoutWithExercisesAndSets(
-        workoutId: Long,
+        workoutPlanId: Long,
+        workoutLogId: Long,
     ): Flow<WorkoutSession> {
         return db.workout_sessionQueries.selectWorkoutSession(
-            workoutLogId = workoutId,
-            workoutPlanId = -1,
+            workoutLogId = workoutLogId,
+            workoutPlanId = workoutPlanId,
         )
             .asFlow()
             .mapToList(dispatchers.io)
@@ -84,7 +88,7 @@ class SqlDelightWorkoutEntityDao(
                             if (entry.set_log_id != null) {
                                 val set = SetLog(
                                     id = entry.set_log_id,
-                                    index = PositiveInt(0),
+                                    setTypeIndex = PositiveInt(0),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
                                     prevReps = PositiveInt(
@@ -102,6 +106,10 @@ class SqlDelightWorkoutEntityDao(
                                     completed = false,
                                     exerciseLogId = entry.exercise_log_id!!,
                                     finishTime = entry.set_finish_time ?: 0,
+                                    exercisePlanId = entry.exercise_plan_id!!,
+                                    exerciseId = entry.exercise_id,
+                                    workoutPlanId = entry.workout_plan_id,
+                                    workoutLogId = entry.workout_log_id,
                                 )
                                 it.add(set)
                             }
@@ -115,8 +123,10 @@ class SqlDelightWorkoutEntityDao(
                             exerciseLog = ExerciseLog(
                                 id = it.exercise_log_id!!,
                                 exerciseId = it.exercise_id!!,
+                                exercisePlanId =it.exercise_plan_id!!,
                                 note = "",
-                                workoutId = workoutLog.id,
+                                workoutLogId = workoutLog.id,
+                                workoutPlanId = workoutLog.workoutPlanId,
                             ),
                             exercise = Exercise(
                                 id = it.exercise_id,

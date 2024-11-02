@@ -97,8 +97,8 @@ private fun TrackWorkout(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
-            val startTime by remember(state.asFilled()?.workoutSession?.workout?.startTimeInMillis) {
-                val time = state.asFilled()?.workoutSession?.workout?.startTimeInMillis
+            val startTime by remember(state.asFilled()?.workoutSession?.workoutLog?.startTimeInMillis) {
+                val time = state.asFilled()?.workoutSession?.workoutLog?.startTimeInMillis
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -164,14 +164,21 @@ private fun TrackWorkout(
                             ),
                         ) {
 
-                            targetState.workoutSession.exercises.forEach { exerciseSession ->
+                            targetState.workoutSession.exerciseSessions.forEach { exerciseSession ->
                                 exerciseLog(
                                     exerciseSession = exerciseSession,
                                     onCompleteSet = {
                                         state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(it))
                                     },
                                     onAddSet = {
-                                        state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
+                                        state.eventSink(
+                                            TrackWorkoutUiEvent.OnAddSet(
+                                                exerciseLogId = it,
+                                                exerciseId = exerciseSession.exercise.id,
+                                                workoutPlanId = targetState.workoutSession.workoutLog.workoutPlanId,
+                                                workoutLogId = targetState.workoutSession.workoutLog.id,
+                                            ),
+                                        )
                                     },
                                     onDeleteSet = {
                                         state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))

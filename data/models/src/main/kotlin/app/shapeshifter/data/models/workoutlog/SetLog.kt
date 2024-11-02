@@ -5,8 +5,12 @@ import app.shapeshifter.data.models.PositiveInt
 
 data class SetLog(
     override val id: Long,
+    val setTypeIndex: PositiveInt,
     val exerciseLogId: Long,
-    val index: PositiveInt,
+    val exercisePlanId: Long?,
+    val exerciseId: Long,
+    val workoutPlanId: Long,
+    val workoutLogId: Long,
     val weight: PositiveInt,
     val reps: PositiveInt,
     val prevReps: PositiveInt,

@@ -11,10 +11,14 @@ class ObserveWorkoutDetailsUseCase(
     private val dao: WorkoutEntityDao,
 ) : FlowUseCase<ObserveWorkoutDetailsUseCase.Params, WorkoutSession>() {
     override fun createObservable(params: Params): Flow<WorkoutSession> {
-        return dao.observeWorkoutWithExercisesAndSets(params.workoutId)
+        return dao.observeWorkoutWithExercisesAndSets(
+            workoutPlanId = params.workoutPlanId,
+            workoutLogId = params.workoutLogId,
+        )
     }
 
     data class Params(
-        val workoutId: Long,
+        val workoutLogId: Long,
+        val workoutPlanId: Long,
     )
 }

@@ -3,11 +3,11 @@ package app.shapeshifter.data.models.workoutlog
 import app.shapeshifter.data.models.Exercise
 
 data class WorkoutSession(
-    val workout: WorkoutLog,
-    val exercises: List<ExerciseSession>,
+    val workoutLog: WorkoutLog,
+    val exerciseSessions: List<ExerciseSession>,
 ) {
     fun isValid(): Boolean {
-        return exercises.isNotEmpty() && exercises.all { it.isValid() }
+        return exerciseSessions.isNotEmpty() && exerciseSessions.all { it.isValid() }
     }
 }
 

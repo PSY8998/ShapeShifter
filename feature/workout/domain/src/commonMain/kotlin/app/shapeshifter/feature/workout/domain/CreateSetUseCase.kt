@@ -11,27 +11,34 @@ import kotlinx.coroutines.withContext
 @Inject
 class CreateSetUseCase(
     private val dispatchers: AppCoroutineDispatchers,
-    private val dao : SetLogEntityDao
+    private val dao: SetLogEntityDao,
 ) : UseCase<CreateSetUseCase.Params, Long>() {
     override suspend fun doWork(params: Params): Long {
         val setLog = SetLog(
             id = 0L,
-            exerciseLogId = params.exerciseLogId ,
-            index = PositiveInt(1),
+            exerciseLogId = params.exerciseLogId,
+            setTypeIndex = PositiveInt(1),
             weight = PositiveInt(0),
             reps = PositiveInt(0),
             prevWeight = PositiveInt(0),
             prevReps = PositiveInt(0),
             completed = false,
-            finishTime = 0
+            finishTime = 0,
+            exercisePlanId = null,
+            exerciseId = params.exerciseId,
+            workoutPlanId = params.workoutPlanId,
+            workoutLogId = params.workoutLogId,
         )
-        return withContext(dispatchers.databaseWrite){
+        return withContext(dispatchers.databaseWrite) {
             dao.insert(setLog)
         }
     }
 
     data class Params(
-        val exerciseLogId: Long
+        val exerciseLogId: Long,
+        val exerciseId: Long,
+        val workoutPlanId: Long,
+        val workoutLogId: Long,
     )
 
 }

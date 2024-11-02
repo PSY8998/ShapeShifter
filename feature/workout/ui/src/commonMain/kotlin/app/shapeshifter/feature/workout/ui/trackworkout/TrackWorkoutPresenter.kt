@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
@@ -27,7 +28,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Inject
@@ -79,8 +79,9 @@ class TrackWorkoutPresenter(
                     if (workoutId != 0L) {
                         storeWorkoutExerciseUseCase(
                             AddExerciseLogUseCase.Params(
-                                workoutId = workoutId,
+                                workoutLogId = workoutId,
                                 exerciseIds = selectedExerciseIds,
+                                workoutPlanId = WorkoutPlan.QuickWorkoutId,
                             ),
                         )
                     }
@@ -103,6 +104,9 @@ class TrackWorkoutPresenter(
                         createSetUseCase(
                             params = CreateSetUseCase.Params(
                                 exerciseLogId = event.exerciseLogId,
+                                exerciseId = event.exerciseId,
+                                workoutPlanId = event.workoutPlanId,
+                                workoutLogId = event.workoutLogId,
                             ),
                         )
                     }
@@ -112,7 +116,7 @@ class TrackWorkoutPresenter(
                     scope.launch {
                         discardWorkoutUseCase(
                             params = DiscardWorkoutUseCase.Params(
-                                workoutLog = workoutSession?.workout ?: return@launch,
+                                workoutLog = workoutSession?.workoutLog ?: return@launch,
                             ),
                         )
 
@@ -157,7 +161,8 @@ class TrackWorkoutPresenter(
             LaunchedEffect(workoutId) {
                 observeWorkoutDetailsUseCase.invoke(
                     params = ObserveWorkoutDetailsUseCase.Params(
-                        workoutId = workoutId,
+                        workoutLogId = workoutId,
+                        workoutPlanId = WorkoutPlan.QuickWorkoutId,
                     ),
                 )
             }
@@ -170,7 +175,7 @@ class TrackWorkoutPresenter(
                 eventSink = ::eventSink,
             )
 
-            session.exercises.isEmpty() -> TrackWorkoutUiState.Empty(
+            session.exerciseSessions.isEmpty() -> TrackWorkoutUiState.Empty(
                 eventSink = ::eventSink,
             )
 

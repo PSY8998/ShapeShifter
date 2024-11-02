@@ -41,6 +41,9 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
 
     data class OnAddSet(
         val exerciseLogId: Long,
+        val exerciseId: Long,
+        val workoutPlanId: Long,
+        val workoutLogId: Long,
     ) : TrackWorkoutUiEvent
 
     data class OnSetCompleted(

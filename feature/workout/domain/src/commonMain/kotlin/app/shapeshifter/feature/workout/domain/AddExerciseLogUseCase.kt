@@ -23,42 +23,33 @@ class AddExerciseLogUseCase(
         withContext(dispatchers.databaseWrite) {
             transactionRunner {
                 for (exerciseId in params.exerciseIds) {
-                    val exerciseSession = exerciseLogEntityDao.exerciseSession(exerciseId)
                     val exerciseLog = ExerciseLog(
                         id = 0,
-                        workoutId = params.workoutId,
+                        workoutLogId = params.workoutLogId,
+                        workoutPlanId = params.workoutPlanId,
                         exerciseId = exerciseId,
+                        exercisePlanId = null,
                         note = "",
                     )
                     val exerciseLogId = exerciseLogEntityDao.insert(exerciseLog)
 
-                    val sets = exerciseSession?.sets?.map { setLog ->
-                        SetLog(
-                            id = 0L,
-                            exerciseLogId = exerciseLogId,
-                            index = PositiveInt(1),
-                            weight = PositiveInt(0),
-                            reps = PositiveInt(0),
-                            prevReps = setLog.reps,
-                            prevWeight = setLog.weight,
-                            completed = false,
-                            finishTime = 0,
-                        )
-                    } ?: listOf(
-                        SetLog(
-                            id = 0L,
-                            exerciseLogId = exerciseLogId,
-                            index = PositiveInt(1),
-                            weight = PositiveInt(0),
-                            reps = PositiveInt(0),
-                            prevReps = PositiveInt(0),
-                            prevWeight = PositiveInt(0),
-                            completed = false,
-                            finishTime = 0,
-                        )
+                    val set = SetLog(
+                        id = 0L,
+                        exerciseLogId = exerciseLogId,
+                        setTypeIndex = PositiveInt(1),
+                        weight = PositiveInt(0),
+                        reps = PositiveInt(0),
+                        prevReps = PositiveInt(0),
+                        prevWeight = PositiveInt(0),
+                        completed = false,
+                        finishTime = 0,
+                        exercisePlanId = null,
+                        exerciseId = exerciseId,
+                        workoutPlanId = params.workoutPlanId,
+                        workoutLogId = params.workoutLogId,
                     )
 
-                    setLogEntityDao.insert(sets)
+                    setLogEntityDao.insert(set)
                 }
             }
         }
@@ -66,7 +57,8 @@ class AddExerciseLogUseCase(
     }
 
     data class Params(
-        val workoutId: Long,
+        val workoutLogId: Long,
+        val workoutPlanId: Long,
         val exerciseIds: List<Long>,
     )
 }

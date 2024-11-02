@@ -5,21 +5,26 @@ import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.workoutlog.SetLog
 import me.tatarka.inject.annotations.Inject
 
-interface SetLogEntityDao: EntityDao<SetLog>
+interface SetLogEntityDao : EntityDao<SetLog>
 
 @Inject
 class SqlDelightSetLogEntityDao(
     override val db: ShapeShifterDatabase,
-    private val transactionRunner: DatabaseTransactionRunner
+    private val transactionRunner: DatabaseTransactionRunner,
 ) : SqlDelightEntityDao<SetLog>, SetLogEntityDao {
     override fun insert(entity: SetLog): Long {
         return transactionRunner {
             db.set_logQueries.insert(
+                id = entity.id,
                 exerciseLogId = entity.exerciseLogId,
+                workoutLogId = entity.workoutLogId,
+                workoutPlanId = entity.workoutPlanId,
+                exerciseId = entity.exerciseId,
+                exercisePlanId = entity.exercisePlanId,
+                setTypeIndex = entity.setTypeIndex.value.toLong(),
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
                 finishTime = entity.finishTime,
-                id = entity.id
             )
 
             db.set_logQueries.lastInsertRowId().executeAsOne()
@@ -32,7 +37,7 @@ class SqlDelightSetLogEntityDao(
             weight = entity.weight.value.toLong(),
             reps = entity.reps.value.toLong(),
             finishTime = entity.finishTime,
-            id = entity.id
+            id = entity.id,
         )
     }
 

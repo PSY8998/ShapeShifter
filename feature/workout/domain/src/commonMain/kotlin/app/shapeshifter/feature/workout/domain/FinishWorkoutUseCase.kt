@@ -23,7 +23,7 @@ class FinishWorkoutUseCase(
 
         return withContext(dispatchers.databaseWrite) {
             dao.upsert(
-                entity = params.workoutSession.workout.copy(
+                entity = params.workoutSession.workoutLog.copy(
                     finishTimeInMillis = System.currentTimeMillis(),
                 ),
             )

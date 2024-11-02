@@ -1,40 +1,61 @@
 CREATE TABLE IF NOT EXISTS set_log (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    `workout_plan_id` INTEGER NOT NULL,
+    `workout_log_id` INTEGER NOT NULL,
+    `exercise_plan_id` INTEGER,
     `exercise_log_id` INTEGER NOT NULL,
+    `exercise_id` INTEGER NOT NULL,
+    `set_type_index` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL,
     `finish_time` INTEGER NOT NULL,
     FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- indices
+CREATE INDEX IF NOT EXISTS `index_set_workout_log_id` ON `set_log` (`workout_log_id`);
+CREATE INDEX IF NOT EXISTS `index_set_workout_plan_id` ON `set_log` (`workout_plan_id`);
+CREATE INDEX IF NOT EXISTS `index_set_exercise_plan_id` ON `set_log` (`exercise_plan_id`);
+CREATE INDEX IF NOT EXISTS `index_set_exercise_log_id` ON `set_log` (`exercise_log_id`);
+
 insert:
 INSERT INTO set_log(
-id,
-exercise_log_id,
-weight,
-reps,
-finish_time
+    id,
+    workout_plan_id,
+    workout_log_id,
+    exercise_plan_id,
+    exercise_log_id,
+    exercise_id,
+    set_type_index,
+    weight,
+    reps,
+    finish_time
 )
 VALUES (
-nullIf(:id, 0),
-:exerciseLogId,
-:weight,
-:reps,
-:finishTime
+    nullIf(:id, 0),
+    :workoutPlanId,
+    :workoutLogId,
+    :exercisePlanId,
+    :exerciseLogId,
+    :exerciseId,
+    :setTypeIndex,
+    :weight,
+    :reps,
+    :finishTime
 );
 
 update:
 UPDATE set_log SET
-exercise_log_id = :exerciseLogId,
-weight = :weight,
-reps = :reps,
-finish_time = :finishTime
+    exercise_log_id = :exerciseLogId,
+    weight = :weight,
+    reps = :reps,
+    finish_time = :finishTime
 WHERE id = :id;
 
 
 delete:
 DELETE FROM set_log
-WHERE id = :id
+    WHERE id = :id
 ;
 
 
