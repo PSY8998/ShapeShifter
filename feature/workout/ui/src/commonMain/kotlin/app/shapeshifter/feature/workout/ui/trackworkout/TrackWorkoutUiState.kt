@@ -52,6 +52,6 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     ) : TrackWorkoutUiEvent
 
     data class OnFinishWorkout(
-        val workout: WorkoutLog,
+        val workoutSession: WorkoutSession,
     ) : TrackWorkoutUiEvent
 }

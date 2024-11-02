@@ -118,7 +118,7 @@ private fun TrackWorkout(
                 onFinish = {
                     val workoutSession = state.asFilled()?.workoutSession
                     if (workoutSession != null) {
-                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(workoutSession.workout))
+                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(workoutSession))
                     }
                 },
             )

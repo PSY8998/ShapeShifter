@@ -14,7 +14,20 @@ data class SetLog(
     val completed: Boolean,
     val finishTime: Long,
 ) : Entity {
+
     fun isValid(): Boolean {
+        if (weight.value < 0) {
+            return false
+        }
+
+        if (reps.value <= 0) {
+            return false
+        }
+
+        if (finishTime <= 0) {
+            return false
+        }
+
         return true
     }
 }

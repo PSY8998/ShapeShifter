@@ -144,7 +144,7 @@ class TrackWorkoutPresenter(
                     scope.launch {
                         val result = finishWorkoutUseCase(
                             params = FinishWorkoutUseCase.Params(
-                                workoutLog = event.workout,
+                                workoutSession = event.workoutSession,
                             ),
                         )
                     }

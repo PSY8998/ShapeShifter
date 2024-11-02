@@ -7,7 +7,7 @@ data class WorkoutSession(
     val exercises: List<ExerciseSession>,
 ) {
     fun isValid(): Boolean {
-        return exercises.all { it.isValid() }
+        return exercises.isNotEmpty() && exercises.all { it.isValid() }
     }
 }
 
@@ -17,7 +17,18 @@ data class ExerciseSession(
     val sets: List<SetLog>,
 ) {
     fun isValid(): Boolean {
-        if (sets.isEmpty()) return false
-        return sets.all { it.isValid() }
+        // Check that at least one set is present
+        if (sets.isEmpty()) {
+            return false
+        }
+
+        // Check that all sets are in a complete state and have valid values
+        for (set in sets) {
+            if (!set.isValid()) {
+                return false
+            }
+        }
+
+        return true
     }
 }
