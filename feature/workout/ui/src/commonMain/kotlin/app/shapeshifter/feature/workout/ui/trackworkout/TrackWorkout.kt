@@ -166,7 +166,8 @@ private fun TrackWorkout(
                                 .fillMaxSize(),
                             contentPadding = PaddingValues(
                                 top = Dimens.Padding.Medium,
-                                bottom = paddingValues.calculateBottomPadding(),
+                                bottom = paddingValues.calculateBottomPadding()
+                                    + Dimens.Padding.Largest,
                             ),
                         ) {
 
