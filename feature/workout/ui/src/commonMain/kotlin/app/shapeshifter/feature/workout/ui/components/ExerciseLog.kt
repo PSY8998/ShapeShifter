@@ -81,7 +81,7 @@ fun ExerciseLog(
                 maxLines = 2,
                 placeholder = {
                     Text(
-                        text = "Note: drop Weight and focus on form",
+                        text = "Go slow and control each movement",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray,
                     )

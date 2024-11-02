@@ -71,8 +71,6 @@ import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.animation.core.KeyframesSpecBaseConfig
-import androidx.compose.ui.unit.IntOffset
 
 @Inject
 class TrackWorkoutUiFactory : Ui.Factory {
