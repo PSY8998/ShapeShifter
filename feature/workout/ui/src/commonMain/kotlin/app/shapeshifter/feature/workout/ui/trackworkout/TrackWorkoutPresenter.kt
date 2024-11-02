@@ -163,9 +163,21 @@ class TrackWorkoutPresenter(
             }
         }
 
-        return TrackWorkoutUiState(
-            workoutSession = workoutSession,
-            eventSink = ::eventSink,
-        )
+        val session = workoutSession
+
+        return when {
+            session == null -> TrackWorkoutUiState.Initial(
+                eventSink = ::eventSink,
+            )
+
+            session.exercises.isEmpty() -> TrackWorkoutUiState.Empty(
+                eventSink = ::eventSink,
+            )
+
+            else -> TrackWorkoutUiState.Filled(
+                workoutSession = session,
+                eventSink = ::eventSink,
+            )
+        }
     }
 }

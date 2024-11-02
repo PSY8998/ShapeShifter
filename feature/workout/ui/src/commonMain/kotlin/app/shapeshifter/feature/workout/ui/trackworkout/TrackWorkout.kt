@@ -1,7 +1,6 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -98,8 +97,8 @@ private fun TrackWorkout(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
-            val startTime by remember(state.workoutSession?.workout?.startTimeInMillis) {
-                val time = state.workoutSession?.workout?.startTimeInMillis
+            val startTime by remember(state.asFilled()?.workoutSession?.workout?.startTimeInMillis) {
+                val time = state.asFilled()?.workoutSession?.workout?.startTimeInMillis
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -117,8 +116,9 @@ private fun TrackWorkout(
                     state.eventSink(TrackWorkoutUiEvent.GoBack)
                 },
                 onFinish = {
-                    if (state.workoutSession != null) {
-                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(state.workoutSession.workout))
+                    val workoutSession = state.asFilled()?.workoutSession
+                    if (workoutSession != null) {
+                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(workoutSession.workout))
                     }
                 },
             )
@@ -136,17 +136,10 @@ private fun TrackWorkout(
                     durationMillis = 600,
                     easing = FastOutSlowInEasing,
                 ),
-                contentKey = {
-                    when {
-                        it.workoutSession?.exercises.isNullOrEmpty() ->
-                            "EmptyWorkoutSession"
-
-                        else -> "WorkoutSession"
-                    }
-                },
+                contentKey = { it::class.java },
             ) { targetState ->
-                when {
-                    targetState.workoutSession?.exercises.isNullOrEmpty() -> {
+                when (targetState) {
+                    is TrackWorkoutUiState.Empty -> {
                         ExerciseEmpty(
                             modifier = Modifier
                                 .padding(top = Dimens.Padding.Medium)
@@ -159,8 +152,7 @@ private fun TrackWorkout(
                             },
                         )
                     }
-
-                    else -> {
+                    is TrackWorkoutUiState.Filled -> {
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize(),
@@ -171,7 +163,7 @@ private fun TrackWorkout(
                             ),
                         ) {
 
-                            state.workoutSession?.exercises?.forEach { exerciseSession ->
+                            targetState.workoutSession.exercises.forEach { exerciseSession ->
                                 exerciseLog(
                                     exerciseSession = exerciseSession,
                                     onCompleteSet = {
@@ -217,6 +209,7 @@ private fun TrackWorkout(
                             }
                         }
                     }
+                    is TrackWorkoutUiState.Initial -> {}
                 }
             }
         }
