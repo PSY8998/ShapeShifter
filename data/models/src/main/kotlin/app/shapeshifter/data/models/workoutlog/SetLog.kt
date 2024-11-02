@@ -24,9 +24,9 @@ data class SetLog(
             return false
         }
 
-        if (finishTime <= 0) {
-            return false
-        }
+//        if (finishTime <= 0) {
+//            return false
+//        }
 
         return true
     }

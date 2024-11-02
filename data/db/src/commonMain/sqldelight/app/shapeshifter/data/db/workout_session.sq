@@ -14,31 +14,33 @@ SELECT
     slog.weight,
     slog.reps,
     (
-        SELECT NULLIF(slog_sub.reps, slog_sub.reps)
-        FROM set_log AS slog_sub
-        LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
-        WHERE elog_sub.exercise_id = elog.exercise_id
-        AND (
-            elog.workout_log_id = -1
-            OR elog_sub.workout_log_id = elog.workout_log_id
-        )
-        AND slog_sub.id < slog.id
-        ORDER BY slog_sub.id DESC
-        LIMIT 1
-    ) AS set_prev_reps,
-    (
-        SELECT NULLIF(slog_sub.weight, slog_sub.weight)
-        FROM set_log AS slog_sub
-        LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
-        WHERE elog_sub.exercise_id = elog.exercise_id
-        AND (
-            elog.workout_log_id = -1
-            OR elog_sub.workout_log_id = elog.workout_log_id
-        )
-        AND slog_sub.id < slog.id
-        ORDER BY slog_sub.id DESC
-        LIMIT 1
-    ) AS set_prev_weight
+            SELECT NULLIF(slog_sub.reps, NULL)
+            FROM set_log AS slog_sub
+            LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
+            LEFT JOIN workout_log AS wlog_sub ON elog_sub.workout_log_id = wlog_sub.id
+            WHERE elog_sub.exercise_id = elog.exercise_id
+            AND (
+                wlog_sub.workout_plan_id = :workoutPlanId
+                OR elog_sub.workout_log_id = elog.workout_log_id
+            )
+            AND slog_sub.id < slog.id
+            ORDER BY slog_sub.id DESC
+            LIMIT 1
+        ) AS set_prev_reps,
+        (
+            SELECT NULLIF(slog_sub.weight, NULL)
+            FROM set_log AS slog_sub
+            LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
+            LEFT JOIN workout_log AS wlog_sub ON elog_sub.workout_log_id = wlog_sub.id
+            WHERE elog_sub.exercise_id = elog.exercise_id
+            AND (
+                wlog_sub.workout_plan_id = :workoutPlanId
+                OR elog_sub.workout_log_id = elog.workout_log_id
+            )
+            AND slog_sub.id < slog.id
+            ORDER BY slog_sub.id DESC
+            LIMIT 1
+        ) AS set_prev_weight
 FROM
     workout_log wlog
 LEFT JOIN
@@ -48,4 +50,4 @@ LEFT JOIN
 LEFT JOIN
     set_log slog ON elog.id = slog.exercise_log_id
 WHERE
-    wlog.id = ?;
+    wlog.id = :workoutLogId;

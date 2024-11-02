@@ -152,6 +152,7 @@ private fun TrackWorkout(
                             },
                         )
                     }
+
                     is TrackWorkoutUiState.Filled -> {
                         LazyColumn(
                             modifier = Modifier
@@ -209,6 +210,7 @@ private fun TrackWorkout(
                             }
                         }
                     }
+
                     is TrackWorkoutUiState.Initial -> {}
                 }
             }
@@ -288,6 +290,8 @@ private fun LazyListScope.exerciseLog(
                             ),
                         )
                     },
+                    prevReps = set.prevReps.value,
+                    prevWeight = set.prevWeight.value,
                     isBeingTracked = true,
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),

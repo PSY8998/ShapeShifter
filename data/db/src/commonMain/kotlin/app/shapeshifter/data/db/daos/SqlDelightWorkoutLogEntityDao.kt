@@ -60,7 +60,10 @@ class SqlDelightWorkoutEntityDao(
     override fun observeWorkoutWithExercisesAndSets(
         workoutId: Long,
     ): Flow<WorkoutSession> {
-        return db.workout_sessionQueries.selectWorkoutSession(workoutId)
+        return db.workout_sessionQueries.selectWorkoutSession(
+            workoutLogId = workoutId,
+            workoutPlanId = -1,
+        )
             .asFlow()
             .mapToList(dispatchers.io)
             .mapNotNull { items ->
