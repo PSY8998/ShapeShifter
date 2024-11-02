@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.common.ui.compose.ui.Crossfade
 import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
@@ -82,7 +84,6 @@ class TrackWorkoutUiFactory : Ui.Factory {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TrackWorkout(
     state: TrackWorkoutUiState,
@@ -96,8 +97,6 @@ private fun TrackWorkout(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
-            val overlayHost = LocalOverlayHost.current
-
             val startTime by remember(state.workoutSession?.workout?.startTimeInMillis) {
                 val time = state.workoutSession?.workout?.startTimeInMillis
                 if (time == null) {
@@ -127,83 +126,101 @@ private fun TrackWorkout(
                 thickness = 2.dp,
             )
 
-            LazyColumn(
+            Crossfade(
+                targetState = state,
                 modifier = Modifier
                     .fillMaxSize(),
-                contentPadding = PaddingValues(
-                    bottom = paddingValues.calculateBottomPadding(),
+                label = "ScreenTransition",
+                animationSpec = tween(
+                    durationMillis = 600,
+                    easing = FastOutSlowInEasing,
                 ),
-            ) {
-                item("spacer") {
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp),
-                    )
-                }
+                contentKey = {
+                    when {
+                        it.workoutSession?.exercises.isNullOrEmpty() ->
+                            "EmptyWorkoutSession"
 
-
-                state.workoutSession?.exercises?.forEach { exerciseSession ->
-                    exerciseLog(
-                        exerciseSession = exerciseSession,
-                        onCompleteSet = {
-                            state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(it))
-                        },
-                        onAddSet = {
-                            state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
-                        },
-                        onDeleteSet = {
-                            state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
-                        },
-                    )
-                }
-
-                if (state.workoutSession?.exercises.isNullOrEmpty()) {
-                    item("empty_exercises_placeholder") {
+                        else -> "WorkoutSession"
+                    }
+                },
+            ) { targetState ->
+                when {
+                    targetState.workoutSession?.exercises.isNullOrEmpty() -> {
                         ExerciseEmpty(
                             modifier = Modifier
                                 .padding(top = Dimens.Padding.Medium)
-                                .fillMaxWidth()
-                                .animateItem(),
+                                .fillMaxWidth(),
                             onAddExercise = {
                                 state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
                             },
+                            onDiscardWorkout = {
+                                state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
+                            },
                         )
                     }
-                }
 
-                item("add_exercise_action") {
-                    AddExercise(
-                        onAddExercise = {
-                            state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
-                        },
-                        modifier = Modifier
-                            .padding(horizontal = Dimens.Padding.Medium),
-                    )
-                }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                top = Dimens.Padding.Medium,
+                                bottom = paddingValues.calculateBottomPadding(),
+                            ),
+                        ) {
 
-                item("discard_action") {
-                    val scope = rememberCoroutineScope()
-                    DiscardWorkout(
-                        onDiscardWorkout = {
-                            scope.launch {
-                                val result = overlayHost.showDiscardWorkoutDialog()
-                                if (result == DialogResult.Confirm) {
-                                    state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
-                                }
+                            state.workoutSession?.exercises?.forEach { exerciseSession ->
+                                exerciseLog(
+                                    exerciseSession = exerciseSession,
+                                    onCompleteSet = {
+                                        state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(it))
+                                    },
+                                    onAddSet = {
+                                        state.eventSink(TrackWorkoutUiEvent.OnAddSet(it))
+                                    },
+                                    onDeleteSet = {
+                                        state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
+                                    },
+                                )
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Dimens.Padding.Medium)
-                            .padding(vertical = Dimens.Padding.Medium),
-                    )
+
+                            item("add_exercise_action") {
+                                AddExercise(
+                                    onAddExercise = {
+                                        state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
+                                    },
+                                    modifier = Modifier
+                                        .padding(horizontal = Dimens.Padding.Medium),
+                                )
+                            }
+
+                            item("discard_action") {
+                                val scope = rememberCoroutineScope()
+                                val overlayHost = LocalOverlayHost.current
+
+                                DiscardWorkout(
+                                    onDiscardWorkout = {
+                                        scope.launch {
+                                            val result = overlayHost.showDiscardWorkoutDialog()
+                                            if (result == DialogResult.Confirm) {
+                                                state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = Dimens.Padding.Medium)
+                                        .padding(vertical = Dimens.Padding.Medium),
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.exerciseLog(
     exerciseSession: ExerciseSession,
     onCompleteSet: (setLog: SetLog) -> Unit,
@@ -399,6 +416,7 @@ private fun TrackWorkoutTopBar(
 private fun ExerciseEmpty(
     modifier: Modifier = Modifier,
     onAddExercise: () -> Unit,
+    onDiscardWorkout: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -431,6 +449,32 @@ private fun ExerciseEmpty(
         Spacer(
             modifier = Modifier
                 .height(Dimens.Padding.Medium),
+        )
+
+        AddExercise(
+            onAddExercise = {
+                onAddExercise()
+            },
+            modifier = Modifier
+                .padding(horizontal = Dimens.Padding.Medium),
+        )
+
+        val overlayHost = LocalOverlayHost.current
+        val scope = rememberCoroutineScope()
+
+        DiscardWorkout(
+            onDiscardWorkout = {
+                scope.launch {
+                    val result = overlayHost.showDiscardWorkoutDialog()
+                    if (result == DialogResult.Confirm) {
+                        onDiscardWorkout()
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Dimens.Padding.Medium)
+                .padding(vertical = Dimens.Padding.Medium),
         )
     }
 }

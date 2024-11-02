@@ -27,6 +27,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Inject
@@ -129,22 +130,22 @@ class TrackWorkoutPresenter(
                     }
                 }
 
-                is TrackWorkoutUiEvent.OnDeleteSet ->{
+                is TrackWorkoutUiEvent.OnDeleteSet -> {
                     scope.launch {
                         deleteSetUseCase(
                             params = DeleteSetUseCase.Params(
                                 setLog = event.set,
-                            )
+                            ),
                         )
                     }
                 }
 
-                is TrackWorkoutUiEvent.OnFinishWorkout ->{
+                is TrackWorkoutUiEvent.OnFinishWorkout -> {
                     scope.launch {
                         val result = finishWorkoutUseCase(
                             params = FinishWorkoutUseCase.Params(
-                                workoutLog = event.workout
-                            )
+                                workoutLog = event.workout,
+                            ),
                         )
                     }
                 }
@@ -152,12 +153,14 @@ class TrackWorkoutPresenter(
             }
         }
 
-        LaunchedEffect(workoutId) {
-            observeWorkoutDetailsUseCase.invoke(
-                params = ObserveWorkoutDetailsUseCase.Params(
-                    workoutId = workoutId,
-                ),
-            )
+        if (workoutId != 0L) {
+            LaunchedEffect(workoutId) {
+                observeWorkoutDetailsUseCase.invoke(
+                    params = ObserveWorkoutDetailsUseCase.Params(
+                        workoutId = workoutId,
+                    ),
+                )
+            }
         }
 
         return TrackWorkoutUiState(
