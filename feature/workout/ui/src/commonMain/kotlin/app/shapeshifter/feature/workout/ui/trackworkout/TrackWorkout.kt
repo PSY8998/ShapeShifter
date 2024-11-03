@@ -52,10 +52,8 @@ import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
-import app.shapeshifter.feature.workout.ui.components.SetAnchors
 import app.shapeshifter.feature.workout.ui.components.SetColumnTitles
 import app.shapeshifter.feature.workout.ui.components.SetLog
-import app.shapeshifter.feature.workout.ui.components.rememberSetAnchorState
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
@@ -256,9 +254,7 @@ private fun LazyListScope.exerciseLog(
         contentType = { _, _ -> "set" },
         key = { _, set -> "set_${set.id}" },
     ) { index, set ->
-        val setLogAnchorState = rememberSetAnchorState()
         SetAnchorBox(
-            state = setLogAnchorState,
             backgroundContent = {
                 Box(
                     contentAlignment = Alignment.CenterEnd,
@@ -270,9 +266,7 @@ private fun LazyListScope.exerciseLog(
                         modifier = Modifier
                             .padding(horizontal = Dimens.Padding.Medium),
                         onClick = {
-                            if (setLogAnchorState.currentValue == SetAnchors.SELECTED) {
-                                onDeleteSet(set)
-                            }
+
                         },
                     ) {
                         Icon(

@@ -1,14 +1,15 @@
 package app.shapeshifter.feature.workout.ui.components
 
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.exponentialDecay
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
-import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -27,35 +29,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.node.LayoutModifierNode
-import androidx.compose.ui.node.ModifierNodeElement
-import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import kotlin.math.roundToInt
@@ -249,96 +238,48 @@ fun SetLog(
 enum class SetAnchors {
     SELECTED,
     UNSELECTED,
-}
-
-@Composable
-fun rememberSetAnchorState(
-    initialValue: SetAnchors = SetAnchors.UNSELECTED,
-    positionalThreshold: (totalDistance: Float) -> Float = { 42f },
-    confirmValueChange: (SetAnchors) -> Boolean = { true },
-): SetAnchorState {
-    val density = LocalDensity.current
-    return rememberSaveable(
-        saver = SetAnchorState.Saver(
-            density = density,
-            positionalThreshold = positionalThreshold,
-            confirmValueChange = confirmValueChange,
-        ),
-    ) {
-        SetAnchorState(initialValue, density, positionalThreshold, confirmValueChange)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-class SetAnchorState(
-    initialValue: SetAnchors,
-    density: Density,
-    positionalThreshold: (totalDistance: Float) -> Float,
-    confirmValueChange: (SetAnchors) -> Boolean,
-) {
-    internal val anchoredDraggableState = AnchoredDraggableState(
-        initialValue = initialValue,
-        snapAnimationSpec = tween(),
-        decayAnimationSpec = exponentialDecay(),
-        confirmValueChange = confirmValueChange,
-        positionalThreshold = positionalThreshold,
-        velocityThreshold = { with(density) { 148.dp.toPx() } },
-    )
-
-    val currentValue: SetAnchors get() = anchoredDraggableState.currentValue
-
-    val targetValue: SetAnchors get() = anchoredDraggableState.targetValue
-
-    internal val offset: Float get() = anchoredDraggableState.offset
-
-    fun requireOffset(): Float = anchoredDraggableState.requireOffset()
-
-    suspend fun dismiss(direction: SetAnchors) {
-        anchoredDraggableState.animateTo(targetValue = direction)
-    }
-
-    companion object {
-
-        /**
-         * The default [Saver] implementation for [SwipeToDismissBoxState].
-         */
-        fun Saver(
-            positionalThreshold: (totalDistance: Float) -> Float,
-            confirmValueChange: (SetAnchors) -> Boolean,
-            density: Density,
-        ) = Saver<SetAnchorState, SetAnchors>(
-            save = { it.currentValue },
-            restore = {
-                SetAnchorState(
-                    initialValue = it,
-                    density = density,
-                    positionalThreshold = positionalThreshold,
-                    confirmValueChange = confirmValueChange,
-                )
-            },
-        )
-    }
+    OVERSCROLL,
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SetAnchorBox(
-    state: SetAnchorState,
     backgroundContent: @Composable RowScope.() -> Unit,
     content: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val density = LocalDensity.current
 
-    Box(
-        modifier
-            .anchoredDraggable(
-                state = state.anchoredDraggableState,
-                orientation = Orientation.Horizontal,
-                enabled = enabled,
-                reverseDirection = isRtl,
+    val state = remember {
+        AnchoredDraggableState(
+            initialValue = SetAnchors.UNSELECTED,
+            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
+            velocityThreshold = { with(density) { 100.dp.toPx() } },
+            decayAnimationSpec = exponentialDecay(
+                frictionMultiplier = 1f,
             ),
+            snapAnimationSpec = spring(
+                stiffness = Spring.StiffnessMedium,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+            ),
+            confirmValueChange = {
+                it != SetAnchors.OVERSCROLL
+            },
+        ).apply {
+            updateAnchors(
+                newAnchors = DraggableAnchors {
+                    with(density) {
+                        SetAnchors.UNSELECTED at 0.dp.toPx()
+                        SetAnchors.SELECTED at -80.dp.toPx()
+                        SetAnchors.OVERSCROLL at -180.dp.toPx()
+                    }
+                },
+            )
+        }
+    }
+    Box(
+        modifier = modifier,
         propagateMinConstraints = true,
     ) {
         Row(
@@ -348,84 +289,28 @@ fun SetAnchorBox(
         Row(
             content = content,
             modifier = Modifier
-                .swipeToSetAnchors(state),
+                .anchoredDraggable(
+                    state = state,
+                    orientation = Orientation.Horizontal,
+                    enabled = enabled,
+                )
+                .offset {
+                    IntOffset(
+                        x = state
+                            .requireOffset()
+                            .roundToInt(),
+                        y = 0,
+                    )
+                },
         )
     }
 }
 
-private fun Modifier.swipeToSetAnchors(
-    state: SetAnchorState,
-) = this then SetAnchorsElement(
-    state,
-)
-
-private class SetAnchorsElement(
-    private val state: SetAnchorState,
-) : ModifierNodeElement<SetAnchorsNode>() {
-
-    override fun create() = SetAnchorsNode(
-        state,
-    )
-
-    override fun update(node: SetAnchorsNode) {
-        node.state = state
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        other as SetAnchorsElement
-        return state == other.state
-    }
-
-    override fun hashCode(): Int {
-        val result = state.hashCode()
-        return result
-    }
-
-    override fun InspectorInfo.inspectableProperties() {
-        debugInspectorInfo {
-            properties["state"] = state
-        }
-    }
-}
-
-private class SetAnchorsNode(
-    var state: SetAnchorState,
-) : Modifier.Node(), LayoutModifierNode {
-    private var didLookahead: Boolean = false
-
-    override fun onDetach() {
-        didLookahead = false
-    }
-
-    @OptIn(ExperimentalFoundationApi::class)
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints,
-    ): MeasureResult {
-        val placeable = measurable.measure(constraints)
-        // If we are in a lookahead pass, we only want to update the anchors here and not in
-        // post-lookahead. If there is no lookahead happening (!isLookingAhead && !didLookahead),
-        // update the anchors in the main pass.
-        if (isLookingAhead || !didLookahead) {
-            val width = placeable.width.toFloat()
-            val newAnchors = DraggableAnchors {
-                SetAnchors.UNSELECTED at 0f
-                SetAnchors.SELECTED at -80.dp.toPx()
-            }
-            state.anchoredDraggableState.updateAnchors(newAnchors)
-        }
-        didLookahead = isLookingAhead || didLookahead
-        return layout(placeable.width, placeable.height) {
-            // In a lookahead pass, we use the position of the current target as this is where any
-            // ongoing animations would move. If SwipeToDismissBox is in a settled state, lookahead
-            // and post-lookahead will converge.
-            val xOffset = if (isLookingAhead) {
-                state.anchoredDraggableState.anchors.positionOf(state.targetValue)
-            } else {
-                state.requireOffset()
-            }
-            placeable.place(xOffset.roundToInt(), 0)
-        }
+val BounceEasing = Easing { time ->
+    // Simulating a bounce effect using a mathematical formula
+    when {
+        time < 0.3f -> time * time * 2f
+        time < 0.6f -> (time - 0.5f) * (time - 0.5f) * 4f + 0.75f
+        else -> (time - 0.8f) * (time - 0.8f) * 8f + 0.95f
     }
 }
