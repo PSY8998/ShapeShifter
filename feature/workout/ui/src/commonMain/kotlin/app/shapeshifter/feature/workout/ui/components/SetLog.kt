@@ -58,8 +58,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workoutlog.SetLog
 import kotlin.math.roundToInt
 
 @Composable
@@ -114,7 +112,7 @@ fun SetLog(
             )
         }
 
-        var setWeight: String by remember {
+        var setWeight: String by remember(weight) {
             mutableStateOf(weight.takeIf { it != 0 }?.toString() ?: "")
         }
 
@@ -163,7 +161,7 @@ fun SetLog(
                 .defaultMinSize(24.dp),
         )
 
-        var setReps by remember {
+        var setReps by remember(reps) {
             mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "")
         }
 
@@ -227,8 +225,10 @@ fun SetLog(
                     onValueChange = {
                         isCompleted = it
                         onCheckChanged(
-                            setWeight.toIntOrNull() ?: 0,
-                            setReps.toIntOrNull() ?: 0,
+                            if (setWeight.isBlank()) prevWeight ?: 0 else setWeight.toIntOrNull()
+                                ?: 0,
+                            if (setReps.isBlank()) prevReps ?: 0 else setReps.toIntOrNull()
+                                ?: 0,
                         )
                     },
                 )

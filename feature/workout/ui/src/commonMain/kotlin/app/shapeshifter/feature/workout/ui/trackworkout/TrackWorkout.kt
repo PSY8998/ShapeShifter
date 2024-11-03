@@ -294,6 +294,7 @@ private fun LazyListScope.exerciseLog(
                             set.copy(
                                 weight = PositiveInt(weight),
                                 reps = PositiveInt(reps),
+                                finishTime = System.currentTimeMillis()
                             ),
                         )
                     },
