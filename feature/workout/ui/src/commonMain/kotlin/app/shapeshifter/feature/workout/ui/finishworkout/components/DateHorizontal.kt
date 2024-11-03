@@ -3,6 +3,7 @@ package app.shapeshifter.feature.workout.ui.finishworkout.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,29 +20,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import com.kizitonwose.calendar.compose.WeekCalendar
-import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarLayoutInfo
+import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarItemInfo
+import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.WeekDay
 import com.kizitonwose.calendar.core.now
-import com.kizitonwose.calendar.core.plusDays
 import java.time.DayOfWeek
 import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.until
 
 @Composable
 fun DateSelector(
@@ -49,7 +46,7 @@ fun DateSelector(
 ) {
     val todayDate by remember { mutableStateOf(LocalDate.now()) }
 
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var selectedDate by remember { mutableStateOf(todayDate) }
 
     val scope = rememberCoroutineScope()
 
@@ -59,95 +56,18 @@ fun DateSelector(
         firstDayOfWeek = DayOfWeek.MONDAY,
     )
 
-    val layoutInfo = {
-        weekCalendarState.layoutInfo
-    }
-
-//    val selectDate: (date: LocalDate) -> Unit = { date ->
-//        scope.launch {
-//            // handle scrolling
-//            val dayOfWeek = date.adjustedDayOfWeek(DayOfWeek.MONDAY).value
-//            val weekLayoutInfo = weekCalendarState.layoutInfo
-//                .visibleWeeksInfo.find { it.week.days.any { weekDay -> weekDay.date == date } }
-//            val viewportSize = weekCalendarState.layoutInfo.viewportSize.width
-//
-//            // this means week is visible
-//            if (weekLayoutInfo != null) {
-//                val weekSize = weekLayoutInfo.size
-//                val daySize = weekSize / 7
-//                // we need to adjust the size because
-//                val offset = weekLayoutInfo.offset - daySize
-//                val positionOffsetInWeek = dayOfWeek * daySize
-//                val positionToSettle = (viewportSize - daySize) / 2
-//                val offsetFromViewPortStart = offset + positionOffsetInWeek
-//                val positionDiff = positionToSettle - offsetFromViewPortStart
-//                weekCalendarState.animateScrollBy(value = -positionDiff.toFloat())
-//            }
-//        }
-//
-//        selectedDate = date
-//    }
-
-
-    val selectDate: (date: LocalDate) -> Unit = { date ->
+    val selectAndScrollToDate: (date: LocalDate) -> Unit = { date ->
         scope.launch {
-            // Determine the day of the week for the selected date relative to the start of the week (zero-based)
-            val dayOfWeek = date.dayOfWeek.isoDayNumber - 1
-            val visibleWeek = layoutInfo()
-                .visibleWeeksInfo.find { it.week.days.any { weekDay -> weekDay.date == date } }
-            val viewportWidth = weekCalendarState.layoutInfo.viewportSize.width
-
-            if (visibleWeek == null) {
-                // Selected date is outside the viewport - determine direction
-                val firstVisibleDate =
-                    weekCalendarState.layoutInfo.visibleWeeksInfo.first().week.days.first().date
-                val isScrollingLeft = date < firstVisibleDate
-
-                // Adjust target week based on direction
-                val targetDate = if (isScrollingLeft) {
-                    // If scrolling left, go to the start of the week before the target
-                    date.plus(DatePeriod(days = 7))
-                } else {
-                    // If scrolling right, go to the start of the week after the target
-                    date
-                }
-
-                // Scroll to the adjusted target week by date
-                weekCalendarState.animateScrollToWeek(targetDate)
-                weekCalendarState.animateScrollBy(-5f)
-            }
-
-            // After scrolling, find the updated layout info for the week with the selected date
-            val updatedWeekLayoutInfo = layoutInfo()
-                .visibleWeeksInfo.find { it.week.days.any { weekDay -> weekDay.date == date } }
-
-            if (updatedWeekLayoutInfo != null) {
-                val weekOffset = updatedWeekLayoutInfo.offset
-                val weekWidth = updatedWeekLayoutInfo.size
-                val dayWidth = weekWidth / 7
-
-                // Calculate the offset for the selected day within the week
-                val dayOffsetWithinWeek = dayOfWeek * dayWidth
-                val targetOffset = weekOffset + dayOffsetWithinWeek
-
-                // Calculate the center position
-                val centerOffset = (viewportWidth - dayWidth) / 2
-
-                // Calculate scroll distance to center the selected day
-                val scrollDistance = targetOffset - centerOffset
-
-                // Animate scrolling by the computed distance
-                weekCalendarState.animateScrollBy(value = scrollDistance.toFloat())
-            }
+            weekCalendarState.animateScrollToDate(date)
         }
-
         selectedDate = date
     }
 
-
-
+    // for the first time we need.to scroll manually
     LaunchedEffect(Unit) {
-        selectDate(todayDate)
+        scope.launch {
+            weekCalendarState.animateScrollToDate(selectedDate)
+        }
     }
 
     Column(
@@ -164,7 +84,7 @@ fun DateSelector(
                     weekDay = weekDay,
                     selectedDate = selectedDate,
                     onSelectedDate = {
-                        selectDate(it)
+                        selectAndScrollToDate(it)
                     },
                     modifier = Modifier,
                 )
@@ -180,7 +100,7 @@ fun DateSelector(
         ) {
             TextButton(
                 onClick = {
-                    selectDate(todayDate)
+                    selectAndScrollToDate(todayDate)
                 },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier,
@@ -236,14 +156,47 @@ private fun Day(
     }
 }
 
+private suspend fun WeekCalendarState.animateScrollToDate(date: LocalDate) {
+    // Determine the day of the week for the selected date relative to the start of the week (zero-based)
+    val dayOfWeek = date.dayOfWeek.isoDayNumber - 1
+    val viewportWidth = layoutInfo.viewportSize.width
 
-fun LocalDate.adjustedDayOfWeek(startOfWeek: DayOfWeek): DayOfWeek {
-    // Get the day of the week for the current date
-    val dayOfWeek = this.dayOfWeek
+    var weekInfoForDay: WeekCalendarItemInfo?
 
-    // Calculate the shift to adjust for the user's start of the week
-    val shift = (dayOfWeek.ordinal - startOfWeek.ordinal + 7) % 7
+    val visibleWeek = layoutInfo
+        .visibleWeeksInfo.find { it.week.days.any { weekDay -> weekDay.date == date } }
 
-    // Return the adjusted day of the week
-    return DayOfWeek.of((startOfWeek.ordinal + shift) % 7 + 1)
+    weekInfoForDay = visibleWeek
+
+    while (weekInfoForDay == null) {
+        val firstVisibleDate =
+            layoutInfo.visibleWeeksInfo.first().week.days.first().date
+
+        val isScrollingLeft = date < firstVisibleDate
+
+        // check if we can do this without using a constant
+        scrollBy((if (isScrollingLeft) -1f else 1f) * 100)
+
+        val weekInView: WeekCalendarItemInfo? = layoutInfo
+            .visibleWeeksInfo.find { it.week.days.any { weekDay -> weekDay.date == date } }
+
+        weekInfoForDay = weekInView
+    }
+
+    val weekOffset = weekInfoForDay.offset
+    val weekWidth = weekInfoForDay.size
+    val dayWidth = weekWidth / 7
+
+    // Calculate the offset for the selected day within the week
+    val dayOffsetWithinWeek = dayOfWeek * dayWidth
+    val targetOffset = weekOffset + dayOffsetWithinWeek
+
+    // Calculate the center position
+    val centerOffset = (viewportWidth - dayWidth) / 2
+
+    // Calculate scroll distance to center the selected day
+    val scrollDistance = targetOffset - centerOffset
+
+    // Animate scrolling by the computed distance
+    animateScrollBy(value = scrollDistance.toFloat())
 }
