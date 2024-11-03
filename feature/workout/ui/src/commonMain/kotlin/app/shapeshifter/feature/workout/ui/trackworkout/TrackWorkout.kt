@@ -521,10 +521,7 @@ fun WorkoutTimer(startTimeInSecs: Long) {
     }
 
     val minutesAndSeconds by remember(ticks) {
-        val minutes = ticks / 60
-        val seconds = ticks % 60
-
-        mutableStateOf("${minutes}m: ${seconds}s")
+        mutableStateOf(naturalTimeSpent(ticks))
     }
 
     Text(
@@ -534,6 +531,21 @@ fun WorkoutTimer(startTimeInSecs: Long) {
         fontWeight = FontWeight.SemiBold,
     )
 }
+
+fun naturalTimeSpent(timeSpent: Long): String {
+    val days = timeSpent / (24 * 3600)
+    val hours = (timeSpent % (24 * 3600)) / 3600
+    val minutes = (timeSpent % 3600) / 60
+    val seconds = timeSpent % 60
+
+    return buildString {
+        if (days > 0) append("${days}d:")
+        if (hours > 0 || days > 0) append("${hours}h:")
+        if (minutes > 0 || hours > 0 || days > 0) append("${minutes}m:")
+        append("${seconds}s")
+    }
+}
+
 
 @Composable
 private fun DiscardWorkout(
