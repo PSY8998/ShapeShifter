@@ -64,82 +64,86 @@ class SqlDelightWorkoutEntityDao(
         workoutPlanId: Long,
         workoutLogId: Long,
     ): Flow<WorkoutSession> {
-        return db.workout_sessionQueries.selectWorkoutSession(
-            workoutLogId = workoutLogId,
-        )
+        return db.workout_sessionQueries
+            .selectWorkoutSession(workoutLogId = workoutLogId)
             .asFlow()
             .mapToList(dispatchers.io)
             .mapNotNull { items ->
-                val item = items.firstOrNull() ?: return@mapNotNull null
-                val exerciseMap = mutableMapOf<Long, MutableList<SetLog>>()
+                // Return null if no items are found
+                val firstItem = items.firstOrNull() ?: return@mapNotNull null
 
+                // Initialize WorkoutLog
                 val workoutLog = WorkoutLog(
-                    id = item.workout_log_id,
-                    workoutPlanId = item.workout_plan_id,
-                    startTimeInMillis = item.workout_start_time,
-                    finishTimeInMillis = item.workout_finish_time,
+                    id = firstItem.workout_log_id,
+                    workoutPlanId = firstItem.workout_plan_id,
+                    startTimeInMillis = firstItem.workout_start_time,
+                    finishTimeInMillis = firstItem.workout_finish_time,
                     note = "",
                 )
 
-                items.forEach { entry ->
-                    if (entry.exercise_log_id != null && entry.exercise_id != null) {
-                        exerciseMap.getOrPut(entry.exercise_id) { mutableListOf() }.also {
-                            if (entry.set_log_id != null) {
-                                val previousSet = previousWorkout(
-                                    workoutPlanId = entry.workout_plan_id,
-                                    exerciseId = entry.exercise_id,
-                                    setTypeIndex = entry.set_type_index ?: 0,
-                                    currentExerciseLogId = entry.exercise_log_id,
-                                )
+                // Group items by exercise_id and map them to SetLogs
+                val exerciseSessions = items
+                    .filter { it.exercise_log_id != null && it.exercise_id != null }
+                    .groupBy { it.exercise_id }
+                    .mapNotNull sessionMap@{ (exerciseId, entries) ->
+                        // Retrieve first entry for each exercise_id to avoid multiple lookups
+                        val entry = entries.firstOrNull() ?: return@sessionMap null
 
-                                val set = SetLog(
-                                    id = entry.set_log_id,
-                                    setTypeIndex = PositiveInt(entry.set_type_index?.toInt()!!),
-                                    weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
-                                    reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
-                                    prevReps = previousSet?.reps ?: PositiveInt(0),
-                                    prevWeight = previousSet?.weight ?: PositiveInt(0),
-                                    completed = false,
-                                    exerciseLogId = entry.exercise_log_id,
-                                    finishTime = entry.set_finish_time ?: 0,
-                                    exercisePlanId = entry.exercise_plan_id,
-                                    exerciseId = entry.exercise_id,
-                                    workoutPlanId = entry.workout_plan_id,
-                                    workoutLogId = entry.workout_log_id,
-                                )
-                                it.add(set)
+                        // Map each entry to a SetLog, adding previous workout data if available
+                        val sets = entries.mapNotNull entries@{ item ->
+
+                            if (
+                                item.set_log_id == null
+                                || item.exercise_id == null
+                            ) {
+                                return@entries null
                             }
-                        }
-                    }
-                }
 
-                val exercises = exerciseMap.entries.mapNotNull { (exerciseId, sets) ->
-                    items.find { it.exercise_id == exerciseId }?.let {
+                            val previousSet = previousWorkout(
+                                workoutPlanId = item.workout_plan_id,
+                                exerciseId = item.exercise_id,
+                                setTypeIndex = item.set_type_index ?: 0,
+                                currentExerciseLogId = item.exercise_log_id!!,
+                            )
+
+                            SetLog(
+                                id = item.set_log_id,
+                                setTypeIndex = PositiveInt(item.set_type_index?.toInt() ?: 0),
+                                weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
+                                reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
+                                prevReps = previousSet?.reps ?: PositiveInt(0),
+                                prevWeight = previousSet?.weight ?: PositiveInt(0),
+                                completed = false,
+                                exerciseLogId = item.exercise_log_id,
+                                finishTime = item.set_finish_time ?: 0,
+                                exercisePlanId = item.exercise_plan_id,
+                                exerciseId = item.exercise_id,
+                                workoutPlanId = item.workout_plan_id,
+                                workoutLogId = item.workout_log_id,
+                            )
+                        }
+
                         ExerciseSession(
                             exerciseLog = ExerciseLog(
-                                id = it.exercise_log_id!!,
-                                exerciseId = it.exercise_id!!,
-                                exercisePlanId = it.exercise_plan_id,
+                                id = entry.exercise_log_id!!,
+                                exerciseId = exerciseId!!,
+                                exercisePlanId = entry.exercise_plan_id,
                                 note = "",
                                 workoutLogId = workoutLog.id,
                                 workoutPlanId = workoutLog.workoutPlanId,
                             ),
                             exercise = Exercise(
-                                id = it.exercise_id,
-                                primaryMuscle = it.exercise_primary_muscle!!,
-                                secondaryMuscle = it.exercise_secondary_muscles!!,
-                                name = it.exercise_name!!,
+                                id = exerciseId,
+                                primaryMuscle = entry.exercise_primary_muscle!!,
+                                secondaryMuscle = entry.exercise_secondary_muscles.orEmpty(),
+                                name = entry.exercise_name.orEmpty(),
                                 imageUrl = "",
                             ),
                             sets = sets,
                         )
                     }
-                }
 
-                WorkoutSession(
-                    workoutLog,
-                    exercises,
-                )
+                WorkoutSession(workoutLog, exerciseSessions)
             }
             .flowOn(dispatchers.io)
     }
