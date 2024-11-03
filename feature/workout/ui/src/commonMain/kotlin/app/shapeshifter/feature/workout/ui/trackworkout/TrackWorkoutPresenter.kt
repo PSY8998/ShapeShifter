@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
+import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
@@ -146,11 +147,12 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnFinishWorkout -> {
                     scope.launch {
-                        val result = finishWorkoutUseCase(
-                            params = FinishWorkoutUseCase.Params(
-                                workoutSession = event.workoutSession,
-                            ),
-                        )
+                        navigator.goTo(FinishWorkoutScreen(event.workoutSession.workoutLog.id))
+//                        val result = finishWorkoutUseCase(
+//                            params = FinishWorkoutUseCase.Params(
+//                                workoutSession = event.workoutSession,
+//                            ),
+//                        )
                     }
                 }
 

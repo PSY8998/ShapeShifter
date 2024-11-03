@@ -8,6 +8,7 @@ import app.shapeshifter.feature.home.ui.HomeComponent
 import app.shapeshifter.feature.profile.ui.ProfileComponent
 import app.shapeshifter.feature.root.ui.ShapeShifterContent
 import app.shapeshifter.feature.workout.ui.createworkoutplan.CreateWorkoutPlanComponent
+import app.shapeshifter.feature.workout.ui.finishworkout.FinishWorkoutComponent
 import app.shapeshifter.feature.workout.ui.savedworkouts.SavedWorkoutsComponent
 import app.shapeshifter.feature.workout.ui.trackworkout.TrackWorkoutComponent
 import com.slack.circuit.foundation.Circuit
@@ -27,7 +28,8 @@ abstract class ActivityComponent(
     SavedWorkoutsComponent,
     TrackWorkoutComponent,
     CreateWorkoutPlanComponent,
-    ProfileComponent{
+    ProfileComponent,
+    FinishWorkoutComponent {
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope
