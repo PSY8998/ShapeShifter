@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.circuitx.overlay)
 
             implementation(libs.kotlinx.serialization)
+            implementation(libs.calendar)
         }
     }
 }

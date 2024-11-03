@@ -93,6 +93,9 @@ coil-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
+# calendar
+calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version = "2.6.0-beta01" }
+
 # test
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

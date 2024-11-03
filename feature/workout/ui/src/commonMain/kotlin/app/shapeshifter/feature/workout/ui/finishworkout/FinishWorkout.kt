@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
+import app.shapeshifter.feature.workout.ui.finishworkout.components.DateSelector
 import app.shapeshifter.feature.workout.ui.finishworkout.components.FinishWorkoutTopSection
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -41,6 +43,11 @@ fun FinishWorkout(
             FinishWorkoutTopSection(
                 workoutName = "Quick Workout",
                 modifier = Modifier,
+            )
+
+            DateSelector(
+                modifier = Modifier
+                    .padding(top = Dimens.Padding.Medium),
             )
         }
     }
