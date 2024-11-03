@@ -68,6 +68,7 @@ fun SetLog(
     isBeingTracked: Boolean,
     isChecked: Boolean,
     onCheckChanged: (
+        isChecked: Boolean,
         weight: Int,
         reps: Int,
     ) -> Unit,
@@ -225,6 +226,7 @@ fun SetLog(
                     onValueChange = {
                         isCompleted = it
                         onCheckChanged(
+                            it,
                             if (setWeight.isBlank()) prevWeight ?: 0 else setWeight.toIntOrNull()
                                 ?: 0,
                             if (setReps.isBlank()) prevReps ?: 0 else setReps.toIntOrNull()

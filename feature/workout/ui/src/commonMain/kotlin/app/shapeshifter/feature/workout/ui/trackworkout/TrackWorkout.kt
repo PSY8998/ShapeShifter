@@ -289,12 +289,12 @@ private fun LazyListScope.exerciseLog(
                     weight = set.weight.value,
                     reps = set.reps.value,
                     isChecked = set.finishTime > 0,
-                    onCheckChanged = { weight, reps ->
+                    onCheckChanged = { isChecked, weight, reps ->
                         onCompleteSet(
                             set.copy(
                                 weight = PositiveInt(weight),
                                 reps = PositiveInt(reps),
-                                finishTime = System.currentTimeMillis()
+                                finishTime = if (isChecked) System.currentTimeMillis() else 0,
                             ),
                         )
                     },
