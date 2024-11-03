@@ -64,6 +64,9 @@ class SqlDelightWorkoutEntityDao(
         workoutPlanId: Long,
         workoutLogId: Long,
     ): Flow<WorkoutSession> {
+        // Cache for previousWorkout results
+        val previousWorkoutCache = mutableMapOf<Triple<Long, Long, Long>, SetLog?>()
+
         return db.workout_sessionQueries
             .selectWorkoutSession(workoutLogId = workoutLogId)
             .asFlow()
@@ -92,19 +95,28 @@ class SqlDelightWorkoutEntityDao(
                         // Map each entry to a SetLog, adding previous workout data if available
                         val sets = entries.mapNotNull entries@{ item ->
 
-                            if (
-                                item.set_log_id == null
+                            if (item.set_log_id == null
                                 || item.exercise_id == null
+                                || item.exercise_log_id == null
                             ) {
                                 return@entries null
                             }
 
-                            val previousSet = previousWorkout(
-                                workoutPlanId = item.workout_plan_id,
-                                exerciseId = item.exercise_id,
-                                setTypeIndex = item.set_type_index ?: 0,
-                                currentExerciseLogId = item.exercise_log_id!!,
+                            val cacheKey = Triple(
+                                item.workout_plan_id,
+                                item.exercise_id,
+                                item.set_type_index ?: 0,
                             )
+
+                            // Retrieve previous set from cache or compute if not cached
+                            val previousSet = previousWorkoutCache.getOrPut(cacheKey) {
+                                previousWorkout(
+                                    workoutPlanId = item.workout_plan_id,
+                                    exerciseId = item.exercise_id,
+                                    setTypeIndex = item.set_type_index ?: 0,
+                                    currentExerciseLogId = item.exercise_log_id
+                                )
+                            }
 
                             SetLog(
                                 id = item.set_log_id,
