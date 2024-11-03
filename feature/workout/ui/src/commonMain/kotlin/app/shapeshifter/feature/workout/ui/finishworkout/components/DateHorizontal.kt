@@ -168,6 +168,8 @@ private suspend fun WeekCalendarState.animateScrollToDate(date: LocalDate) {
 
     weekInfoForDay = visibleWeek
 
+    // this while loop is just wrong
+    // need to check for more break conditions
     while (weekInfoForDay == null) {
         val firstVisibleDate =
             layoutInfo.visibleWeeksInfo.first().week.days.first().date
