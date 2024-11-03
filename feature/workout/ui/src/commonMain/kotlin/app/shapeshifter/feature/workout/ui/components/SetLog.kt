@@ -1,5 +1,7 @@
 package app.shapeshifter.feature.workout.ui.components
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.exponentialDecay
@@ -252,50 +254,39 @@ fun SetAnchorBox(
 ) {
     val density = LocalDensity.current
 
-    val state = rememberSaveable(
-        saver = AnchoredDraggableState.Saver(
-            snapAnimationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            decayAnimationSpec = exponentialDecay(),
-            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
-            velocityThreshold = { with(density) { 100.dp.toPx() } },
+    val state = rememberAnchorDraggableState(
+        initialValue = SetAnchors.UNSELECTED,
+        positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
+        velocityThreshold = { with(density) { 100.dp.toPx() } },
+        decayAnimationSpec = exponentialDecay(
+            frictionMultiplier = 1f,
         ),
-    ) {
-        AnchoredDraggableState(
-            initialValue = SetAnchors.UNSELECTED,
-            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
-            velocityThreshold = { with(density) { 100.dp.toPx() } },
-            decayAnimationSpec = exponentialDecay(
-                frictionMultiplier = 1f,
-            ),
-            snapAnimationSpec = spring(
-                stiffness = Spring.StiffnessMedium,
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-            ),
-            confirmValueChange = {
-                it != SetAnchors.OVERSCROLL
+        snapAnimationSpec = spring(
+            stiffness = Spring.StiffnessMedium,
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+        ),
+        confirmValueChange = {
+            it != SetAnchors.OVERSCROLL
+        },
+    ).apply {
+        updateAnchors(
+            newAnchors = DraggableAnchors {
+                with(density) {
+                    SetAnchors.UNSELECTED at 0.dp.toPx()
+                    SetAnchors.SELECTED at -80.dp.toPx()
+                    SetAnchors.OVERSCROLL at -180.dp.toPx()
+                }
             },
-        ).apply {
-            updateAnchors(
-                newAnchors = DraggableAnchors {
-                    with(density) {
-                        SetAnchors.UNSELECTED at 0.dp.toPx()
-                        SetAnchors.SELECTED at -80.dp.toPx()
-                        SetAnchors.OVERSCROLL at -180.dp.toPx()
-                    }
-                },
-            )
-        }
+        )
     }
+
     Box(
         modifier = modifier,
         propagateMinConstraints = true,
     ) {
-        val selectedProgress = state.progress(SetAnchors.UNSELECTED, SetAnchors.SELECTED)
         Row(
             content = {
+                val selectedProgress = state.progress(SetAnchors.UNSELECTED, SetAnchors.SELECTED)
                 backgroundContent(selectedProgress)
             },
             modifier = Modifier.matchParentSize(),
@@ -316,6 +307,36 @@ fun SetAnchorBox(
                         y = 0,
                     )
                 },
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun <T : Any> rememberAnchorDraggableState(
+    initialValue: T,
+    snapAnimationSpec: AnimationSpec<Float>,
+    decayAnimationSpec: DecayAnimationSpec<Float>,
+    positionalThreshold: (distance: Float) -> Float,
+    velocityThreshold: () -> Float,
+    confirmValueChange: (T) -> Boolean = { true },
+): AnchoredDraggableState<T> {
+    return rememberSaveable(
+        saver = AnchoredDraggableState.Saver(
+            snapAnimationSpec = snapAnimationSpec,
+            decayAnimationSpec = decayAnimationSpec,
+            positionalThreshold = positionalThreshold,
+            velocityThreshold = velocityThreshold,
+            confirmValueChange = confirmValueChange,
+        ),
+    ) {
+        AnchoredDraggableState(
+            initialValue = initialValue,
+            positionalThreshold = positionalThreshold,
+            velocityThreshold = velocityThreshold,
+            decayAnimationSpec = decayAnimationSpec,
+            snapAnimationSpec = snapAnimationSpec,
+            confirmValueChange = confirmValueChange,
         )
     }
 }
