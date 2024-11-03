@@ -66,7 +66,6 @@ class SqlDelightWorkoutEntityDao(
     ): Flow<WorkoutSession> {
         return db.workout_sessionQueries.selectWorkoutSession(
             workoutLogId = workoutLogId,
-            workoutPlanId = workoutPlanId,
         )
             .asFlow()
             .mapToList(dispatchers.io)
@@ -83,30 +82,27 @@ class SqlDelightWorkoutEntityDao(
                 )
 
                 items.forEach { entry ->
-                    if (entry.exercise_id != null) {
+                    if (entry.exercise_log_id != null && entry.exercise_id != null) {
                         exerciseMap.getOrPut(entry.exercise_id) { mutableListOf() }.also {
                             if (entry.set_log_id != null) {
+                                val previousSet = previousWorkout(
+                                    workoutPlanId = entry.workout_plan_id,
+                                    exerciseId = entry.exercise_id,
+                                    setTypeIndex = entry.set_type_index ?: 0,
+                                    currentExerciseLogId = entry.exercise_log_id,
+                                )
+
                                 val set = SetLog(
                                     id = entry.set_log_id,
-                                    setTypeIndex = PositiveInt(0),
+                                    setTypeIndex = PositiveInt(entry.set_type_index?.toInt()!!),
                                     weight = PositiveInt(max(entry.weight?.toInt() ?: 0, 0)),
                                     reps = PositiveInt(max(entry.reps?.toInt() ?: 0, 0)),
-                                    prevReps = PositiveInt(
-                                        max(
-                                            entry.set_prev_reps?.toInt() ?: 0,
-                                            0,
-                                        ),
-                                    ),
-                                    prevWeight = PositiveInt(
-                                        max(
-                                            entry.set_prev_weight?.toInt() ?: 0,
-                                            0,
-                                        ),
-                                    ),
+                                    prevReps = previousSet?.reps ?: PositiveInt(0),
+                                    prevWeight = previousSet?.weight ?: PositiveInt(0),
                                     completed = false,
-                                    exerciseLogId = entry.exercise_log_id!!,
+                                    exerciseLogId = entry.exercise_log_id,
                                     finishTime = entry.set_finish_time ?: 0,
-                                    exercisePlanId = entry.exercise_plan_id!!,
+                                    exercisePlanId = entry.exercise_plan_id,
                                     exerciseId = entry.exercise_id,
                                     workoutPlanId = entry.workout_plan_id,
                                     workoutLogId = entry.workout_log_id,
@@ -123,7 +119,7 @@ class SqlDelightWorkoutEntityDao(
                             exerciseLog = ExerciseLog(
                                 id = it.exercise_log_id!!,
                                 exerciseId = it.exercise_id!!,
-                                exercisePlanId =it.exercise_plan_id!!,
+                                exercisePlanId = it.exercise_plan_id,
                                 note = "",
                                 workoutLogId = workoutLog.id,
                                 workoutPlanId = workoutLog.workoutPlanId,
@@ -146,6 +142,51 @@ class SqlDelightWorkoutEntityDao(
                 )
             }
             .flowOn(dispatchers.io)
+    }
+
+    private fun previousWorkout(
+        workoutPlanId: Long,
+        exerciseId: Long,
+        currentExerciseLogId: Long,
+        setTypeIndex: Long,
+    ): SetLog? {
+        val previousSetForWorkout = db.set_logQueries
+            .previousExerciseSetForWorkout(
+                workoutPlanId = workoutPlanId,
+                exerciseId = exerciseId,
+                setTypeIndex = setTypeIndex,
+                currentExerciseLogId = currentExerciseLogId,
+            ).executeAsOneOrNull()
+            ?: db.set_logQueries
+                .previousExerciseSetForIndex(
+                    exerciseId = exerciseId,
+                    setTypeIndex = setTypeIndex,
+                    currentExerciseLogId = currentExerciseLogId,
+                ).executeAsOneOrNull()
+            ?: db.set_logQueries
+                .previousExerciseSetWithHighestIndex(
+                    exerciseId = exerciseId,
+                    currentExerciseLogId = currentExerciseLogId,
+                )
+                .executeAsOneOrNull()
+            ?: return null
+
+        return SetLog(
+            id = previousSetForWorkout.id,
+            setTypeIndex = PositiveInt(previousSetForWorkout.set_type_index.toInt()),
+            exerciseLogId = previousSetForWorkout.exercise_log_id,
+            exercisePlanId = previousSetForWorkout.exercise_plan_id,
+            exerciseId = previousSetForWorkout.exercise_id,
+            workoutPlanId = previousSetForWorkout.workout_plan_id,
+            workoutLogId = previousSetForWorkout.workout_log_id,
+            weight = PositiveInt(previousSetForWorkout.weight.toInt()),
+            reps = PositiveInt(previousSetForWorkout.reps.toInt()),
+            prevReps = PositiveInt(0),
+            prevWeight = PositiveInt(0),
+            completed = true,
+            finishTime = 0,
+        )
+
     }
 
     override fun activeWorkout(): Flow<WorkoutSessionOverview?> {

@@ -49,7 +49,7 @@ class TrackWorkoutPresenterFactory(
 @Inject
 class TrackWorkoutPresenter(
     @Assisted private val navigator: Navigator,
-    private val storeWorkoutExerciseUseCase: AddExerciseLogUseCase,
+    private val addExerciseUseCase: AddExerciseLogUseCase,
     private val observeWorkoutDetailsUseCase: ObserveWorkoutDetailsUseCase,
     private val createWorkoutUseCase: CreateWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
@@ -77,7 +77,7 @@ class TrackWorkoutPresenter(
                 val selectedExerciseIds = result.exerciseIds
                 scope.launch {
                     if (workoutId != 0L) {
-                        storeWorkoutExerciseUseCase(
+                        addExerciseUseCase(
                             AddExerciseLogUseCase.Params(
                                 workoutLogId = workoutId,
                                 exerciseIds = selectedExerciseIds,

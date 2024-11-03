@@ -13,6 +13,13 @@ class SqlDelightSetLogEntityDao(
     private val transactionRunner: DatabaseTransactionRunner,
 ) : SqlDelightEntityDao<SetLog>, SetLogEntityDao {
     override fun insert(entity: SetLog): Long {
+        val lastSet = db.set_logQueries.exerciseLastSet(
+            exerciseLogId = entity.exerciseLogId,
+        ).executeAsOneOrNull()
+
+        // update set index
+        val setIndex = lastSet?.set_type_index?.toInt()?.let { it + 1 } ?: 0
+
         return transactionRunner {
             db.set_logQueries.insert(
                 id = entity.id,
@@ -21,7 +28,7 @@ class SqlDelightSetLogEntityDao(
                 workoutPlanId = entity.workoutPlanId,
                 exerciseId = entity.exerciseId,
                 exercisePlanId = entity.exercisePlanId,
-                setTypeIndex = entity.setTypeIndex.value.toLong(),
+                setTypeIndex = setIndex.toLong(),
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
                 finishTime = entity.finishTime,

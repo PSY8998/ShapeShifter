@@ -58,6 +58,39 @@ DELETE FROM set_log
     WHERE id = :id
 ;
 
+previousExerciseSetForWorkout:
+SELECT *
+FROM set_log
+WHERE workout_plan_id = :workoutPlanId
+AND exercise_id = :exerciseId
+AND set_type_index = :setTypeIndex
+AND exercise_log_id < :currentExerciseLogId
+ORDER BY id DESC
+LIMIT 1;
+
+previousExerciseSetForIndex:
+SELECT *
+FROM set_log
+WHERE exercise_id = :exerciseId
+AND set_type_index = :setTypeIndex
+AND exercise_log_id < :currentExerciseLogId
+ORDER BY id DESC
+LIMIT 1;
+
+previousExerciseSetWithHighestIndex:
+SELECT *
+FROM set_log
+WHERE exercise_id = :exerciseId
+AND exercise_log_id < :currentExerciseLogId
+ORDER BY set_type_index DESC, id DESC
+LIMIT 1;
+
+exerciseLastSet:
+SELECT *
+FROM set_log
+WHERE exercise_log_id = :exerciseLogId
+ORDER BY id DESC
+LIMIT 1;
 
 lastInsertRowId:
 SELECT last_insert_rowid();
