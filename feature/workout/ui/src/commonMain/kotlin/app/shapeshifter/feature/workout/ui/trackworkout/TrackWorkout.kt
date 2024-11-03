@@ -1,6 +1,8 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,8 +43,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
@@ -255,16 +261,47 @@ private fun LazyListScope.exerciseLog(
         key = { _, set -> "set_${set.id}" },
     ) { index, set ->
         SetAnchorBox(
-            backgroundContent = {
+            backgroundContent = { progress ->
                 Box(
                     contentAlignment = Alignment.CenterEnd,
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = MaterialTheme.colorScheme.errorContainer),
                 ) {
+                    // Define the start and end offset for the slide animation
+                    val startOffset = 80.dp // Start 100.dp to the right (adjust as needed)
+                    val endOffset = 0.dp     // End position is 0.dp (the original position)
+
+                    var targetOffset by remember { mutableStateOf(startOffset) }
+
+                    // Animate the offset based on targetOffset
+                    val animatedOffset by animateDpAsState(
+                        targetValue = targetOffset,
+                        animationSpec = tween(
+                            easing = FastOutSlowInEasing
+                        ),
+                        label = "DeleteTransition",
+                    )
+
+                    // Trigger animation only once when progress reaches 1.0
+                    LaunchedEffect(progress) {
+                        if (progress == 1.0f) {
+                            targetOffset = endOffset
+                        }
+
+                        if (progress == 0f) {
+                            targetOffset = startOffset
+                        }
+                    }
+
+                    val density = LocalDensity.current
+
                     IconButton(
                         modifier = Modifier
-                            .padding(horizontal = Dimens.Padding.Medium),
+                            .padding(horizontal = Dimens.Padding.Medium)
+                            .graphicsLayer {
+                                translationX = with(density) { animatedOffset.toPx() }
+                            },
                         onClick = {
 
                         },

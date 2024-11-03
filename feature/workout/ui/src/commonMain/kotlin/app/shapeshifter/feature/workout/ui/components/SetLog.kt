@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -244,14 +245,24 @@ enum class SetAnchors {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SetAnchorBox(
-    backgroundContent: @Composable RowScope.() -> Unit,
+    backgroundContent: @Composable RowScope.(progress: Float) -> Unit,
     content: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     val density = LocalDensity.current
 
-    val state = remember {
+    val state = rememberSaveable(
+        saver = AnchoredDraggableState.Saver(
+            snapAnimationSpec = spring(
+                stiffness = Spring.StiffnessMedium,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+            ),
+            decayAnimationSpec = exponentialDecay(),
+            positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
+            velocityThreshold = { with(density) { 100.dp.toPx() } },
+        ),
+    ) {
         AnchoredDraggableState(
             initialValue = SetAnchors.UNSELECTED,
             positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
@@ -282,8 +293,11 @@ fun SetAnchorBox(
         modifier = modifier,
         propagateMinConstraints = true,
     ) {
+        val selectedProgress = state.progress(SetAnchors.UNSELECTED, SetAnchors.SELECTED)
         Row(
-            content = backgroundContent,
+            content = {
+                backgroundContent(selectedProgress)
+            },
             modifier = Modifier.matchParentSize(),
         )
         Row(
@@ -303,14 +317,5 @@ fun SetAnchorBox(
                     )
                 },
         )
-    }
-}
-
-val BounceEasing = Easing { time ->
-    // Simulating a bounce effect using a mathematical formula
-    when {
-        time < 0.3f -> time * time * 2f
-        time < 0.6f -> (time - 0.5f) * (time - 0.5f) * 4f + 0.75f
-        else -> (time - 0.8f) * (time - 0.8f) * 8f + 0.95f
     }
 }
