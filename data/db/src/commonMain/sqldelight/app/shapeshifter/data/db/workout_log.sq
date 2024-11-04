@@ -4,23 +4,26 @@ CREATE TABLE IF NOT EXISTS workout_log (
     -- saved_workout_id is primary id of saved_workout table,
     `workout_plan_id` INTEGER NOT NULL,
     `start_time` INTEGER NOT NULL,
-    `finish_time` INTEGER NOT NULL
+    `finish_time` INTEGER NOT NULL,
+    `name` TEXT NOT NULL
 );
 
 insert:
-INSERT INTO workout_log (`id`, `workout_plan_id`,`start_time`, `finish_time`)
+INSERT INTO workout_log (`id`, `workout_plan_id`,`start_time`, `finish_time`, `name`)
 VALUES (
 nullif(:id, 0),
 :workoutPlanId,
 :startTime,
-:finishTime
+:finishTime,
+:name
 );
 
 update:
 UPDATE workout_log SET
 workout_plan_id = :workoutPlanId,
 start_time = :startTime,
-finish_time = :finishTime
+finish_time = :finishTime,
+name = :name
 WHERE id = :id;
 
 lastInsertRowId:
@@ -33,6 +36,7 @@ routine.name,
 workout_log.workout_plan_id,
 workout_plan.name,
 workout_log.id,
+workout_log.name,
 workout_log.start_time,
 workout_log.finish_time
 FROM workout_log

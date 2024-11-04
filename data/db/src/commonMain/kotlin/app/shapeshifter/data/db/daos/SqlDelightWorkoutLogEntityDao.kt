@@ -44,6 +44,7 @@ class SqlDelightWorkoutEntityDao(
             db.workout_logQueries.insert(
                 id = entity.id,
                 workoutPlanId = entity.workoutPlanId,
+                name = entity.name,
                 startTime = entity.startTimeInMillis,
                 finishTime = entity.finishTimeInMillis,
             )
@@ -54,6 +55,7 @@ class SqlDelightWorkoutEntityDao(
     override fun update(entity: WorkoutLog) {
         db.workout_logQueries.update(
             workoutPlanId = entity.workoutPlanId,
+            name = entity.name,
             startTime = entity.startTimeInMillis,
             finishTime = entity.finishTimeInMillis,
             id = entity.id,
@@ -83,6 +85,7 @@ class SqlDelightWorkoutEntityDao(
                 val workoutLog = WorkoutLog(
                     id = firstItem.workout_log_id,
                     workoutPlanId = firstItem.workout_plan_id,
+                    name = firstItem.workout_log_name,
                     startTimeInMillis = firstItem.workout_start_time,
                     finishTimeInMillis = firstItem.workout_finish_time,
                     note = "",
@@ -182,6 +185,7 @@ class SqlDelightWorkoutEntityDao(
                         val workoutLog = WorkoutLog(
                             id = firstItem.workout_log_id,
                             workoutPlanId = firstItem.workout_plan_id,
+                            name = firstItem.workout_log_name,
                             startTimeInMillis = firstItem.workout_start_time,
                             finishTimeInMillis = firstItem.workout_finish_time,
                             note = "",
@@ -321,6 +325,7 @@ class SqlDelightWorkoutEntityDao(
                 workoutPlanId,
                 name,
                 id,
+                workoutLogName,
                 startTime,
                 finishTime,
             ->
@@ -336,6 +341,7 @@ class SqlDelightWorkoutEntityDao(
                 workout = WorkoutLog(
                     id = id,
                     workoutPlanId = workoutPlanId,
+                    name = workoutLogName,
                     startTimeInMillis = startTime,
                     finishTimeInMillis = finishTime,
                     note = "",
