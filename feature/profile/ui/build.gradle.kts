@@ -27,3 +27,7 @@ kotlin {
         }
     }
 }
+dependencies {
+    implementation(project(":data:models"))
+    implementation(project(":feature:workout:domain"))
+}

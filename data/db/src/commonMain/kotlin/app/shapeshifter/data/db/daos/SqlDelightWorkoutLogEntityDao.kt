@@ -6,6 +6,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
+import app.shapeshifter.data.db.WorkoutSessions
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
@@ -26,7 +27,10 @@ interface WorkoutEntityDao : EntityDao<WorkoutLog> {
         workoutLogId: Long,
     ): Flow<WorkoutSession>
 
+    fun observeWorkoutSessions(): Flow<List<WorkoutSession>>
+
     fun activeWorkout(): Flow<WorkoutSessionOverview?>
+
 }
 
 @Inject
@@ -114,7 +118,7 @@ class SqlDelightWorkoutEntityDao(
                                     workoutPlanId = item.workout_plan_id,
                                     exerciseId = item.exercise_id,
                                     setTypeIndex = item.set_type_index ?: 0,
-                                    currentExerciseLogId = item.exercise_log_id
+                                    currentExerciseLogId = item.exercise_log_id,
                                 )
                             }
 
@@ -156,6 +160,111 @@ class SqlDelightWorkoutEntityDao(
                     }
 
                 WorkoutSession(workoutLog, exerciseSessions)
+            }
+            .flowOn(dispatchers.io)
+    }
+
+    override fun observeWorkoutSessions(): Flow<List<WorkoutSession>> {
+        val previousWorkoutCache = mutableMapOf<Triple<Long, Long, Long>, SetLog?>()
+
+        return db.workout_sessionQueries
+            .workoutSessions()
+            .asFlow()
+            .mapToList(dispatchers.io)
+            .mapNotNull { items ->
+
+                // Group items by exercise_id and map them to SetLogs
+                val sessions = items
+                    .groupBy { it.workout_log_id }
+                    .mapNotNull workoutMap@{ (_, entries) ->
+                        val firstItem = entries.firstOrNull() ?: return@workoutMap null
+
+                        val workoutLog = WorkoutLog(
+                            id = firstItem.workout_log_id,
+                            workoutPlanId = firstItem.workout_plan_id,
+                            startTimeInMillis = firstItem.workout_start_time,
+                            finishTimeInMillis = firstItem.workout_finish_time,
+                            note = "",
+                        )
+
+                        val exerciseSessions = entries
+                            .filter { it.exercise_log_id != null && it.exercise_id != null }
+                            .groupBy { it.exercise_log_id }
+                            .mapNotNull sessionMap@{ (exerciseId, entries) ->
+                                // Retrieve first entry for each exercise_id to avoid multiple lookups
+                                val entry = entries.firstOrNull() ?: return@sessionMap null
+
+                                // Map each entry to a SetLog, adding previous workout data if available
+                                val sets = entries.mapNotNull entries@{ item ->
+
+                                    if (item.set_log_id == null
+                                        || item.exercise_id == null
+                                        || item.exercise_log_id == null
+                                    ) {
+                                        return@entries null
+                                    }
+
+                                    val cacheKey = Triple(
+                                        item.workout_plan_id,
+                                        item.exercise_id,
+                                        item.set_type_index ?: 0,
+                                    )
+
+                                    // Retrieve previous set from cache or compute if not cached
+                                    val previousSet = previousWorkoutCache.getOrPut(cacheKey) {
+                                        previousWorkout(
+                                            workoutPlanId = item.workout_plan_id,
+                                            exerciseId = item.exercise_id,
+                                            setTypeIndex = item.set_type_index ?: 0,
+                                            currentExerciseLogId = item.exercise_log_id,
+                                        )
+                                    }
+
+                                    SetLog(
+                                        id = item.set_log_id,
+                                        setTypeIndex = PositiveInt(
+                                            item.set_type_index?.toInt() ?: 0,
+                                        ),
+                                        weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
+                                        reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
+                                        prevReps = previousSet?.reps ?: PositiveInt(0),
+                                        prevWeight = previousSet?.weight ?: PositiveInt(0),
+                                        completed = false,
+                                        exerciseLogId = item.exercise_log_id,
+                                        finishTime = item.set_finish_time ?: 0,
+                                        exercisePlanId = item.exercise_plan_id,
+                                        exerciseId = item.exercise_id,
+                                        workoutPlanId = item.workout_plan_id,
+                                        workoutLogId = item.workout_log_id,
+                                    )
+                                }
+
+                                ExerciseSession(
+                                    exerciseLog = ExerciseLog(
+                                        id = entry.exercise_log_id!!,
+                                        exerciseId = exerciseId!!,
+                                        exercisePlanId = entry.exercise_plan_id,
+                                        note = "",
+                                        workoutLogId = workoutLog.id,
+                                        workoutPlanId = workoutLog.workoutPlanId,
+                                    ),
+                                    exercise = Exercise(
+                                        id = exerciseId,
+                                        primaryMuscle = entry.exercise_primary_muscle!!,
+                                        secondaryMuscle = entry.exercise_secondary_muscles.orEmpty(),
+                                        name = entry.exercise_name.orEmpty(),
+                                        imageUrl = "",
+                                    ),
+                                    sets = sets,
+                                )
+                            }
+                        WorkoutSession(
+                            workoutLog = workoutLog,
+                            exerciseSessions = exerciseSessions,
+                        )
+                    }
+
+                return@mapNotNull sessions
             }
             .flowOn(dispatchers.io)
     }

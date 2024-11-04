@@ -25,3 +25,29 @@ LEFT JOIN
     set_log slog ON elog.id = slog.exercise_log_id
 WHERE
     wlog.id = :workoutLogId;
+
+workoutSessions:
+SELECT
+    wlog.id AS workout_log_id,
+    wlog.workout_plan_id AS workout_plan_id,
+    wlog.start_time AS workout_start_time,
+    wlog.finish_time AS workout_finish_time,
+    e.id AS exercise_id,
+    e.name AS exercise_name,
+    e.primary_muscle AS exercise_primary_muscle,
+    e.secondary_muscles AS exercise_secondary_muscles,
+    elog.id AS exercise_log_id,
+    elog.exercise_plan_id AS exercise_plan_id,
+    slog.id AS set_log_id,
+    slog.finish_time AS set_finish_time,
+    slog.weight,
+    slog.reps,
+    slog.set_type_index
+FROM
+    workout_log wlog
+LEFT JOIN
+    exercise_log elog ON wlog.id = elog.workout_log_id
+LEFT JOIN
+    exercise e ON elog.exercise_id = e.id
+LEFT JOIN
+    set_log slog ON elog.id = slog.exercise_log_id;
