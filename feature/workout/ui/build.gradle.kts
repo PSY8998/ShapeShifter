@@ -33,6 +33,7 @@ kotlin {
 
             implementation(libs.kotlinx.serialization)
             implementation(libs.calendar)
+            implementation(libs.dateTimePicker)
         }
     }
 }

@@ -2,13 +2,24 @@ package app.shapeshifter.feature.workout.ui.finishworkout
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
 import app.shapeshifter.feature.workout.ui.finishworkout.components.DateSelector
 import app.shapeshifter.feature.workout.ui.finishworkout.components.FinishWorkoutTopSection
+import com.commandiron.wheel_picker_compose.WheelTimePicker
+import com.commandiron.wheel_picker_compose.core.TimeFormat
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -49,6 +60,43 @@ fun FinishWorkout(
                 modifier = Modifier
                     .padding(top = Dimens.Padding.Medium),
             )
+
+            TimeSelector(
+                modifier = Modifier
+                    .padding(top = Dimens.Padding.Large)
+                    .padding(horizontal = Dimens.Padding.Medium),
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimeSelector(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+
+        Text(
+            text = "Select time",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Gray,
+            modifier = Modifier,
+        )
+
+        WheelTimePicker(
+            timeFormat = TimeFormat.AM_PM,
+            size = DpSize(
+                width = 360.dp,
+                height = 128.dp
+            ),
+            modifier = Modifier
+                .padding(
+                    top = Dimens.Padding.Medium,
+                ),
+        ) { snappedTime ->
+
         }
     }
 }
