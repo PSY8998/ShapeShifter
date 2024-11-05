@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -17,13 +20,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,17 +42,15 @@ fun ExerciseLog(
     name: String,
     modifier: Modifier = Modifier,
 ) {
-    var exerciseNote by rememberRetained(key = "exerciseNote") { mutableStateOf("") }
-
     Column(
         modifier = modifier,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Dimens.Padding.Medium),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Padding.ExtraSmall),
         ) {
             Text(
                 text = name,
@@ -62,30 +66,31 @@ fun ExerciseLog(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = Dimens.Padding.Small),
+                .padding(vertical = Dimens.Padding.ExtraSmall),
         ) {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                value = exerciseNote,
-                onValueChange = {
-                    exerciseNote = it
-                },
-                textStyle = MaterialTheme.typography.bodySmall,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.secondary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                maxLines = 2,
-                placeholder = {
-                    Text(
-                        text = "Go slow and control each movement",
-                        style = MaterialTheme.typography.bodySmall,
+            val textFieldState = rememberTextFieldState()
+
+            BasicTextField(
+                state = textFieldState,
+                textStyle = MaterialTheme.typography.bodySmall
+                    .copy(
                         color = Color.Gray,
-                    )
+                    ),
+                cursorBrush = SolidColor(Color.Gray),
+                decorator = { innerTextField ->
+                    if (textFieldState.text.isEmpty()) {
+                        Text(
+                            text = "Go slow and control each movement",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                        )
+                    }
+
+                    innerTextField()
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimens.Padding.Medium),
             )
         }
     }
@@ -141,7 +146,6 @@ fun SetColumnTitles(
 
     }
 }
-
 
 
 @Composable
