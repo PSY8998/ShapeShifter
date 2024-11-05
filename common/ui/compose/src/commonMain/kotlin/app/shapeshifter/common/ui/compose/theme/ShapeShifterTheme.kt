@@ -1,7 +1,9 @@
 package app.shapeshifter.common.ui.compose.theme
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 @Composable
 fun ShapeShifterTheme(
@@ -16,6 +18,8 @@ fun ShapeShifterTheme(
         },
         typography = ShapeShifterTypography,
     ) {
-        content()
+        CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
+            content()
+        }
     }
 }

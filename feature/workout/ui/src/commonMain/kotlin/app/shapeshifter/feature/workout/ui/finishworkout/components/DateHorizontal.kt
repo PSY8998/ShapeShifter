@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +26,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarItemInfo
@@ -32,6 +42,7 @@ import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.WeekDay
 import com.kizitonwose.calendar.core.now
 import java.time.DayOfWeek
+import java.time.format.TextStyle
 import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
@@ -73,6 +84,49 @@ fun DateSelector(
     Column(
         modifier = modifier,
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Dimens.Padding.Medium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    ) {
+                        append("When")
+                    }
+
+                    withStyle(
+                        SpanStyle(
+                            color = Color.Gray,
+                        ),
+                    ) {
+                        append(" was the workout")
+                        append("\nperformed?")
+                    }
+                },
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .weight(1f),
+            )
+
+            TextButton(
+                onClick = {
+                    selectAndScrollToDate(todayDate)
+                },
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier,
+            ) {
+                Text(
+                    text = "Today",
+                )
+            }
+        }
+
         WeekCalendar(
             state = weekCalendarState,
             calendarScrollPaged = false,
@@ -90,24 +144,9 @@ fun DateSelector(
                 )
             },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = Dimens.Padding.Medium),
         )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-        ) {
-            TextButton(
-                onClick = {
-                    selectAndScrollToDate(todayDate)
-                },
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier,
-            ) {
-                Text(text = "Today")
-            }
-        }
     }
 }
 
@@ -124,7 +163,7 @@ private fun Day(
             .padding(horizontal = Dimens.Padding.ExtraSmall)
             .width(60.dp)
             .background(
-                if (isSelected) MaterialTheme.colorScheme.primary else
+                color = if (isSelected) MaterialTheme.colorScheme.primary else
                     MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.small,
             )
@@ -140,18 +179,39 @@ private fun Day(
     ) {
         val contentColor =
             if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+
         Text(
-            text = weekDay.date.dayOfWeek.getDisplayName(
-                java.time.format.TextStyle.SHORT,
+            text = weekDay.date.dayOfMonth.toString(),
+            color = contentColor,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyLarge,
+        )
+
+        Text(
+            text = weekDay.date.month.getDisplayName(
+                TextStyle.SHORT,
                 Locale.getDefault(),
             ),
             color = contentColor,
             style = MaterialTheme.typography.bodySmall,
         )
 
-        Text(
-            text = weekDay.date.dayOfMonth.toString(),
+        VerticalDivider(
             color = contentColor,
+            thickness = 2.dp,
+            modifier = Modifier
+                .padding(vertical = Dimens.Padding.ExtraSmall)
+                .height(Dimens.Padding.Small)
+                .clip(CircleShape),
+        )
+
+        Text(
+            text = weekDay.date.dayOfWeek.getDisplayName(
+                TextStyle.SHORT,
+                Locale.getDefault(),
+            ),
+            color = contentColor,
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

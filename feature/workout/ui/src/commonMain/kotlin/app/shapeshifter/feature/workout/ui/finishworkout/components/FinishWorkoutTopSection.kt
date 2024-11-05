@@ -1,25 +1,27 @@
 package app.shapeshifter.feature.workout.ui.finishworkout.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
-import app.shapeshifter.common.ui.compose.resources.Dimens
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun FinishWorkoutTopSection(
@@ -27,41 +29,69 @@ fun FinishWorkoutTopSection(
     modifier: Modifier = Modifier,
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = modifier
+            .height(52.dp)
             .fillMaxWidth(),
     ) {
-        var planName by remember { mutableStateOf(workoutName) }
+        val workoutNameTextFieldState = rememberTextFieldState(
+            initialText = workoutName,
+        )
 
-        TextField(
+        Box(
             modifier = Modifier
-                .padding(top = Dimens.Padding.Small)
-                .fillMaxWidth()
+                .fillMaxWidth(0.2f),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            IconButton(
+                onClick = {
+
+                },
+                modifier = Modifier,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                    modifier = Modifier,
+                    contentDescription = "",
+                )
+            }
+        }
+
+
+        BasicTextField(
+            state = workoutNameTextFieldState,
+            textStyle = MaterialTheme.typography.titleMedium
+                .copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                ),
+            cursorBrush = SolidColor(
+                MaterialTheme.colorScheme.onSurface,
+            ),
+            decorator = { innerTextField ->
+                if (workoutNameTextFieldState.text.isEmpty()) {
+                    Text(
+                        text = "Enter plan name here",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    )
+                }
+
+                innerTextField()
+            },
+            modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth(fraction = 0.6f)
                 .wrapContentWidth(align = Alignment.CenterHorizontally),
-            value = planName,
-            onValueChange = {
-                planName = it
-            },
-            textStyle = MaterialTheme.typography.bodyMedium
-                .copy(textAlign = TextAlign.Center),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            shape = MaterialTheme.shapes.small,
-            maxLines = 2,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                capitalization = KeyboardCapitalization.Words,
-            ),
-            placeholder = {
-                Text(
-                    text = "Plan name",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                )
-            },
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.2f),
         )
     }
 }
