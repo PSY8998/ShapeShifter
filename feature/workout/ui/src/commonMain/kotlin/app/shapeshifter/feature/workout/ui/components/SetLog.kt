@@ -289,16 +289,11 @@ fun SetAnchorBox(
                 val selectedProgress = state.progress(SetAnchors.UNSELECTED, SetAnchors.SELECTED)
                 backgroundContent(selectedProgress)
             },
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier,
         )
         Row(
             content = content,
             modifier = Modifier
-                .anchoredDraggable(
-                    state = state,
-                    orientation = Orientation.Horizontal,
-                    enabled = enabled,
-                )
                 .offset {
                     IntOffset(
                         x = state
@@ -306,7 +301,12 @@ fun SetAnchorBox(
                             .roundToInt(),
                         y = 0,
                     )
-                },
+                }
+                .anchoredDraggable(
+                    state = state,
+                    orientation = Orientation.Horizontal,
+                    enabled = enabled,
+                ),
         )
     }
 }

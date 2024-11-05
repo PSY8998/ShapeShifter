@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import app.shapeshifter.common.ui.compose.resources.Dimens
@@ -278,7 +280,7 @@ private fun LazyListScope.exerciseLog(
                     val animatedOffset by animateDpAsState(
                         targetValue = targetOffset,
                         animationSpec = tween(
-                            easing = FastOutSlowInEasing
+                            easing = FastOutSlowInEasing,
                         ),
                         label = "DeleteTransition",
                     )
@@ -299,11 +301,18 @@ private fun LazyListScope.exerciseLog(
                     IconButton(
                         modifier = Modifier
                             .padding(horizontal = Dimens.Padding.Medium)
-                            .graphicsLayer {
-                                translationX = with(density) { animatedOffset.toPx() }
+                            .offset {
+                                IntOffset(
+                                    x = with(density) {
+                                        animatedOffset
+                                            .toPx()
+                                            .toInt()
+                                    },
+                                    y = 0,
+                                )
                             },
                         onClick = {
-
+                            onDeleteSet(set)
                         },
                     ) {
                         Icon(
