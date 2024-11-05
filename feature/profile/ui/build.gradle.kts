@@ -30,4 +30,5 @@ kotlin {
 dependencies {
     implementation(project(":data:models"))
     implementation(project(":feature:workout:domain"))
+    implementation(project(":feature:workout:ui"))
 }

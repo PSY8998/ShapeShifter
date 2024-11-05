@@ -16,6 +16,21 @@ data class ExerciseSession(
     val exercise: Exercise,
     val sets: List<SetLog>,
 ) {
+
+    fun setsOverview(): String {
+        var totalSets = 0
+        var totalReps = 0
+        var totalWeight = 0
+
+        for(set in sets) {
+            totalSets += 1
+            totalReps += set.reps.value
+            totalWeight += set.weight.value
+        }
+
+        return "$totalSets sets x $totalReps reps x $totalWeight kg"
+    }
+
     fun isValid(): Boolean {
         // Check that at least one set is present
         if (sets.isEmpty()) {
