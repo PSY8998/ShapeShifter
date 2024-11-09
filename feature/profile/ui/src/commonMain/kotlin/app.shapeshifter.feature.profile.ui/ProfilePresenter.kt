@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.ProfileScreen
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutSessionsUseCase
 import com.slack.circuit.runtime.CircuitContext
@@ -40,13 +41,22 @@ class ProfilePresenter(
     override fun present(): ProfileUiState {
         val workoutSessions by observeWorkoutSessionsUseCase.flow.collectAsState(emptyList())
 
+        fun eventSink(event: ProfileUiEvent){
+            when(event){
+                is ProfileUiEvent.GoBack -> navigator.resetRoot(
+                    newRoot = HomeScreen,
+                    saveState = true,
+                    restoreState = true,
+                )
+            }
+        }
+
         LaunchedEffect(Unit) {
             observeWorkoutSessionsUseCase(Unit)
         }
-
         return ProfileUiState(
-            workouts = workoutSessions
+            workouts = workoutSessions,
+            eventSink = ::eventSink
         )
     }
-
 }

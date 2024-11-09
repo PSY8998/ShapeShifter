@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,9 +36,11 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.resources.Fire
 import app.shapeshifter.common.ui.compose.resources.Medal
 import app.shapeshifter.common.ui.compose.screens.ProfileScreen
+import app.shapeshifter.data.models.metrics.WorkoutMetrics
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
+import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -74,6 +75,11 @@ fun Profile(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            BackHandler(
+                enabled = true,
+                onBack = { state.eventSink(ProfileUiEvent.GoBack) },
+            )
+
             ProfileTopBar(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -115,6 +121,7 @@ fun ThreeDotMenu(
     var expanded by remember { mutableStateOf(false) }
     IconButton(
         onClick = { expanded = true },
+        modifier = modifier,
     ) {
         Icon(
             imageVector = MoreHorizontal,
@@ -129,7 +136,9 @@ fun PreviousWorkouts(
     workoutSessions: List<WorkoutSession>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = modifier,
+    ) {
         items(
             items = workoutSessions,
         ) { workoutSession ->
@@ -176,6 +185,7 @@ fun WorkoutCard(
                     Text(
                         text = workoutSession.workoutLog.formatMillisToDate(),
                         style = MaterialTheme.typography.labelSmall,
+                        color = Color.LightGray,
                     )
                 }
 
@@ -184,29 +194,41 @@ fun WorkoutCard(
                 )
             }
 
-            WorkoutSummary()
+            WorkoutMetrics(
+                metrics = workoutSession.metrics(),
+                modifier = Modifier,
+            )
 
             WorkoutSummaryExercises(
                 exerciseSessions = workoutSession.exerciseSessions,
                 modifier = Modifier
                     .padding(Dimens.Padding.Medium),
             )
+
+            if (workoutSession.exerciseSessions.size > 3) {
+                BottomCard(
+                    exerciseSessions = workoutSession.exerciseSessions,
+                    modifier = Modifier,
+                )
+            }
         }
     }
 }
 
 @Composable
-fun WorkoutSummary(
+fun WorkoutMetrics(
+    metrics: WorkoutMetrics,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(Dimens.Padding.Medium),
+            .padding(horizontal = Dimens.Padding.Medium),
         horizontalArrangement = Arrangement.spacedBy(
-            Dimens.Padding.Medium
+            Dimens.Padding.Medium,
         ),
     ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
@@ -230,7 +252,7 @@ fun WorkoutSummary(
                     .size(24.dp),
             )
             Text(
-                text = "52 min",
+                text = "${(metrics.duration / (1000 * 60)) % 60} min",
             )
         }
 
@@ -257,7 +279,7 @@ fun WorkoutSummary(
                     .size(24.dp),
             )
             Text(
-                text = "640 kcal",
+                text = "${metrics.calories} kcal",
             )
         }
         Column(
@@ -273,7 +295,7 @@ fun WorkoutSummary(
                     shape = MaterialTheme.shapes.small,
                 )
                 .padding(Dimens.Padding.Medium)
-                .weight(1f)
+                .weight(1f),
         ) {
             Icon(
                 imageVector = Medal,
@@ -296,10 +318,13 @@ fun WorkoutSummaryExercises(
     modifier: Modifier = Modifier,
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(
+            Dimens.Padding.Small,
+        ),
         modifier = modifier
             .fillMaxWidth(),
     ) {
-        exerciseSessions.forEach { exerciseSession ->
+        exerciseSessions.take(3).forEach { exerciseSession ->
             Column(
                 modifier = Modifier,
             ) {
@@ -313,12 +338,24 @@ fun WorkoutSummaryExercises(
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.LightGray,
                 )
-
-                HorizontalDivider(
-                    thickness = 2.dp,
-                )
             }
         }
+    }
+}
+
+@Composable
+fun BottomCard(
+    exerciseSessions: List<ExerciseSession>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .padding(Dimens.Padding.Medium),
+    ) {
+        Text(
+            text = "${exerciseSessions.size - 3} more exercises >",
+            color = Color.LightGray,
+        )
     }
 }
 

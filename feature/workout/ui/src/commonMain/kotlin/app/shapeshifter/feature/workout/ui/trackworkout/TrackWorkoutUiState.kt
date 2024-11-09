@@ -1,13 +1,10 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import app.shapeshifter.data.models.workoutlog.SetLog
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
-import java.sql.Time
 
 @Immutable
 sealed interface TrackWorkoutUiState : CircuitUiState {

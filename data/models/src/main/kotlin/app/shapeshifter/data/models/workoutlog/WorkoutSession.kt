@@ -1,6 +1,7 @@
 package app.shapeshifter.data.models.workoutlog
 
 import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.metrics.WorkoutMetrics
 
 data class WorkoutSession(
     val workoutLog: WorkoutLog,
@@ -9,6 +10,16 @@ data class WorkoutSession(
     fun isValid(): Boolean {
         return exerciseSessions.isNotEmpty() && exerciseSessions.all { it.isValid() }
     }
+
+    fun metrics(): WorkoutMetrics {
+        val duration = workoutLog.finishTimeInMillis - workoutLog.startTimeInMillis
+        val calories = 200
+        return WorkoutMetrics(
+            duration = duration,
+            calories = calories,
+        )
+    }
+
 }
 
 data class ExerciseSession(
