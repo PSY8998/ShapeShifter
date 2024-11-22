@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,11 +21,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -156,68 +161,89 @@ private fun TrackWorkout(
                     }
 
                     is TrackWorkoutUiState.Filled -> {
-                        LazyColumn(
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                top = Dimens.Padding.Medium,
-                                bottom = paddingValues.calculateBottomPadding()
-                                    + Dimens.Padding.Largest,
-                            ),
                         ) {
+                            LazyColumn(
+                                modifier = Modifier,
+                                contentPadding = PaddingValues(
+                                    top = Dimens.Padding.Medium,
+                                    bottom = paddingValues.calculateBottomPadding()
+                                        + Dimens.Padding.Largest,
+                                ),
+                            ) {
 
-                            targetState.workoutSession.exerciseSessions.forEach { exerciseSession ->
-                                exerciseLog(
-                                    exerciseSession = exerciseSession,
-                                    onCompleteSet = {
-                                        state.eventSink(TrackWorkoutUiEvent.OnSetCompleted(it))
-                                    },
-                                    onAddSet = {
-                                        state.eventSink(
-                                            TrackWorkoutUiEvent.OnAddSet(
-                                                exerciseLogId = it,
-                                                exerciseId = exerciseSession.exercise.id,
-                                                workoutPlanId = targetState.workoutSession.workoutLog.workoutPlanId,
-                                                workoutLogId = targetState.workoutSession.workoutLog.id,
-                                            ),
-                                        )
-                                    },
-                                    onDeleteSet = {
-                                        state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
-                                    },
-                                )
-                            }
+                                targetState.workoutSession.exerciseSessions.forEach { exerciseSession ->
+                                    exerciseLog(
+                                        exerciseSession = exerciseSession,
+                                        onCompleteSet = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent.OnSetCompleted(
+                                                    set = it,
+                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                ),
+                                            )
+                                        },
+                                        onAddSet = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent.OnAddSet(
+                                                    exerciseLogId = it,
+                                                    exerciseId = exerciseSession.exercise.id,
+                                                    workoutPlanId = targetState.workoutSession.workoutLog.workoutPlanId,
+                                                    workoutLogId = targetState.workoutSession.workoutLog.id,
+                                                ),
+                                            )
+                                        },
+                                        onDeleteSet = {
+                                            state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
+                                        },
+                                    )
+                                }
 
-                            item("add_exercise_action") {
-                                AddExercise(
-                                    onAddExercise = {
-                                        state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = Dimens.Padding.Medium),
-                                )
-                            }
+                                item("add_exercise_action") {
+                                    AddExercise(
+                                        onAddExercise = {
+                                            state.eventSink(TrackWorkoutUiEvent.OnAddExercise)
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = Dimens.Padding.Medium),
+                                    )
+                                }
 
-                            item("discard_action") {
-                                val scope = rememberCoroutineScope()
-                                val overlayHost = LocalOverlayHost.current
+                                item("discard_action") {
+                                    val scope = rememberCoroutineScope()
+                                    val overlayHost = LocalOverlayHost.current
 
-                                DiscardWorkout(
-                                    onDiscardWorkout = {
-                                        scope.launch {
-                                            val result = overlayHost.showDiscardWorkoutDialog()
-                                            if (result == DialogResult.Confirm) {
-                                                state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
+                                    DiscardWorkout(
+                                        onDiscardWorkout = {
+                                            scope.launch {
+                                                val result = overlayHost.showDiscardWorkoutDialog()
+                                                if (result == DialogResult.Confirm) {
+                                                    state.eventSink(TrackWorkoutUiEvent.DiscardWorkout)
+                                                }
                                             }
-                                        }
-                                    },
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = Dimens.Padding.Medium)
+                                            .padding(vertical = Dimens.Padding.Medium),
+                                    )
+                                }
+                            }
+                            if (targetState.restTimeDurationInSecs > 0) {
+                                RestTimer(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = Dimens.Padding.Medium)
-                                        .padding(vertical = Dimens.Padding.Medium),
+                                        .align(Alignment.BottomCenter)
+                                        .padding(Dimens.Padding.Small),
+                                    restTimeDurationInSecs = targetState.restTimeDurationInSecs,
+                                    onComplete = {
+                                        state.eventSink(TrackWorkoutUiEvent.OnCompleteRestTime)
+                                    },
                                 )
                             }
                         }
+
                     }
 
                     is TrackWorkoutUiState.Initial -> {}
@@ -603,3 +629,61 @@ private fun DiscardWorkout(
         Text("Discard Workout")
     }
 }
+
+@Composable
+private fun RestTimer(
+    modifier: Modifier = Modifier,
+    restTimeDurationInSecs: Long,
+    onComplete: () -> Unit,
+) {
+    var isTimerRunning by remember { mutableStateOf(false) }
+    var remainingTime by remember { mutableLongStateOf(0) }
+
+    LaunchedEffect(restTimeDurationInSecs) {
+        remainingTime = restTimeDurationInSecs / 1000
+        isTimerRunning = true
+    }
+
+    if (isTimerRunning) {
+        LaunchedEffect(Unit) {
+            while (remainingTime > 0) {
+                delay(1000L)
+                remainingTime -= 1
+            }
+            onComplete()
+            isTimerRunning = false
+        }
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically),
+            elevation = CardDefaults.elevatedCardElevation(Dimens.Padding.Small),
+            shape = RoundedCornerShape(Dimens.Padding.Medium),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            ),
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(Dimens.Padding.ExtraLarge),
+                horizontalArrangement = Arrangement.Absolute.Center,
+            ) {
+                if (isTimerRunning) {
+                    Text(
+                        text = "$remainingTime seconds",
+                    )
+                } else {
+                    Text(text = "Ready for the next set!")
+                }
+            }
+        }
+    }
+}
+

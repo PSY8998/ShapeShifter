@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
+import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
@@ -49,6 +50,14 @@ class SavedWorkoutsPresenter(
 
         fun eventSink(event: SavedWorkoutsUiEvent) {
             when (event) {
+                is SavedWorkoutsUiEvent.SwitchToHome -> {
+                    navigator.resetRoot(
+                        newRoot = HomeScreen,
+                        saveState = true,
+                        restoreState = true
+                    )
+                }
+
                 is SavedWorkoutsUiEvent.OpenQuickWorkout -> {
                     navigator.goTo(TrackWorkoutScreen)
                 }

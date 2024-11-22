@@ -13,6 +13,9 @@ data class SavedWorkoutsUiState(
 ) : CircuitUiState
 
 sealed interface SavedWorkoutsUiEvent : CircuitUiEvent {
+
+    data object SwitchToHome : SavedWorkoutsUiEvent
+
     data object OpenQuickWorkout : SavedWorkoutsUiEvent
 
     data class DiscardWorkout(val workoutLog: WorkoutLog) : SavedWorkoutsUiEvent

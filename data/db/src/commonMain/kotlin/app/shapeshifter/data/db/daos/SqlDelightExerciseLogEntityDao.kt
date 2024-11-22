@@ -30,6 +30,7 @@ class SqlDelightExerciseLogEntityDao(
             workoutPlanId = entity.workoutPlanId,
             exerciseId = entity.exerciseId,
             exercisePlanId = entity.exercisePlanId,
+            restTimeDuration = entity.restTimeDuration,
         )
 
         return db.exercise_logQueries.lastInsertRowId().executeAsOne()
@@ -48,7 +49,7 @@ class SqlDelightExerciseLogEntityDao(
             .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
-                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId ->
+                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration ->
                     ExerciseLog(
                         id = id,
                         exerciseId = exerciseId,
@@ -56,6 +57,7 @@ class SqlDelightExerciseLogEntityDao(
                         workoutLogId = workoutLogId,
                         exercisePlanId = exercisePlanId,
                         note = "",
+                        restTimeDuration = restTimeDuration!!,
                     )
                 },
             )
@@ -80,6 +82,7 @@ class SqlDelightExerciseLogEntityDao(
             exerciseId = firstSession.exercise_id,
             exercisePlanId = firstSession.exercise_plan_id,
             note = "",
+            restTimeDuration = firstSession.exercise_rest_time_duration!!,
         )
 
         val exercise = Exercise(

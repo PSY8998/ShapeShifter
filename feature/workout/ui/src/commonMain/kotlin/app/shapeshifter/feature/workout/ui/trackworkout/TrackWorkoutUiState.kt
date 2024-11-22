@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.runtime.Immutable
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -23,6 +24,7 @@ sealed interface TrackWorkoutUiState : CircuitUiState {
     @Immutable
     data class Filled(
         val workoutSession: WorkoutSession,
+        val restTimeDurationInSecs: Long,
         override val eventSink: (TrackWorkoutUiEvent) -> Unit,
     ) : TrackWorkoutUiState
 
@@ -45,6 +47,7 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
 
     data class OnSetCompleted(
         val set: SetLog,
+        val exerciseLog: ExerciseLog,
     ) : TrackWorkoutUiEvent
 
     data class OnDeleteSet(
@@ -54,4 +57,6 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     data class OnFinishWorkout(
         val workoutSession: WorkoutSession,
     ) : TrackWorkoutUiEvent
+
+    data object OnCompleteRestTime: TrackWorkoutUiEvent
 }

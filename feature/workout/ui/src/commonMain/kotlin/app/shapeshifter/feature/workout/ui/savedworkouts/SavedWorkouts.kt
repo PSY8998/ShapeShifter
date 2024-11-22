@@ -40,6 +40,7 @@ import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import app.shapeshifter.feature.workout.ui.createworkoutplan.WorkoutPlanNameResult
 import app.shapeshifter.feature.workout.ui.createworkoutplan.showWorkoutPlanName
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
+import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -80,6 +81,10 @@ internal fun SavedWorkouts(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            BackHandler {
+                eventSink(SavedWorkoutsUiEvent.SwitchToHome)
+            }
+
             WorkoutTopBar(
                 activeWorkout = uiState.activeWorkout,
                 onDiscardWorkout = {

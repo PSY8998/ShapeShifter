@@ -16,6 +16,7 @@ data class WorkoutLog(
     val startTimeInMillis: Long,
     val finishTimeInMillis: Long,
     val note: String,
+    val restFinishTimeInMillis: Long,
 ) : Entity {
 
     fun isWorkoutFinished() = finishTimeInMillis != UnfinishedWorkoutTimeInMillis
@@ -35,6 +36,7 @@ data class WorkoutLog(
                 startTimeInMillis = System.currentTimeMillis(),
                 finishTimeInMillis = UnfinishedWorkoutTimeInMillis,
                 note = "",
+                restFinishTimeInMillis = 0,
             )
         }
     }

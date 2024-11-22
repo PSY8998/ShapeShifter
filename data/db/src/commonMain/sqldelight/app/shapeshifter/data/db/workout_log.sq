@@ -5,17 +5,19 @@ CREATE TABLE IF NOT EXISTS workout_log (
     `workout_plan_id` INTEGER NOT NULL,
     `start_time` INTEGER NOT NULL,
     `finish_time` INTEGER NOT NULL,
-    `name` TEXT NOT NULL
+    `name` TEXT NOT NULL,
+    `rest_finish_at` INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO workout_log (`id`, `workout_plan_id`,`start_time`, `finish_time`, `name`)
+INSERT INTO workout_log (`id`, `workout_plan_id`,`start_time`, `finish_time`, `name`, `rest_finish_at`)
 VALUES (
 nullif(:id, 0),
 :workoutPlanId,
 :startTime,
 :finishTime,
-:name
+:name,
+:restFinishAt
 );
 
 update:
@@ -23,7 +25,8 @@ UPDATE workout_log SET
 workout_plan_id = :workoutPlanId,
 start_time = :startTime,
 finish_time = :finishTime,
-name = :name
+name = :name,
+rest_finish_at = :restFinishAt
 WHERE id = :id;
 
 lastInsertRowId:
@@ -38,7 +41,8 @@ workout_plan.name,
 workout_log.id,
 workout_log.name,
 workout_log.start_time,
-workout_log.finish_time
+workout_log.finish_time,
+workout_log.rest_finish_at
 FROM workout_log
 LEFT JOIN workout_plan ON workout_log.workout_plan_id = workout_plan.id
 LEFT JOIN routine ON workout_plan.routine_id = routine.id

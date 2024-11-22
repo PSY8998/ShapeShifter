@@ -47,6 +47,7 @@ class SqlDelightWorkoutEntityDao(
                 name = entity.name,
                 startTime = entity.startTimeInMillis,
                 finishTime = entity.finishTimeInMillis,
+                restFinishAt = entity.restFinishTimeInMillis,
             )
             db.workout_logQueries.lastInsertRowId().executeAsOne()
         }
@@ -59,6 +60,7 @@ class SqlDelightWorkoutEntityDao(
             startTime = entity.startTimeInMillis,
             finishTime = entity.finishTimeInMillis,
             id = entity.id,
+            restFinishAt = entity.restFinishTimeInMillis,
         )
     }
 
@@ -89,6 +91,7 @@ class SqlDelightWorkoutEntityDao(
                     startTimeInMillis = firstItem.workout_start_time,
                     finishTimeInMillis = firstItem.workout_finish_time,
                     note = "",
+                    restFinishTimeInMillis = firstItem.workout_rest_finish_at,
                 )
 
                 // Group items by exercise_id and map them to SetLogs
@@ -150,6 +153,7 @@ class SqlDelightWorkoutEntityDao(
                                 note = "",
                                 workoutLogId = workoutLog.id,
                                 workoutPlanId = workoutLog.workoutPlanId,
+                                restTimeDuration = entry.exercise_rest_time_duration!!,
                             ),
                             exercise = Exercise(
                                 id = exerciseId,
@@ -189,6 +193,7 @@ class SqlDelightWorkoutEntityDao(
                             startTimeInMillis = firstItem.workout_start_time,
                             finishTimeInMillis = firstItem.workout_finish_time,
                             note = "",
+                            restFinishTimeInMillis = firstItem.workout_rest_finish_at,
                         )
 
                         val exerciseSessions = entries
@@ -248,6 +253,7 @@ class SqlDelightWorkoutEntityDao(
                                         id = entry.exercise_log_id!!,
                                         exerciseId = exerciseId!!,
                                         exercisePlanId = entry.exercise_plan_id,
+                                        restTimeDuration = entry.exercise_rest_time_duration!!,
                                         note = "",
                                         workoutLogId = workoutLog.id,
                                         workoutPlanId = workoutLog.workoutPlanId,
@@ -328,6 +334,7 @@ class SqlDelightWorkoutEntityDao(
                 workoutLogName,
                 startTime,
                 finishTime,
+                restFinishAt,
             ->
             WorkoutSessionOverview(
                 routine = WorkoutSessionOverview.RoutineOverview(
@@ -345,6 +352,7 @@ class SqlDelightWorkoutEntityDao(
                     startTimeInMillis = startTime,
                     finishTimeInMillis = finishTime,
                     note = "",
+                    restFinishTimeInMillis = restFinishAt,
                 ),
             )
         }

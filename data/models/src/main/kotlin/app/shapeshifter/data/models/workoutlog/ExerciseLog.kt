@@ -9,4 +9,5 @@ data class ExerciseLog(
     val exerciseId: Long,
     val exercisePlanId: Long?,
     val note: String,
+    val restTimeDuration: Long,
 ) : Entity

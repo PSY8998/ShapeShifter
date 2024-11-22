@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `exercise_log` (
     `workout_plan_id` INTEGER NOT NULL,
     `workout_log_id` INTEGER NOT NULL,
     `exercise_plan_id` INTEGER,
+    `rest_time_duration` INTEGER NOT NULL,
     FOREIGN KEY (`workout_log_id`) REFERENCES `workout_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -20,14 +21,16 @@ INSERT INTO exercise_log (
     `exercise_id`,
     `workout_log_id`,
     `workout_plan_id`,
-    `exercise_plan_id`
+    `exercise_plan_id`,
+    `rest_time_duration`
 )
 VALUES (
     nullif(:id, 0),
     :exerciseId,
     :workoutLogId,
     :workoutPlanId,
-    :exercisePlanId
+    :exercisePlanId,
+    :restTimeDuration
 );
 
 selectAll:

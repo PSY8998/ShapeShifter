@@ -5,6 +5,7 @@ SELECT
     elog.workout_log_id AS workout_log_id,
     elog.workout_plan_id AS workout_plan_id,
     elog.exercise_plan_id AS exercise_plan_id,
+    elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,
     slog.reps AS set_log_reps,
     slog.weight AS set_log_weight,

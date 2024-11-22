@@ -127,9 +127,13 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnSetCompleted -> {
                     scope.launch {
+                        val session = workoutSession ?: return@launch
                         finishedSetUseCase(
                             params = FinishedSetUseCase.Params(
                                 setLog = event.set,
+                                workoutLog = session.workoutLog.copy(
+                                    restFinishTimeInMillis = System.currentTimeMillis() + event.exerciseLog.restTimeDuration,
+                                ),
                             ),
                         )
                     }
@@ -156,12 +160,16 @@ class TrackWorkoutPresenter(
                     }
                 }
 
+                is TrackWorkoutUiEvent.OnCompleteRestTime -> {
+
+                }
+
             }
         }
 
         if (workoutId != 0L) {
             LaunchedEffect(workoutId) {
-                observeWorkoutDetailsUseCase.invoke(
+                observeWorkoutDetailsUseCase(
                     params = ObserveWorkoutDetailsUseCase.Params(
                         workoutLogId = workoutId,
                         workoutPlanId = WorkoutPlan.QuickWorkoutId,
@@ -183,6 +191,9 @@ class TrackWorkoutPresenter(
 
             else -> TrackWorkoutUiState.Filled(
                 workoutSession = session,
+                restTimeDurationInSecs = workoutSession?.workoutLog?.restFinishTimeInMillis?.let {
+                    it - System.currentTimeMillis()
+                }?.takeIf { it > 0 } ?: 0,
                 eventSink = ::eventSink,
             )
         }

@@ -10,6 +10,7 @@ import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.withContext
 
 @Inject
@@ -31,6 +32,7 @@ class AddExerciseLogUseCase(
                         exerciseId = exerciseId,
                         exercisePlanId = null,
                         note = "",
+                        restTimeDuration = 120.seconds.inWholeMilliseconds
                     )
                     val exerciseLogId = exerciseLogEntityDao.insert(exerciseLog)
 
