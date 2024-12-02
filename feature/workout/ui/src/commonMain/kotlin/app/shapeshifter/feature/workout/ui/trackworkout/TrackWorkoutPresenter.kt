@@ -164,6 +164,15 @@ class TrackWorkoutPresenter(
 
                 }
 
+                is TrackWorkoutUiEvent.OnReorderExercises -> {
+                    navigator.goTo(ExercisesScreen(false))
+                }
+
+                is TrackWorkoutUiEvent.OnRemoveExercise -> {
+                    scope.launch {
+
+                    }
+                }
             }
         }
 

@@ -10,24 +10,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
@@ -35,11 +28,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
-import com.slack.circuit.retained.rememberRetained
 
 @Composable
 fun ExerciseLog(
     name: String,
+    onReorderExercises: () -> Unit,
+    onRemoveExercise: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -60,6 +54,30 @@ fun ExerciseLog(
                     .weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+            )
+
+            val exerciseMenuItems = remember {
+                listOf(
+                    MenuItem(
+                        id = 0,
+                        name = "Reorder",
+                        onClick = {
+                            onReorderExercises()
+                        }
+                    ),
+                    MenuItem(
+                        id = 1,
+                        name = "Remove Exercise",
+                        onClick = {
+                            onRemoveExercise()
+                        }
+                    )
+                )
+            }
+
+            ThreeDotMenu(
+                modifier = Modifier,
+                menuItems = exerciseMenuItems,
             )
         }
 
@@ -202,3 +220,4 @@ fun AddNewSet(
 }
 
 val pattern = Regex("^\\d*\$")
+

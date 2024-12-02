@@ -17,15 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +34,7 @@ import app.shapeshifter.common.ui.compose.screens.ProfileScreen
 import app.shapeshifter.data.models.metrics.WorkoutMetrics
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
-import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
+import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -109,26 +104,11 @@ fun ProfileTopBar(
             modifier = Modifier
                 .wrapContentSize(Alignment.TopEnd),
         ) {
-            ThreeDotMenu()
+            ThreeDotMenu(
+                menuItems = listOf(),
+            )
         }
     }
-}
-
-@Composable
-fun ThreeDotMenu(
-    modifier: Modifier = Modifier,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    IconButton(
-        onClick = { expanded = true },
-        modifier = modifier,
-    ) {
-        Icon(
-            imageVector = MoreHorizontal,
-            contentDescription = "Options",
-        )
-    }
-
 }
 
 @Composable
@@ -191,6 +171,7 @@ fun WorkoutCard(
 
                 ThreeDotMenu(
                     modifier = Modifier,
+                    menuItems = listOf(),
                 )
             }
 

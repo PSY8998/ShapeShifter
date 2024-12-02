@@ -1,5 +1,6 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,15 +48,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
 import app.shapeshifter.data.models.PositiveInt
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
@@ -198,6 +204,19 @@ private fun TrackWorkout(
                                         onDeleteSet = {
                                             state.eventSink(TrackWorkoutUiEvent.OnDeleteSet(it))
                                         },
+                                        onReorderExercises = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent
+                                                    .OnReorderExercises(listOf(exerciseSession.exerciseLog.id,),
+                                                ),
+                                            )
+                                        },
+                                        onRemoveExercise = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent
+                                                    .OnRemoveExercise(exerciseSession.exerciseLog),
+                                            )
+                                        },
                                     )
                                 }
 
@@ -234,8 +253,7 @@ private fun TrackWorkout(
                             if (targetState.restTimeDurationInSecs > 0) {
                                 RestTimer(
                                     modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .padding(Dimens.Padding.Small),
+                                        .align(Alignment.BottomCenter),
                                     restTimeDurationInSecs = targetState.restTimeDurationInSecs,
                                     onComplete = {
                                         state.eventSink(TrackWorkoutUiEvent.OnCompleteRestTime)
@@ -258,6 +276,8 @@ private fun LazyListScope.exerciseLog(
     onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
     onDeleteSet: (setLog: SetLog) -> Unit,
+    onReorderExercises: (exerciseLogId: Long) -> Unit,
+    onRemoveExercise: (exerciseLog: ExerciseLog) -> Unit,
 ) {
     val exerciseLog = exerciseSession.exerciseLog
     item(
@@ -266,6 +286,9 @@ private fun LazyListScope.exerciseLog(
     ) {
         ExerciseLog(
             name = exerciseSession.exercise.name,
+            onReorderExercises = { onReorderExercises(exerciseLog.id) },
+            onRemoveExercise = { onRemoveExercise(exerciseLog) },
+            modifier = Modifier,
         )
     }
 
@@ -630,6 +653,7 @@ private fun DiscardWorkout(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun RestTimer(
     modifier: Modifier = Modifier,
@@ -638,6 +662,7 @@ private fun RestTimer(
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var remainingTime by remember { mutableLongStateOf(0) }
+    val progress = remainingTime / restTimeDurationInSecs.toFloat()
 
     LaunchedEffect(restTimeDurationInSecs) {
         remainingTime = restTimeDurationInSecs / 1000
@@ -672,18 +697,104 @@ private fun RestTimer(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(Dimens.Padding.ExtraLarge),
+                    .padding(Dimens.Padding.Small),
                 horizontalArrangement = Arrangement.Absolute.Center,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (isTimerRunning) {
-                    Text(
-                        text = "$remainingTime seconds",
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.Padding.Small),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = when {
+                                remainingTime > 30 -> "Crushing it! Take a breather before the next set 💪"
+                                remainingTime > 15 -> "Almost there! Get ready for the next set"
+                                else -> "Time to get back at it—go hard or go home!"
+                            },
+                        )
+
+                        Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier,
+                        ) {
+                            Text(
+                                text = String.format(
+                                    "%02d:%02d",
+                                    remainingTime / 60,
+                                    remainingTime % 60,
+                                ),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(Color.Gray.copy(alpha = 0.3f)),
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .fillMaxWidth()
+                                        .background(
+                                            when {
+                                                remainingTime > 30 -> Color.Green
+                                                remainingTime > 15 -> Color.Yellow
+                                                else -> Color.Red
+                                            },
+                                        ),
+                                )
+                            }
+                        }
+                    }
                 } else {
-                    Text(text = "Ready for the next set!")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.Padding.Small),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "Ready for the next set!",
+                        )
+
+                        Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier,
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp),
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight(),
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
+
+                            Text(
+                                text = "",
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
+
 
