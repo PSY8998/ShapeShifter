@@ -41,7 +41,7 @@ class SqlDelightExerciseLogEntityDao(
     }
 
     override fun deleteEntity(entity: ExerciseLog) {
-        TODO("Not yet implemented")
+        db.exercise_logQueries.delete(entity.id)
     }
 
     override fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>> {
@@ -49,7 +49,7 @@ class SqlDelightExerciseLogEntityDao(
             .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
-                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration ->
+                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration->
                     ExerciseLog(
                         id = id,
                         exerciseId = exerciseId,
@@ -57,7 +57,7 @@ class SqlDelightExerciseLogEntityDao(
                         workoutLogId = workoutLogId,
                         exercisePlanId = exercisePlanId,
                         note = "",
-                        restTimeDuration = restTimeDuration!!,
+                        restTimeDuration = restTimeDuration,
                     )
                 },
             )
@@ -82,7 +82,7 @@ class SqlDelightExerciseLogEntityDao(
             exerciseId = firstSession.exercise_id,
             exercisePlanId = firstSession.exercise_plan_id,
             note = "",
-            restTimeDuration = firstSession.exercise_rest_time_duration!!,
+            restTimeDuration = firstSession.exercise_rest_time_duration,
         )
 
         val exercise = Exercise(

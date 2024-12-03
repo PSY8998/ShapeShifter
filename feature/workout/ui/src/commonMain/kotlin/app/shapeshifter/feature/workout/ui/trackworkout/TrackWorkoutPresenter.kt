@@ -20,6 +20,7 @@ import app.shapeshifter.feature.workout.domain.FinishWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FinishedSetUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
+import app.shapeshifter.feature.workout.domain.RemoveExerciseLogUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
@@ -58,6 +59,7 @@ class TrackWorkoutPresenter(
     private val finishedSetUseCase: FinishedSetUseCase,
     private val deleteSetUseCase: DeleteSetUseCase,
     private val finishWorkoutUseCase: FinishWorkoutUseCase,
+    private val removeExerciseLogUseCase: RemoveExerciseLogUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
     @Composable
@@ -170,7 +172,11 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnRemoveExercise -> {
                     scope.launch {
-
+                        removeExerciseLogUseCase(
+                            params = RemoveExerciseLogUseCase.Params(
+                                exerciseLog = event.exerciseLog
+                            )
+                        )
                     }
                 }
             }

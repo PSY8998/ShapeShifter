@@ -32,7 +32,7 @@ class AddExerciseLogUseCase(
                         exerciseId = exerciseId,
                         exercisePlanId = null,
                         note = "",
-                        restTimeDuration = 120.seconds.inWholeMilliseconds
+                        restTimeDuration = 120.seconds.inWholeMilliseconds,
                     )
                     val exerciseLogId = exerciseLogEntityDao.insert(exerciseLog)
 

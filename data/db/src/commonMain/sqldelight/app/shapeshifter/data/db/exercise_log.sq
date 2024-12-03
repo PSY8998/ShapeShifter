@@ -33,6 +33,11 @@ VALUES (
     :restTimeDuration
 );
 
+delete:
+DELETE FROM exercise_log
+WHERE id = :id
+;
+
 selectAll:
 SELECT * FROM exercise_log
 WHERE `workout_log_id` = :workout_id;
