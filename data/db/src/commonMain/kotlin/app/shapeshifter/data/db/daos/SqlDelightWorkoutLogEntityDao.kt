@@ -97,7 +97,7 @@ class SqlDelightWorkoutEntityDao(
                 // Group items by exercise_id and map them to SetLogs
                 val exerciseSessions = items
                     .filter { it.exercise_log_id != null && it.exercise_id != null }
-                    .groupBy { it.exercise_id }
+                    .groupBy { it.exercise_log_id }
                     .mapNotNull sessionMap@{ (exerciseId, entries) ->
                         // Retrieve first entry for each exercise_id to avoid multiple lookups
                         val entry = entries.firstOrNull() ?: return@sessionMap null
