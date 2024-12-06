@@ -33,6 +33,11 @@ VALUES (
     :restTimeDuration
 );
 
+update:
+UPDATE exercise_log SET
+    rest_time_duration = :restTimeDuration
+WHERE id = :id;
+
 delete:
 DELETE FROM exercise_log
 WHERE id = :id

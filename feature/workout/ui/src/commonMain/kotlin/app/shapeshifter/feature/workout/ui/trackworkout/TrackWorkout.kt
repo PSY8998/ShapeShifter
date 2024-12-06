@@ -207,14 +207,24 @@ private fun TrackWorkout(
                                         onReorderExercises = {
                                             state.eventSink(
                                                 TrackWorkoutUiEvent
-                                                    .OnReorderExercises(listOf(exerciseSession.exerciseLog.id,),
-                                                ),
+                                                    .OnReorderExercises(
+                                                        listOf(exerciseSession.exerciseLog.id),
+                                                    ),
                                             )
                                         },
                                         onRemoveExercise = {
                                             state.eventSink(
-                                                TrackWorkoutUiEvent
-                                                    .OnRemoveExercise(exerciseSession.exerciseLog),
+                                                TrackWorkoutUiEvent.OnRemoveExercise(
+                                                    exerciseSession.exerciseLog,
+                                                ),
+                                            )
+                                        },
+                                        onUpdateRestTime = { minutes, seconds ->
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent.OnUpdateRestTime(
+                                                    minutes, seconds,
+                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                ),
                                             )
                                         },
                                     )
@@ -278,8 +288,10 @@ private fun LazyListScope.exerciseLog(
     onDeleteSet: (setLog: SetLog) -> Unit,
     onReorderExercises: (exerciseLogId: Long) -> Unit,
     onRemoveExercise: (exerciseLog: ExerciseLog) -> Unit,
+    onUpdateRestTime: (Int, Int) -> Unit,
 ) {
     val exerciseLog = exerciseSession.exerciseLog
+
     item(
         key = "exercise_${exerciseLog.id}",
         contentType = "exercise",
@@ -288,6 +300,7 @@ private fun LazyListScope.exerciseLog(
             name = exerciseSession.exercise.name,
             onReorderExercises = { onReorderExercises(exerciseLog.id) },
             onRemoveExercise = { onRemoveExercise(exerciseLog) },
+            updateRestTime = onUpdateRestTime,
             modifier = Modifier,
         )
     }

@@ -44,7 +44,11 @@ sealed interface WorkoutPlanNameResult {
 @OptIn(ExperimentalMaterial3Api::class)
 suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
     return show(
-        bottomSheetOverlay { navigator ->
+        bottomSheetOverlay<WorkoutPlanNameResult>(
+            onDismiss = {
+                WorkoutPlanNameResult.Dismiss
+            }
+        ) { navigator ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -109,16 +113,17 @@ suspend fun OverlayHost.showWorkoutPlanName(): WorkoutPlanNameResult {
 
 
 @ExperimentalMaterial3Api
-private fun bottomSheetOverlay(
-    content: @Composable (navigator: OverlayNavigator<WorkoutPlanNameResult>) -> Unit,
-): BottomSheetOverlay<*, WorkoutPlanNameResult> {
+fun <Result: Any> bottomSheetOverlay(
+    onDismiss: () -> Result,
+    content: @Composable (navigator: OverlayNavigator<Result>) -> Unit,
+): BottomSheetOverlay<*, Result> {
     return BottomSheetOverlay(
         model = Unit,
         sheetShape = RoundedCornerShape(
             topEnd = 16.dp,
             topStart = 16.dp,
         ),
-        onDismiss = { WorkoutPlanNameResult.Dismiss },
+        onDismiss = onDismiss,
     ) { _, navigator ->
         Surface(
             modifier = Modifier

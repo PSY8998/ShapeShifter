@@ -37,7 +37,10 @@ class SqlDelightExerciseLogEntityDao(
     }
 
     override fun update(entity: ExerciseLog) {
-        TODO("Not yet implemented")
+        db.exercise_logQueries.update(
+            restTimeDuration = entity.restTimeDuration,
+            id = entity.id,
+        )
     }
 
     override fun deleteEntity(entity: ExerciseLog) {
