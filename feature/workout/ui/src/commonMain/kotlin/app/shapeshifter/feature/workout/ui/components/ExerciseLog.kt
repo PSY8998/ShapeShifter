@@ -2,9 +2,11 @@ package app.shapeshifter.feature.workout.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,20 +15,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,15 +46,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.Clock
 import app.shapeshifter.common.ui.compose.resources.Dimens
-import app.shapeshifter.feature.workout.ui.trackworkout.TrackWorkoutUiEvent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseLog(
     name: String,
@@ -56,7 +63,6 @@ fun ExerciseLog(
     modifier: Modifier = Modifier,
 ) {
 
-    val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showSetRestTimerBottomSheet by remember { mutableStateOf(false) }
 
@@ -113,7 +119,6 @@ fun ExerciseLog(
 
             if (showSetRestTimerBottomSheet) {
                 SetRestTimerBottomSheet(
-                    sheetState = sheetState,
                     onDismiss = { showSetRestTimerBottomSheet = false },
                     onConfirm = updateRestTime,
                     modifier = Modifier,
@@ -269,7 +274,6 @@ fun AddNewSet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetRestTimerBottomSheet(
-    sheetState: SheetState,
     onDismiss: () -> Unit,
     onConfirm: (Int, Int) -> Unit,
     modifier: Modifier,
@@ -280,76 +284,150 @@ fun SetRestTimerBottomSheet(
     var selectedMinutes by remember { mutableIntStateOf(2) }
     var selectedSeconds by remember { mutableIntStateOf(0) }
 
+    val sheetState = rememberModalBottomSheetState(
+        confirmValueChange = {
+            it != SheetValue.Hidden
+        }
+    )
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+        ),
     ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            NumberPicker(
-                onValueChange = { value ->
-                    selectedMinutes = value
-                },
-                range = minutes,
-                modifier = Modifier
-                    .height(100.dp)
-                    .padding(Dimens.Padding.Medium),
-            )
-
-            Text(
-                text = "Minutes",
-            )
-
-            NumberPicker(
-                onValueChange = { value ->
-                    selectedSeconds = value
-                },
-                range = seconds,
-                modifier = Modifier
-                    .height(100.dp)
-                    .padding(Dimens.Padding.Medium),
-            )
-
-            Text(
-                text = "Seconds",
-            )
-        }
-        Button(
-            onClick = { onConfirm(selectedMinutes, selectedSeconds) },
+        Column(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(
-                    top = Dimens.Padding.Medium,
-                    bottom = Dimens.Padding.ExtraMedium,
-                ),
-            shape = MaterialTheme.shapes.small,
+                .fillMaxWidth()
+                .padding(Dimens.Padding.ExtraSmall),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "Done",
-            )
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(Dimens.Padding.Small),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Set  Rest  Timer",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .weight(1f),
+                )
+
+                IconButton(
+                    onClick = onDismiss,
+                    colors = IconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Close",
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                NumberPicker(
+                    onValueSelected = { value ->
+                        selectedMinutes = value
+                    },
+                    range = minutes,
+                    modifier = Modifier
+                        .padding(Dimens.Padding.Medium),
+                )
+
+                Text(
+                    text = "Minutes",
+                    fontWeight = FontWeight.Bold,
+                )
+
+                NumberPicker(
+                    onValueSelected = { value ->
+                        selectedSeconds = value
+                    },
+                    range = seconds,
+                    modifier = Modifier
+                        .padding(Dimens.Padding.Medium),
+                )
+
+                Text(
+                    text = "Seconds",
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Button(
+                onClick = {
+                    onConfirm(selectedMinutes, selectedSeconds)
+                    onDismiss()
+                },
+                modifier = Modifier
+                    .padding(
+                        top = Dimens.Padding.Medium,
+                        bottom = Dimens.Padding.ExtraMedium,
+                    ),
+                shape = MaterialTheme.shapes.small,
+            ) {
+                Text(
+                    text = "Done",
+                )
+            }
         }
     }
 }
 
 @Composable
 fun NumberPicker(
-    onValueChange: (Int) -> Unit,
+    onValueSelected: (Int) -> Unit,
     range: List<Int>,
     modifier: Modifier,
 ) {
+    val lazyListState = rememberLazyListState()
+    val itemHeightPx = with(LocalDensity.current) { 150.dp.toPx() }
+
+    val centerIndex = remember{
+        derivedStateOf {
+            val firstVisibleIndex = lazyListState.firstVisibleItemIndex
+            val firstVisibleOffset = lazyListState.firstVisibleItemScrollOffset
+
+            val centerOffset = firstVisibleOffset + itemHeightPx / 2
+            firstVisibleIndex + (centerOffset / itemHeightPx).toInt()
+        }
+    }
+
+    LaunchedEffect(centerIndex.value) {
+        onValueSelected(range[centerIndex.value])
+    }
+
     LazyColumn(
+        state = lazyListState,
         verticalArrangement = Arrangement.Center,
         modifier = modifier,
+        contentPadding = PaddingValues(Dimens.Padding.Small),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState)
     ) {
         items(range) { value ->
+            val isSelected = centerIndex.value == value
             Text(
                 text = value.toString(),
                 modifier = Modifier
-                    .clickable { onValueChange(value) },
+                    .padding(Dimens.Padding.ExtraSmall),
+                textAlign = TextAlign.Center,
+                color = if (isSelected)Color.Blue else Color.Gray,
             )
         }
     }
