@@ -34,19 +34,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -287,7 +286,7 @@ fun SetRestTimerBottomSheet(
     val sheetState = rememberModalBottomSheetState(
         confirmValueChange = {
             it != SheetValue.Hidden
-        }
+        },
     )
 
     ModalBottomSheet(
@@ -338,7 +337,7 @@ fun SetRestTimerBottomSheet(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp),
+                    .height(200.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -346,9 +345,11 @@ fun SetRestTimerBottomSheet(
                     onValueSelected = { value ->
                         selectedMinutes = value
                     },
+                    initialValue = 2,
                     range = minutes,
                     modifier = Modifier
                         .padding(Dimens.Padding.Medium),
+
                 )
 
                 Text(
@@ -360,6 +361,7 @@ fun SetRestTimerBottomSheet(
                     onValueSelected = { value ->
                         selectedSeconds = value
                     },
+                    initialValue = 5,
                     range = seconds,
                     modifier = Modifier
                         .padding(Dimens.Padding.Medium),
@@ -392,44 +394,41 @@ fun SetRestTimerBottomSheet(
 
 @Composable
 fun NumberPicker(
+    initialValue: Int,
     onValueSelected: (Int) -> Unit,
     range: List<Int>,
     modifier: Modifier,
 ) {
-    val lazyListState = rememberLazyListState()
-    val itemHeightPx = with(LocalDensity.current) { 150.dp.toPx() }
-
-    val centerIndex = remember{
-        derivedStateOf {
-            val firstVisibleIndex = lazyListState.firstVisibleItemIndex
-            val firstVisibleOffset = lazyListState.firstVisibleItemScrollOffset
-
-            val centerOffset = firstVisibleOffset + itemHeightPx / 2
-            firstVisibleIndex + (centerOffset / itemHeightPx).toInt()
-        }
-    }
-
-    LaunchedEffect(centerIndex.value) {
-        onValueSelected(range[centerIndex.value])
-    }
+    val lazyListState = rememberLazyListState(initialValue-1)
+    val centerOffset = 100.dp
 
     LazyColumn(
         state = lazyListState,
         verticalArrangement = Arrangement.Center,
         modifier = modifier,
-        contentPadding = PaddingValues(Dimens.Padding.Small),
-        flingBehavior = rememberSnapFlingBehavior(lazyListState)
+        contentPadding = PaddingValues(vertical = centerOffset),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState),
     ) {
         items(range) { value ->
-            val isSelected = centerIndex.value == value
             Text(
                 text = value.toString(),
                 modifier = Modifier
                     .padding(Dimens.Padding.ExtraSmall),
                 textAlign = TextAlign.Center,
-                color = if (isSelected)Color.Blue else Color.Gray,
+                color = if (lazyListState.layoutInfo.visibleItemsInfo
+                        .firstOrNull { it.index == range.indexOf(value) }?.offset == 0
+                ) MaterialTheme.colorScheme.onSurface else Color.Gray,
             )
         }
+    }
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.firstVisibleItemIndex -1 }
+            .collect { index ->
+                val selectedValue = range.getOrNull(index)
+                if (selectedValue != null) {
+                    onValueSelected(selectedValue)
+                }
+            }
     }
 }
 

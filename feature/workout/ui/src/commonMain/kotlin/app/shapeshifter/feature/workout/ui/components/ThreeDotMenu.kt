@@ -1,10 +1,16 @@
 package app.shapeshifter.feature.workout.ui.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -13,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
 
 @Immutable
@@ -22,6 +29,7 @@ data class MenuItem(
     val onClick: () -> Unit,
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreeDotMenu(
     menuItems: List<MenuItem>,
@@ -39,18 +47,33 @@ fun ThreeDotMenu(
                 contentDescription = "Options",
             )
         }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            menuItems.forEach { menuItem ->
-                DropdownMenuItem(
-                    onClick = {
-                        expanded = false
-                        menuItem.onClick()
-                    },
-                    text = { Text(menuItem.name) },
-                )
+        if (expanded) {
+            ModalBottomSheet(
+                onDismissRequest = { expanded = false },
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.Padding.Large),
+                ) {
+                    menuItems.forEach { menuItem ->
+                        Button(
+                            modifier = modifier
+                                .fillMaxWidth(),
+                            shape = MaterialTheme.shapes.small,
+                            onClick = {
+                                expanded = false
+                                menuItem.onClick()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        ) {
+                            Text(menuItem.name)
+                        }
+                    }
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import app.shapeshifter.feature.home.ui.HomeComponent
 import app.shapeshifter.feature.profile.ui.ProfileComponent
 import app.shapeshifter.feature.root.ui.ShapeShifterContent
 import app.shapeshifter.feature.workout.ui.createworkoutplan.CreateWorkoutPlanComponent
+import app.shapeshifter.feature.workout.ui.exercisesequence.ExerciseSequenceComponent
 import app.shapeshifter.feature.workout.ui.finishworkout.FinishWorkoutComponent
 import app.shapeshifter.feature.workout.ui.savedworkouts.SavedWorkoutsComponent
 import app.shapeshifter.feature.workout.ui.trackworkout.TrackWorkoutComponent
@@ -29,7 +30,8 @@ abstract class ActivityComponent(
     TrackWorkoutComponent,
     CreateWorkoutPlanComponent,
     ProfileComponent,
-    FinishWorkoutComponent {
+    FinishWorkoutComponent,
+    ExerciseSequenceComponent{
     abstract val shapeShifterContent: ShapeShifterContent
 
     @ActivityScope
