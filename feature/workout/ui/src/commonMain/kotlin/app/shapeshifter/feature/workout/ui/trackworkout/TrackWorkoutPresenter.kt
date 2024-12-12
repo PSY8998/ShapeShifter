@@ -170,7 +170,9 @@ class TrackWorkoutPresenter(
                 }
 
                 is TrackWorkoutUiEvent.OnReorderExercises -> {
-                    navigator.goTo(ExerciseSequenceScreen())
+                    navigator.goTo(ExerciseSequenceScreen(
+                        exerciseSessions = event.exerciseSessions
+                    ))
                 }
 
                 is TrackWorkoutUiEvent.OnRemoveExercise -> {

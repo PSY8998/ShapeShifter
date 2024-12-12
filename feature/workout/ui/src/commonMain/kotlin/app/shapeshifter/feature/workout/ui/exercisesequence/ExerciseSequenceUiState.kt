@@ -8,5 +8,4 @@ data class ExerciseSequenceUiState(
 ) : CircuitUiState
 
 sealed interface ExerciseSequenceUiEvent : CircuitUiEvent {
-
 }

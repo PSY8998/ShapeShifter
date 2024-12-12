@@ -34,6 +34,10 @@ kotlin {
             implementation(libs.kotlinx.serialization)
             implementation(libs.calendar)
             implementation(libs.dateTimePicker)
+
         }
     }
+}
+dependencies {
+    implementation(project(":feature:exercise:ui"))
 }

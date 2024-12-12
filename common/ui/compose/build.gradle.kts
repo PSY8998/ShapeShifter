@@ -18,6 +18,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(projects.data.models)
                 implementation(compose.material3)
                 implementation(libs.circuit.foundation)
                 implementation(compose.components.resources)
