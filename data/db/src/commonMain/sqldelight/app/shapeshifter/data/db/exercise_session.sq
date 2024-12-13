@@ -1,6 +1,7 @@
 selectExerciseSession:
 SELECT
     elog.id AS exercise_log_id,
+    elog.exercise_index AS exercise_index,
     elog.exercise_id AS exercise_id,
     elog.workout_log_id AS workout_log_id,
     elog.workout_plan_id AS workout_plan_id,

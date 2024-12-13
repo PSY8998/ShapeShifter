@@ -78,7 +78,7 @@ class TrackWorkoutPresenter(
             workoutId = insertedWorkoutId ?: 0
         }
 
-        val answeringNavigator =
+        val selectExercisesNavigator =
             rememberAnsweringNavigator<ExercisesScreen.Result>(navigator) { result ->
                 val selectedExerciseIds = result.exerciseIds
                 scope.launch {
@@ -94,6 +94,7 @@ class TrackWorkoutPresenter(
                 }
             }
 
+
         val workoutSession: WorkoutSession?
             by observeWorkoutDetailsUseCase.flow.collectAsRetainedState(null)
 
@@ -102,7 +103,7 @@ class TrackWorkoutPresenter(
                 is TrackWorkoutUiEvent.GoBack -> navigator.pop()
 
                 is TrackWorkoutUiEvent.OnAddExercise -> {
-                    answeringNavigator.goTo(ExercisesScreen(true))
+                    selectExercisesNavigator.goTo(ExercisesScreen(true))
                 }
 
                 is TrackWorkoutUiEvent.OnAddSet -> {
@@ -170,9 +171,9 @@ class TrackWorkoutPresenter(
                 }
 
                 is TrackWorkoutUiEvent.OnReorderExercises -> {
-                    navigator.goTo(ExerciseSequenceScreen(
-                        exerciseSessions = event.exerciseSessions
-                    ))
+                    scope.launch {
+                        navigator.goTo(ExerciseSequenceScreen(workoutId))
+                    }
                 }
 
                 is TrackWorkoutUiEvent.OnRemoveExercise -> {
@@ -191,7 +192,7 @@ class TrackWorkoutPresenter(
                             params = UpdateRestTimeUseCase.Params(
                                 restTimeDurationInSecs = ((event.minutes * 60) + event.seconds).toLong(),
                                 exerciseLog = event.exerciseLog,
-                            )
+                            ),
                         )
                     }
                 }

@@ -2,7 +2,6 @@ package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.runtime.Immutable
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -60,7 +59,7 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     ) : TrackWorkoutUiEvent
 
     data class OnReorderExercises(
-        val exerciseSessions: List<ExerciseSession>,
+        val workoutLogId: Long,
     ) : TrackWorkoutUiEvent
 
     data class OnRemoveExercise(

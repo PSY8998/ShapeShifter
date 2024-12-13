@@ -208,7 +208,7 @@ private fun TrackWorkout(
                                             state.eventSink(
                                                 TrackWorkoutUiEvent
                                                     .OnReorderExercises(
-                                                        targetState.workoutSession.exerciseSessions,
+                                                        targetState.workoutSession.workoutLog.id,
                                                     ),
                                             )
                                         },

@@ -26,6 +26,7 @@ class SqlDelightExerciseLogEntityDao(
     override fun insert(entity: ExerciseLog): Long {
         db.exercise_logQueries.insert(
             id = entity.id,
+            exerciseIndex = entity.index,
             workoutLogId = entity.workoutLogId,
             workoutPlanId = entity.workoutPlanId,
             exerciseId = entity.exerciseId,
@@ -40,6 +41,7 @@ class SqlDelightExerciseLogEntityDao(
         db.exercise_logQueries.update(
             restTimeDuration = entity.restTimeDuration,
             id = entity.id,
+            exerciseIndex = entity.index,
         )
     }
 
@@ -52,9 +54,10 @@ class SqlDelightExerciseLogEntityDao(
             .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
-                mapper = { id, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration->
+                mapper = { id, index, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration->
                     ExerciseLog(
                         id = id,
+                        index = index,
                         exerciseId = exerciseId,
                         workoutPlanId = workoutPlanId,
                         workoutLogId = workoutLogId,
@@ -80,6 +83,7 @@ class SqlDelightExerciseLogEntityDao(
 
         val exerciseLog = ExerciseLog(
             id = firstSession.exercise_log_id,
+            index = firstSession.exercise_index,
             workoutLogId = firstSession.workout_log_id,
             workoutPlanId = firstSession.workout_plan_id,
             exerciseId = firstSession.exercise_id,

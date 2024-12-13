@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -18,8 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
@@ -42,7 +43,6 @@ class ExerciseSequenceUiFactory : Ui.Factory {
                 ReorderExercises(
                     uiState = state,
                     modifier = modifier,
-                    exerciseSessions = screen.exerciseSessions,
                 )
             }
 
@@ -54,7 +54,6 @@ class ExerciseSequenceUiFactory : Ui.Factory {
 @Composable
 internal fun ReorderExercises(
     uiState: ExerciseSequenceUiState,
-    exerciseSessions: List<ExerciseSession>,
     modifier: Modifier = Modifier,
 ) {
     NestedScaffold(
@@ -66,10 +65,22 @@ internal fun ReorderExercises(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            ReorderableExerciseList(
-                exerciseSessions = exerciseSessions,
-                modifier = Modifier,
-            )
+            when (uiState) {
+                is ExerciseSequenceUiState.Empty -> {}
+                is ExerciseSequenceUiState.Filled -> {
+                    ReorderableExerciseList(
+                        exerciseSessions = uiState.exerciseSessions,
+                        modifier = Modifier,
+                        onReorderedExercises = {
+                            uiState.eventSink(
+                                ExerciseSequenceUiEvent.OnReorderedExercises(
+                                    exerciseSessions = it
+                                ),
+                            )
+                        },
+                    )
+                }
+            }
         }
     }
 }
@@ -77,6 +88,7 @@ internal fun ReorderExercises(
 @Composable
 fun ReorderableExerciseList(
     exerciseSessions: List<ExerciseSession>,
+    onReorderedExercises: (List<ExerciseSession>) -> Unit,
     modifier: Modifier,
 ) {
     var list by remember { mutableStateOf(exerciseSessions) }
@@ -86,29 +98,44 @@ fun ReorderableExerciseList(
         list = list.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
     }
 
-    LazyColumn(
-        modifier = modifier.dragContainer(dragDropState),
-        state = listState,
-        contentPadding = PaddingValues(Dimens.Padding.Small),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize(),
     ) {
-        itemsIndexed(list, key = { _, item -> item.exerciseLog.id }) { index, item ->
-            DraggableItem(dragDropState, index) { isDragging ->
-                ElevatedCard(
-                    elevation = CardDefaults.cardElevation(if (isDragging) 4.dp else 1.dp),
-                    colors = CardDefaults.elevatedCardColors(
-                        if (isDragging) MaterialTheme.colorScheme.onPrimaryContainer
-                        else MaterialTheme.colorScheme.onSecondaryContainer,
-                    ),
-                ) {
-                    Text(
-                        text = item.exercise.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                    )
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .dragContainer(dragDropState),
+            state = listState,
+            contentPadding = PaddingValues(Dimens.Padding.Small),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            itemsIndexed(list, key = { _, item -> item.exerciseLog.id }) { index, item ->
+                DraggableItem(dragDropState, index) { isDragging ->
+                    ElevatedCard(
+                        elevation = CardDefaults.cardElevation(if (isDragging) 8.dp else 1.dp),
+                        colors = CardDefaults.elevatedCardColors(
+                            if (isDragging) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onSecondaryContainer,
+                        ),
+                    ) {
+                        Text(
+                            text = item.exercise.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                        )
+                    }
                 }
             }
+        }
+
+        Button(
+            onClick = { onReorderedExercises(list) },
+            modifier = Modifier,
+        ) {
+            Text("Save")
         }
     }
 }
