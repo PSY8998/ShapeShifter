@@ -11,6 +11,7 @@ SELECT
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
     elog.id AS exercise_log_id,
+    elog.exercise_index AS exercise_log_index,
     elog.exercise_plan_id AS exercise_plan_id,
     elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,
@@ -27,7 +28,9 @@ LEFT JOIN
 LEFT JOIN
     set_log slog ON elog.id = slog.exercise_log_id
 WHERE
-    wlog.id = :workoutLogId;
+    wlog.id = :workoutLogId
+ORDER BY
+    elog.exercise_index;
 
 workoutSessions:
 SELECT
@@ -42,6 +45,7 @@ SELECT
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
     elog.id AS exercise_log_id,
+    elog.exercise_index AS exercise_log_index,
     elog.exercise_plan_id AS exercise_plan_id,
     elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,

@@ -98,7 +98,7 @@ class SqlDelightWorkoutEntityDao(
                 val exerciseSessions = items
                     .filter { it.exercise_log_id != null && it.exercise_id != null }
                     .groupBy { it.exercise_log_id }
-                    .mapNotNull sessionMap@{ (exerciseId, entries) ->
+                    .mapNotNull sessionMap@{ (index, entries) ->
                         // Retrieve first entry for each exercise_id to avoid multiple lookups
                         val entry = entries.firstOrNull() ?: return@sessionMap null
 
@@ -148,7 +148,8 @@ class SqlDelightWorkoutEntityDao(
                         ExerciseSession(
                             exerciseLog = ExerciseLog(
                                 id = entry.exercise_log_id!!,
-                                exerciseId = exerciseId!!,
+                                index = entry.exercise_log_index!!,
+                                exerciseId = entry.exercise_id!!,
                                 exercisePlanId = entry.exercise_plan_id,
                                 note = "",
                                 workoutLogId = workoutLog.id,
@@ -156,7 +157,7 @@ class SqlDelightWorkoutEntityDao(
                                 restTimeDuration = entry.exercise_rest_time_duration!!,
                             ),
                             exercise = Exercise(
-                                id = exerciseId,
+                                id = entry.exercise_id,
                                 primaryMuscle = entry.exercise_primary_muscle!!,
                                 secondaryMuscle = entry.exercise_secondary_muscles.orEmpty(),
                                 name = entry.exercise_name.orEmpty(),
@@ -251,6 +252,7 @@ class SqlDelightWorkoutEntityDao(
                                 ExerciseSession(
                                     exerciseLog = ExerciseLog(
                                         id = entry.exercise_log_id!!,
+                                        index = entry.exercise_log_index!!,
                                         exerciseId = exerciseId!!,
                                         exercisePlanId = entry.exercise_plan_id,
                                         restTimeDuration = entry.exercise_rest_time_duration!!,

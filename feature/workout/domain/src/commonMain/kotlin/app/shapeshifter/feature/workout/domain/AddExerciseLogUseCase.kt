@@ -27,6 +27,7 @@ class AddExerciseLogUseCase(
                 for (exerciseId in params.exerciseIds) {
                     val exerciseLog = ExerciseLog(
                         id = 0,
+                        index = 0,
                         workoutLogId = params.workoutLogId,
                         workoutPlanId = params.workoutPlanId,
                         exerciseId = exerciseId,

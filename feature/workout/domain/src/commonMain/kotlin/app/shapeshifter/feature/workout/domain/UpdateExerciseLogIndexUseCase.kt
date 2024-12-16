@@ -14,12 +14,18 @@ class UpdateExerciseLogIndexUseCase(
 ) : UseCase<UpdateExerciseLogIndexUseCase.Params, Unit>() {
 
     override suspend fun doWork(params: Params) {
-        return withContext(dispatchers.databaseWrite){
-
+        params.exerciseLogs.forEachIndexed { index, exerciseLog ->
+            withContext(dispatchers.databaseWrite) {
+                dao.update(
+                    exerciseLog.copy(
+                        index = index.toLong(),
+                    ),
+                )
+            }
         }
     }
 
     data class Params(
-        val exerciseLogs: List<ExerciseLog>
+        val exerciseLogs: List<ExerciseLog>,
     )
 }
