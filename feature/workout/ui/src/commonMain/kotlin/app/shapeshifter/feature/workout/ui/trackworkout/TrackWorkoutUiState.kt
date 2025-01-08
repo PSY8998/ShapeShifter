@@ -62,6 +62,10 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
         val workoutLogId: Long,
     ) : TrackWorkoutUiEvent
 
+    data class OnReplaceExercise(
+        val exerciseLog: ExerciseLog,
+    ) : TrackWorkoutUiEvent
+
     data class OnRemoveExercise(
         val exerciseLog: ExerciseLog,
     ): TrackWorkoutUiEvent

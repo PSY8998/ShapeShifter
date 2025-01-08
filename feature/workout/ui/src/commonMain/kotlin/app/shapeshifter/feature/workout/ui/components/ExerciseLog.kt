@@ -57,6 +57,7 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 fun ExerciseLog(
     name: String,
     onReorderExercises: () -> Unit,
+    onReplaceExercise: () -> Unit,
     onRemoveExercise: () -> Unit,
     updateRestTime: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -91,16 +92,19 @@ fun ExerciseLog(
                     MenuItem(
                         id = 0,
                         name = "Reorder",
-                        onClick = {
-                            onReorderExercises()
-                        },
+                        onClick = { onReorderExercises() },
                     ),
+
                     MenuItem(
                         id = 1,
+                        name = "Replace Exercise",
+                        onClick = { onReplaceExercise() },
+                    ),
+
+                    MenuItem(
+                        id = 2,
                         name = "Remove Exercise",
-                        onClick = {
-                            onRemoveExercise()
-                        },
+                        onClick = { onRemoveExercise() },
                     ),
                 )
             }
@@ -350,7 +354,7 @@ fun SetRestTimerBottomSheet(
                     modifier = Modifier
                         .padding(Dimens.Padding.Medium),
 
-                )
+                    )
 
                 Text(
                     text = "Minutes",
@@ -399,7 +403,7 @@ fun NumberPicker(
     range: List<Int>,
     modifier: Modifier,
 ) {
-    val lazyListState = rememberLazyListState(initialValue-1)
+    val lazyListState = rememberLazyListState(initialValue - 1)
     val centerOffset = 100.dp
 
     LazyColumn(
@@ -422,7 +426,7 @@ fun NumberPicker(
         }
     }
     LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.firstVisibleItemIndex -1 }
+        snapshotFlow { lazyListState.firstVisibleItemIndex - 1 }
             .collect { index ->
                 val selectedValue = range.getOrNull(index)
                 if (selectedValue != null) {

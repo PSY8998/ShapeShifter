@@ -95,7 +95,9 @@ class ExercisesUiFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
         return when (screen) {
             is ExercisesScreen -> ui<ExercisesUiState> { uiState, _ ->
-                Exercises(uiState)
+                Exercises(
+                    uiState,
+                )
             }
 
             else -> null
@@ -138,8 +140,16 @@ private fun Exercises(
                             onSelectExercises = {
                                 eventSink(ExerciseUiEvent.SelectExercises(it))
                             },
+                            onReplaceExercise = { exerciseLogId, exerciseId ->
+                                eventSink(
+                                    ExerciseUiEvent.ReplaceExercise(
+                                        exerciseLogId, exerciseId,
+                                    ),
+                                )
+                            },
                             modifier = Modifier,
-                        )
+
+                            )
                     }
 
                     is ExercisesUiState.Empty -> {
@@ -161,6 +171,7 @@ private fun Exercises(
 private fun ExercisesContent(
     uiState: ExercisesUiState.Exercises,
     onSelectExercises: (exerciseIds: List<Long>) -> Unit,
+    onReplaceExercise: (exerciseLogId: Long, exerciseId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -172,14 +183,19 @@ private fun ExercisesContent(
             modifier = Modifier
                 .fillMaxSize(),
             selectedExerciseIds = selectedExerciseIds.toList(),
-            onSelectExercises = {
-                selectedExerciseIds = selectedExerciseIds.plus(it)
+            onSelectExercise = {
+                if (uiState.intent is ExercisesScreen.Intent.ReplaceExercise) {
+                    selectedExerciseIds = emptySet()
+                    selectedExerciseIds = selectedExerciseIds.plus(it)
+                } else {
+                    selectedExerciseIds = selectedExerciseIds.plus(it)
+                }
             },
             onUnSelectExercise = {
                 selectedExerciseIds = selectedExerciseIds.minus(it)
             },
             exercises = uiState.exercises,
-            canSelect = uiState.canSelect,
+            canSelect = uiState.intent != ExercisesScreen.Intent.Exercises,
         )
 
         val exerciseSelectionStarted by remember {
@@ -198,14 +214,26 @@ private fun ExercisesContent(
         ) {
             Button(
                 onClick = {
-                    onSelectExercises(selectedExerciseIds.toList())
+                    if (uiState.intent is ExercisesScreen.Intent.ReplaceExercise) {
+                        if (selectedExerciseIds.isNotEmpty())
+                            onReplaceExercise(
+                                uiState.intent.exerciseLogId,
+                                selectedExerciseIds.first(),
+                            )
+                    } else {
+                        onSelectExercises(selectedExerciseIds.toList())
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = MaterialTheme.shapes.small,
             ) {
-                Text("Select Exercises")
+                if (uiState.intent is ExercisesScreen.Intent.ReplaceExercise) {
+                    Text("Replace Exercise")
+                } else {
+                    Text("Select Exercises")
+                }
             }
         }
     }
@@ -216,7 +244,7 @@ private fun ExercisesContent(
 private fun ExerciseScrollContent(
     modifier: Modifier = Modifier,
     selectedExerciseIds: List<Long>,
-    onSelectExercises: (exerciseId: Long) -> Unit,
+    onSelectExercise: (exerciseId: Long) -> Unit,
     onUnSelectExercise: (exerciseId: Long) -> Unit,
     exercises: List<Exercise>,
     canSelect: Boolean,
@@ -233,11 +261,11 @@ private fun ExerciseScrollContent(
 
             val state = rememberExerciseAnchorState()
 
-            LaunchedEffect(state.targetValue) {
-                if (state.targetValue == ExerciseAnchors.SELECTED) {
-                    onSelectExercises(exercise.id)
+            LaunchedEffect(exerciseSelectedIndex) {
+                if (exerciseSelectedIndex >= 0) {
+                    state.dismiss(ExerciseAnchors.SELECTED)
                 } else {
-                    onUnSelectExercise(exercise.id)
+                    state.dismiss(ExerciseAnchors.UNSELECTED)
                 }
             }
 
@@ -287,16 +315,12 @@ private fun ExerciseScrollContent(
                                 when {
                                     canSelect &&
                                         state.currentValue == ExerciseAnchors.SELECTED -> {
-                                        scope.launch {
-                                            state.dismiss(ExerciseAnchors.UNSELECTED)
-                                        }
+                                        onUnSelectExercise(exercise.id)
                                     }
 
                                     canSelect &&
                                         state.currentValue == ExerciseAnchors.UNSELECTED -> {
-                                        scope.launch {
-                                            state.dismiss(ExerciseAnchors.SELECTED)
-                                        }
+                                        onSelectExercise(exercise.id)
                                     }
 
                                     else -> {

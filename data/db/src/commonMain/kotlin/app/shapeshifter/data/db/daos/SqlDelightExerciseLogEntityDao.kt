@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExerciseLogEntityDao : EntityDao<ExerciseLog> {
     fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>>
-    fun exerciseSession(exerciseId: Long): ExerciseSession?
+    fun exerciseSession(exerciseLogId: Long): ExerciseSession?
 }
 
 @Inject
@@ -71,10 +71,10 @@ class SqlDelightExerciseLogEntityDao(
             .mapToList(appCoroutineDispatchers.io)
     }
 
-    override fun exerciseSession(exerciseId: Long): ExerciseSession? {
+    override fun exerciseSession(exerciseLogId: Long): ExerciseSession? {
         val sessions: List<SelectExerciseSession> = db
             .exercise_sessionQueries.selectExerciseSession(
-                exercise_id = exerciseId,
+                exerciseLogId = exerciseLogId,
             ).executeAsList()
 
         if (sessions.isEmpty()) return null

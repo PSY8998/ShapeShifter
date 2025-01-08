@@ -65,10 +65,18 @@ fun ThreeDotMenu(
                                 expanded = false
                                 menuItem.onClick()
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
+                            colors = if (menuItem.id.toInt() == 2) {
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onErrorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                )
+                            } else {
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+
+                                    )
+                            },
                         ) {
                             Text(menuItem.name)
                         }

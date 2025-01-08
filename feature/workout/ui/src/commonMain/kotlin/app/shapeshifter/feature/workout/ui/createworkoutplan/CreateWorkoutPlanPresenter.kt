@@ -86,24 +86,24 @@ class CreateWorkoutPlanPresenter(
 
         val answeringNavigator =
             rememberAnsweringNavigator<ExercisesScreen.Result>(navigator) { result ->
-                val selectedExerciseIds = result.exerciseIds
-                exercises.value +=
-                    fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
-
-                exercisePlans.value += selectedExerciseIds.map {
-                    ExercisePlan(
-                        id = currentExercisePlanId.incrementAndGet().toLong(),
-                        workoutPlanId = 0,
-                        exerciseId = it,
-                        index = PositiveInt(0),
-                    )
-                }
+//                val selectedExerciseIds = result.exerciseIds
+//                exercises.value +=
+//                    fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
+//
+//                exercisePlans.value += selectedExerciseIds.map {
+//                    ExercisePlan(
+//                        id = currentExercisePlanId.incrementAndGet().toLong(),
+//                        workoutPlanId = 0,
+//                        exerciseId = it,
+//                        index = PositiveInt(0),
+//                    )
+//                }
             }
 
         fun eventSink(event: CreateWorkoutPlanUiEvent) {
             when (event) {
                 is CreateWorkoutPlanUiEvent.OnAddExercise -> {
-                    answeringNavigator.goTo(ExercisesScreen(true))
+                    answeringNavigator.goTo(ExercisesScreen(ExercisesScreen.Intent.SelectExercises))
                 }
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {

@@ -227,6 +227,14 @@ private fun TrackWorkout(
                                                 ),
                                             )
                                         },
+
+                                        onReplaceExercise = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent.OnReplaceExercise(
+                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                )
+                                            )
+                                        },
                                     )
                                 }
 
@@ -287,6 +295,7 @@ private fun LazyListScope.exerciseLog(
     onAddSet: (exerciseLogId: Long) -> Unit,
     onDeleteSet: (setLog: SetLog) -> Unit,
     onReorderExercises: (exerciseLogId: Long) -> Unit,
+    onReplaceExercise: (exerciseLog: ExerciseLog) -> Unit,
     onRemoveExercise: (exerciseLog: ExerciseLog) -> Unit,
     onUpdateRestTime: (Int, Int) -> Unit,
 ) {
@@ -299,6 +308,7 @@ private fun LazyListScope.exerciseLog(
         ExerciseLog(
             name = exerciseSession.exercise.name,
             onReorderExercises = { onReorderExercises(exerciseLog.id) },
+            onReplaceExercise = { onReplaceExercise(exerciseLog)},
             onRemoveExercise = { onRemoveExercise(exerciseLog) },
             updateRestTime = onUpdateRestTime,
             modifier = Modifier,

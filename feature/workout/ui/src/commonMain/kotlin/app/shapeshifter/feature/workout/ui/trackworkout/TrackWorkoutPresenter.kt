@@ -12,6 +12,7 @@ import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.plans.WorkoutPlan
+import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.CreateSetUseCase
@@ -32,6 +33,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import shapeshifter.feature.workout.ui.generated.resources.Res
 import kotlinx.coroutines.launch
 
 @Inject
@@ -80,16 +82,42 @@ class TrackWorkoutPresenter(
 
         val selectExercisesNavigator =
             rememberAnsweringNavigator<ExercisesScreen.Result>(navigator) { result ->
-                val selectedExerciseIds = result.exerciseIds
-                scope.launch {
-                    if (workoutId != 0L) {
-                        addExerciseUseCase(
-                            AddExerciseLogUseCase.Params(
-                                workoutLogId = workoutId,
-                                exerciseIds = selectedExerciseIds,
-                                workoutPlanId = WorkoutPlan.QuickWorkoutId,
-                            ),
-                        )
+                when (result) {
+                    is ExercisesScreen.Result.ReplaceExercise -> {
+                        val exerciseLogId = result.exerciseLogId
+                        val selectedExerciseId = result.exerciseId
+                        scope.launch {
+                            val deletedLog: ExerciseLog? = removeExerciseLogUseCase.invoke(
+                                RemoveExerciseLogUseCase.Params(
+                                    exerciseLogId,
+                                ),
+                            ).getOrNull()
+
+                            addExerciseUseCase(
+                                AddExerciseLogUseCase.Params(
+                                    workoutLogId = workoutId,
+                                    exerciseIds = listOf(selectedExerciseId),
+                                    workoutPlanId = WorkoutPlan.QuickWorkoutId,
+                                    index = deletedLog?.index ?: 0,
+                                ),
+                            )
+                        }
+                    }
+
+                    is ExercisesScreen.Result.SelectedExercises -> {
+                        val selectedExerciseIds = result.exerciseIds
+                        scope.launch {
+                            if (workoutId != 0L) {
+                                addExerciseUseCase(
+                                    AddExerciseLogUseCase.Params(
+                                        workoutLogId = workoutId,
+                                        exerciseIds = selectedExerciseIds,
+                                        workoutPlanId = WorkoutPlan.QuickWorkoutId,
+                                        index = 0
+                                    ),
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -103,7 +131,7 @@ class TrackWorkoutPresenter(
                 is TrackWorkoutUiEvent.GoBack -> navigator.pop()
 
                 is TrackWorkoutUiEvent.OnAddExercise -> {
-                    selectExercisesNavigator.goTo(ExercisesScreen(true))
+                    selectExercisesNavigator.goTo(ExercisesScreen(ExercisesScreen.Intent.SelectExercises))
                 }
 
                 is TrackWorkoutUiEvent.OnAddSet -> {
@@ -176,11 +204,23 @@ class TrackWorkoutPresenter(
                     }
                 }
 
+                is TrackWorkoutUiEvent.OnReplaceExercise -> {
+                    scope.launch {
+                        selectExercisesNavigator.goTo(
+                            ExercisesScreen(
+                                ExercisesScreen.Intent.ReplaceExercise(
+                                    event.exerciseLog.id,
+                                ),
+                            ),
+                        )
+                    }
+                }
+
                 is TrackWorkoutUiEvent.OnRemoveExercise -> {
                     scope.launch {
                         removeExerciseLogUseCase(
                             params = RemoveExerciseLogUseCase.Params(
-                                exerciseLog = event.exerciseLog,
+                                exerciseLogId = event.exerciseLog.id,
                             ),
                         )
                     }

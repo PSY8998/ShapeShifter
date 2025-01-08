@@ -48,6 +48,6 @@ JOIN
 JOIN
     exercise AS e ON e.id = elog.exercise_id
 WHERE
-    elog.exercise_id = ?
+    elog.id = :exerciseLogId
 ORDER BY elog.id DESC
 LIMIT 1;

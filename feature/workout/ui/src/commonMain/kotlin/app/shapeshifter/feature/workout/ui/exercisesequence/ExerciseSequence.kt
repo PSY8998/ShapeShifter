@@ -74,7 +74,7 @@ internal fun ReorderExercises(
                         onReorderedExercises = {
                             uiState.eventSink(
                                 ExerciseSequenceUiEvent.OnReorderedExercises(
-                                    exerciseSessions = it
+                                    exerciseSessions = it,
                                 ),
                             )
                         },

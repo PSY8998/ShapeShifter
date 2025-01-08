@@ -11,15 +11,19 @@ import kotlinx.coroutines.withContext
 class RemoveExerciseLogUseCase(
     private val dispatchers: AppCoroutineDispatchers,
     private val dao: ExerciseLogEntityDao,
-): UseCase<RemoveExerciseLogUseCase.Params, Unit>() {
+) : UseCase<RemoveExerciseLogUseCase.Params, ExerciseLog?>() {
 
-    override suspend fun doWork(params: Params) {
-        return withContext(dispatchers.databaseWrite){
-            dao.deleteEntity(params.exerciseLog)
+    override suspend fun doWork(params: Params): ExerciseLog? {
+        return withContext(dispatchers.databaseWrite) {
+            val exerciseSession = dao.exerciseSession(params.exerciseLogId)
+            if (exerciseSession?.exerciseLog != null) {
+                dao.deleteEntity(exerciseSession.exerciseLog)
+            }
+            exerciseSession?.exerciseLog
         }
     }
 
     data class Params(
-        val exerciseLog: ExerciseLog
+        val exerciseLogId: Long,
     )
 }

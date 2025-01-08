@@ -3,7 +3,6 @@ package app.shapeshifter.feature.exercise.ui.exercises
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.data.models.Exercise
@@ -48,7 +47,6 @@ class ExercisesPresenter(
 
     @Composable
     override fun present(): ExercisesUiState {
-        val canSelect: Boolean = rememberSaveable { screen.canSelect }
 
         LaunchedEffect(Unit) {
             launch {
@@ -67,7 +65,20 @@ class ExercisesPresenter(
                 }
 
                 is ExerciseUiEvent.SelectExercises -> {
-                    navigator.pop(result = ExercisesScreen.Result(event.ids))
+                    navigator.pop(
+                        result = ExercisesScreen.Result.SelectedExercises(
+                            exerciseIds = event.ids,
+                        ),
+                    )
+                }
+
+                is ExerciseUiEvent.ReplaceExercise -> {
+                    navigator.pop(
+                        result = ExercisesScreen.Result.ReplaceExercise(
+                            exerciseLogId = event.exerciseLogId,
+                            exerciseId = event.exerciseId,
+                        ),
+                    )
                 }
             }
         }
@@ -83,7 +94,7 @@ class ExercisesPresenter(
             ExercisesUiState.Exercises(
                 eventSink = ::eventSink,
                 exercises = exercises,
-                canSelect = canSelect,
+                intent = screen.intent,
             )
         }
     }

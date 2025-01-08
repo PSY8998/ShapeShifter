@@ -23,11 +23,12 @@ class AddExerciseLogUseCase(
 
     override suspend fun doWork(params: Params) {
         withContext(dispatchers.databaseWrite) {
+            var currentIndex = params.index
             transactionRunner {
                 for (exerciseId in params.exerciseIds) {
                     val exerciseLog = ExerciseLog(
                         id = 0,
-                        index = 0,
+                        index = currentIndex,
                         workoutLogId = params.workoutLogId,
                         workoutPlanId = params.workoutPlanId,
                         exerciseId = exerciseId,
@@ -54,6 +55,7 @@ class AddExerciseLogUseCase(
                     )
 
                     setLogEntityDao.insert(set)
+                    currentIndex += 1
                 }
             }
         }
@@ -64,5 +66,6 @@ class AddExerciseLogUseCase(
         val workoutLogId: Long,
         val workoutPlanId: Long,
         val exerciseIds: List<Long>,
+        val index: Long,
     )
 }
