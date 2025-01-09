@@ -12,5 +12,8 @@ nullif(:id, 0),
 :name
 );
 
+selectAll:
+SELECT * FROM workout_plan;
+
 lastInsertRowId:
 SELECT last_insert_rowid();

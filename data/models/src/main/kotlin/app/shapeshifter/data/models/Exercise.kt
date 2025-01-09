@@ -1,5 +1,8 @@
 package app.shapeshifter.data.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Exercise(
     override val id: Long = 0,
     val name: String,

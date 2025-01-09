@@ -1,6 +1,7 @@
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.runtime.Immutable
+import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import com.slack.circuit.runtime.CircuitUiEvent
@@ -9,6 +10,7 @@ import com.slack.circuit.runtime.CircuitUiState
 @Immutable
 data class SavedWorkoutsUiState(
     val activeWorkout: WorkoutSessionOverview? = null,
+    val workoutPlans: List<WorkoutPlanSession> = emptyList(),
     val eventSink: (SavedWorkoutsUiEvent) -> Unit,
 ) : CircuitUiState
 

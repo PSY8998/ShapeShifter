@@ -22,6 +22,7 @@ import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FetchExercisesUseCase
+import app.shapeshifter.feature.workout.domain.SaveWorkoutUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedSaveable
@@ -60,6 +61,7 @@ class CreateWorkoutPlanPresenter(
     @Assisted private val navigator: Navigator,
     @Assisted private val screen: CreateWorkoutPlanScreen,
     private val fetchExercisesUseCase: FetchExercisesUseCase,
+    private val saveWorkoutUseCase: SaveWorkoutUseCase,
 ) : Presenter<CreateWorkoutPlanUiState> {
 
     @Composable
@@ -85,19 +87,19 @@ class CreateWorkoutPlanPresenter(
         val scope = rememberCoroutineScope()
 
         val answeringNavigator =
-            rememberAnsweringNavigator<ExercisesScreen.Result>(navigator) { result ->
-//                val selectedExerciseIds = result.exerciseIds
-//                exercises.value +=
-//                    fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
-//
-//                exercisePlans.value += selectedExerciseIds.map {
-//                    ExercisePlan(
-//                        id = currentExercisePlanId.incrementAndGet().toLong(),
-//                        workoutPlanId = 0,
-//                        exerciseId = it,
-//                        index = PositiveInt(0),
-//                    )
-//                }
+            rememberAnsweringNavigator<ExercisesScreen.Result.SelectedExercises>(navigator) { result ->
+               val selectedExerciseIds = result.exerciseIds
+                exercises.value +=
+                    fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
+
+                exercisePlans.value += selectedExerciseIds.map {
+                    ExercisePlan(
+                        id = currentExercisePlanId.incrementAndGet().toLong(),
+                        workoutPlanId = 0,
+                        exerciseId = it,
+                        index = PositiveInt(0),
+                    )
+                }
             }
 
         fun eventSink(event: CreateWorkoutPlanUiEvent) {
@@ -135,7 +137,12 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnSaveWorkout ->{
-                    navigator.pop()
+                    scope.launch {
+                        saveWorkoutUseCase(
+                            params = event.workoutPlanSession,
+                        )
+                        navigator.pop()
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package app.shapeshifter.data.models.plans
 
 import app.shapeshifter.data.models.Entity
+import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable

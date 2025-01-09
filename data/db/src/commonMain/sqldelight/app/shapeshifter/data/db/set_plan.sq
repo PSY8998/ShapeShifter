@@ -19,3 +19,9 @@ nullIf(:id, 0),
 :weight,
 :reps
 );
+
+selectAll:
+SELECT * FROM set_plan;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

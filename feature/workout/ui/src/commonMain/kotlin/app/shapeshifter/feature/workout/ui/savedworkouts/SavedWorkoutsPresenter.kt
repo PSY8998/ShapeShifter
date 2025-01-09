@@ -2,6 +2,7 @@ package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
@@ -9,6 +10,7 @@ import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
+import app.shapeshifter.feature.workout.domain.FetchWorkoutPlanSessionsUseCase
 import app.shapeshifter.feature.workout.domain.ObserveActiveWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.StartWorkoutUseCase
 import com.slack.circuit.retained.collectAsRetainedState
@@ -41,12 +43,14 @@ class SavedWorkoutsPresenter(
     @Assisted private val navigator: Navigator,
     private val observeActiveWorkoutUseCase: ObserveActiveWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
+    private val fetchWorkoutPlanSessionsUseCase: FetchWorkoutPlanSessionsUseCase,
 ) : Presenter<SavedWorkoutsUiState> {
 
     @Composable
     override fun present(): SavedWorkoutsUiState {
         val scope = rememberCoroutineScope()
         val activeWorkout by observeActiveWorkoutUseCase.flow.collectAsRetainedState(null)
+        val workoutPlanSessions by fetchWorkoutPlanSessionsUseCase.flow.collectAsState(emptyList())
 
         fun eventSink(event: SavedWorkoutsUiEvent) {
             when (event) {
@@ -92,9 +96,11 @@ class SavedWorkoutsPresenter(
 
         LaunchedEffect(Unit) {
             observeActiveWorkoutUseCase(Unit)
+            fetchWorkoutPlanSessionsUseCase(Unit)
         }
 
         return SavedWorkoutsUiState(
+            workoutPlans = workoutPlanSessions,
             activeWorkout = activeWorkout,
             eventSink = ::eventSink,
         )

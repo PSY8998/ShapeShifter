@@ -88,7 +88,11 @@ internal fun CreateWorkoutPlan(
             CreateWorkoutPlanTopBar(
                 planName = uiState.workoutPlanSession.workoutPlan.name,
                 onSave = {
-                    uiState.eventSink(CreateWorkoutPlanUiEvent.OnSaveWorkout)
+                    uiState.eventSink(
+                        CreateWorkoutPlanUiEvent.OnSaveWorkout(
+                            workoutPlanSession = uiState.workoutPlanSession
+                        ),
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -337,7 +341,7 @@ fun SetPlanUi(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = index.toString(),
+            text = (index + 1).toString(),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodyMedium,
@@ -380,7 +384,7 @@ fun SetPlanUi(
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
-                            )
+                            ),
                         )
                     }
                 }
@@ -394,21 +398,24 @@ fun SetPlanUi(
         )
 
         var setReps by remember {
-            mutableStateOf(reps.takeIf { it != 0 }?.toString() ?: "0")
+            mutableStateOf(reps.takeIf { it != -1 }?.toString() ?: "")
         }
-
         BasicTextField(
             value = setReps,
             onValueChange = {
                 if (pattern.matches(it)) {
                     setReps = it
-                    onSetRepsChanged(it.toInt())
+                    onSetRepsChanged(it.toIntOrNull() ?: SetPlan.Undefined)
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Black,
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
             ),
             decorationBox = { innerTextField ->
                 Box(
@@ -417,8 +424,24 @@ fun SetPlanUi(
                     contentAlignment = Alignment.Center,
                 ) {
                     innerTextField()
+
+                    if (setReps.isEmpty()) {
+                        Text(
+                            text = "0",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                            ),
+                        )
+                    }
                 }
+
             },
+            modifier = Modifier
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .weight(1f)
+                .width(IntrinsicSize.Min)
+                .defaultMinSize(24.dp),
         )
     }
 }

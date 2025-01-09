@@ -18,3 +18,18 @@ nullIf(:id, 0),
 :workoutPlanId
 );
 
+selectAll:
+SELECT
+    eplan.id AS exercise_plan_id,
+    eplan.workout_plan_id AS workout_plan_id,
+    eplan.exercise_id AS exercise_id,
+    e.name AS exercise_name,
+    e.image_url AS exercise_image_url,
+    e.primary_muscle AS exercise_primary_muscle,
+    e.secondary_muscles AS exercise_secondary_muscles
+FROM exercise_plan AS eplan
+JOIN exercise AS e ON e.id = eplan.exercise_id;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+

@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
+import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
@@ -119,6 +124,7 @@ internal fun SavedWorkouts(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize(),
+                workoutPlanSessions = uiState.workoutPlans,
             )
         }
     }
@@ -131,6 +137,7 @@ private fun SavedWorkoutsScrollingContent(
         routineId: Long,
         planName: String,
     ) -> Unit,
+    workoutPlanSessions: List<WorkoutPlanSession>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -172,6 +179,7 @@ private fun SavedWorkoutsScrollingContent(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
                     .padding(horizontal = 16.dp),
+                workoutPlanSessions = workoutPlanSessions,
             )
         }
 
@@ -304,6 +312,7 @@ private fun MyRoutine(
         routineId: Long,
         planName: String,
     ) -> Unit,
+    workoutPlanSessions: List<WorkoutPlanSession>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -375,18 +384,58 @@ private fun MyRoutine(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.barbell_overhead_empty),
-                contentDescription = "empty workout",
-            )
-
-            Text(
-                text = "No workouts present in this routine",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier,
-                color = Color.Gray,
-            )
+            Column(
+                modifier = modifier,
+            ) {
+                for (workoutPlanSession in workoutPlanSessions) {
+                    WorkoutPlanCard(
+                        modifier = Modifier,
+                        workoutPlanSession = workoutPlanSession,
+                    )
+                }
+            }
         }
+    }
+
+    // If workoutPlanSessions is empty
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.spacedBy(16.dp),
+//        ) {
+//
+//            Image(
+//                painter = painterResource(Res.drawable.barbell_overhead_empty),
+//                contentDescription = "empty workout",
+//            )
+//
+//            Text(
+//                text = "No workouts present in this routine",
+//                style = MaterialTheme.typography.labelMedium,
+//                modifier = Modifier,
+//                color = Color.Gray,
+//            )
+//        }
+}
+
+@Composable
+fun WorkoutPlanCard(
+    workoutPlanSession: WorkoutPlanSession,
+    modifier: Modifier,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(Dimens.Padding.Small),
+        shape = RoundedCornerShape(Dimens.Padding.Medium),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+    ) {
+        Text(text = workoutPlanSession.workoutPlan.name)
     }
 }
 
