@@ -9,6 +9,7 @@ import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
+import app.shapeshifter.feature.workout.domain.DeleteWorkoutPlanUseCase
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FetchWorkoutPlanSessionsUseCase
 import app.shapeshifter.feature.workout.domain.ObserveActiveWorkoutUseCase
@@ -44,6 +45,7 @@ class SavedWorkoutsPresenter(
     private val observeActiveWorkoutUseCase: ObserveActiveWorkoutUseCase,
     private val discardWorkoutUseCase: DiscardWorkoutUseCase,
     private val fetchWorkoutPlanSessionsUseCase: FetchWorkoutPlanSessionsUseCase,
+    private val deleteWorkoutPlanUseCase: DeleteWorkoutPlanUseCase,
 ) : Presenter<SavedWorkoutsUiState> {
 
     @Composable
@@ -58,7 +60,7 @@ class SavedWorkoutsPresenter(
                     navigator.resetRoot(
                         newRoot = HomeScreen,
                         saveState = true,
-                        restoreState = true
+                        restoreState = true,
                     )
                 }
 
@@ -86,10 +88,32 @@ class SavedWorkoutsPresenter(
                 is SavedWorkoutsUiEvent.CreateWorkoutPlan -> {
                     navigator.goTo(
                         CreateWorkoutPlanScreen(
-                            planName = event.planName,
-                            routineId = event.routineId
+                            intent = CreateWorkoutPlanScreen.Intent.NewWorkoutPlan(
+                                planName = event.planName,
+                                routineId = event.routineId,
+                            )
                         ),
                     )
+                }
+
+                is SavedWorkoutsUiEvent.OnDeleteWorkoutPlan -> {
+                    scope.launch {
+                        deleteWorkoutPlanUseCase(
+                            DeleteWorkoutPlanUseCase.Params(event.workoutPlanSession),
+                        )
+                    }
+                }
+
+                is SavedWorkoutsUiEvent.OnEditWorkoutPlan -> {
+                    scope.launch {
+                        navigator.goTo(
+                            CreateWorkoutPlanScreen(
+                                intent = CreateWorkoutPlanScreen.Intent.EditWorkoutPlan(
+                                    event.workoutPlanSession.workoutPlan.id
+                                )
+                            ),
+                        )
+                    }
                 }
             }
         }

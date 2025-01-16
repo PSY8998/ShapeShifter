@@ -27,6 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,9 +40,12 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
+import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
+import app.shapeshifter.feature.workout.ui.components.MenuItem
+import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import app.shapeshifter.feature.workout.ui.createworkoutplan.WorkoutPlanNameResult
 import app.shapeshifter.feature.workout.ui.createworkoutplan.showWorkoutPlanName
@@ -125,6 +130,12 @@ internal fun SavedWorkouts(
                     .weight(1f)
                     .fillMaxSize(),
                 workoutPlanSessions = uiState.workoutPlans,
+                onEditWorkoutPlan = {
+                    eventSink(SavedWorkoutsUiEvent.OnEditWorkoutPlan(it))
+                },
+                onDeleteWorkoutPlan = {
+                    eventSink(SavedWorkoutsUiEvent.OnDeleteWorkoutPlan(it))
+                },
             )
         }
     }
@@ -132,12 +143,14 @@ internal fun SavedWorkouts(
 
 @Composable
 private fun SavedWorkoutsScrollingContent(
+    workoutPlanSessions: List<WorkoutPlanSession>,
     onStartQuickWorkout: () -> Unit,
     onCreateWorkoutPlan: (
         routineId: Long,
         planName: String,
     ) -> Unit,
-    workoutPlanSessions: List<WorkoutPlanSession>,
+    onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
+    onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -180,6 +193,8 @@ private fun SavedWorkoutsScrollingContent(
                     .padding(top = 16.dp)
                     .padding(horizontal = 16.dp),
                 workoutPlanSessions = workoutPlanSessions,
+                onEditWorkoutPlan = onEditWorkoutPlan,
+                onDeleteWorkoutPlan = onDeleteWorkoutPlan,
             )
         }
 
@@ -308,11 +323,13 @@ private fun Routines(
 
 @Composable
 private fun MyRoutine(
+    workoutPlanSessions: List<WorkoutPlanSession>,
     onCreateWorkoutPlan: (
         routineId: Long,
         planName: String,
     ) -> Unit,
-    workoutPlanSessions: List<WorkoutPlanSession>,
+    onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
+    onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -379,63 +396,121 @@ private fun MyRoutine(
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .fillMaxWidth(),
         ) {
             Column(
-                modifier = modifier,
+                modifier = Modifier,
             ) {
+                if (workoutPlanSessions.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+
+                        Image(
+                            painter = painterResource(Res.drawable.barbell_overhead_empty),
+                            contentDescription = "empty workout",
+                        )
+
+                        Text(
+                            text = "No workouts present in this routine",
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier,
+                            color = Color.Gray,
+                        )
+                    }
+                }
+
                 for (workoutPlanSession in workoutPlanSessions) {
-                    WorkoutPlanCard(
-                        modifier = Modifier,
-                        workoutPlanSession = workoutPlanSession,
-                    )
+                    key(workoutPlanSession.workoutPlan.id) {
+                        WorkoutPlanCard(
+                            modifier = Modifier,
+                            workoutPlanSession = workoutPlanSession,
+                            onEditWorkoutPlan = { onEditWorkoutPlan(workoutPlanSession) },
+                            onDeleteWorkoutPlan = { onDeleteWorkoutPlan(workoutPlanSession) },
+                            onStartWorkoutPlan = {},
+                        )
+                    }
                 }
             }
         }
     }
-
-    // If workoutPlanSessions is empty
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.spacedBy(16.dp),
-//        ) {
-//
-//            Image(
-//                painter = painterResource(Res.drawable.barbell_overhead_empty),
-//                contentDescription = "empty workout",
-//            )
-//
-//            Text(
-//                text = "No workouts present in this routine",
-//                style = MaterialTheme.typography.labelMedium,
-//                modifier = Modifier,
-//                color = Color.Gray,
-//            )
-//        }
 }
 
 @Composable
 fun WorkoutPlanCard(
     workoutPlanSession: WorkoutPlanSession,
+    onEditWorkoutPlan: () -> Unit,
+    onDeleteWorkoutPlan: () -> Unit,
+    onStartWorkoutPlan: () -> Unit,
     modifier: Modifier,
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .padding(vertical = Dimens.Padding.Small)
+            .fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(Dimens.Padding.Small),
         shape = RoundedCornerShape(Dimens.Padding.Medium),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
     ) {
-        Text(text = workoutPlanSession.workoutPlan.name)
+        Column(
+            modifier = Modifier
+                .padding(horizontal = Dimens.Padding.Small),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(Dimens.Padding.ExtraSmall),
+            ) {
+                Text(
+                    text = workoutPlanSession.workoutPlan.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .weight(1f),
+                )
+
+                val workoutPlanMenuItems = remember {
+                    listOf(
+                        MenuItem(
+                            id = 0,
+                            name = "Edit Workout",
+                            onClick = { onEditWorkoutPlan() },
+                        ),
+
+                        MenuItem(
+                            id = 1,
+                            name = "Delete Workout",
+                            onClick = { onDeleteWorkoutPlan() },
+                        ),
+                    )
+                }
+
+                ThreeDotMenu(
+                    menuItems = workoutPlanMenuItems,
+                    modifier = Modifier,
+                )
+            }
+            Row {
+                for (exercisePlanSession in workoutPlanSession.exercisePlanSessions) {
+                    Text(exercisePlanSession.exercise.name + ", ")
+                }
+            }
+
+            Button(
+                onClick = { onStartWorkoutPlan() },
+                modifier = Modifier
+                    .padding(vertical = Dimens.Padding.Small)
+                    .fillMaxWidth(),
+            ) {
+                Text("Start Workout")
+            }
+        }
     }
 }
 

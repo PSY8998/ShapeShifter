@@ -36,7 +36,7 @@ class SqlDelightExercisePlanEntityDao(
     }
 
     override fun deleteEntity(entity: ExercisePlan) {
-        TODO("Not yet implemented")
+
     }
 
     fun observeExercisePlans(): Flow<List<Pair<ExercisePlan, Exercise>>> {

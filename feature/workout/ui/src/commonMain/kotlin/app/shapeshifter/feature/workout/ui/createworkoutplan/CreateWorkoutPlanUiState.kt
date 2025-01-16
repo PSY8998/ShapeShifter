@@ -4,8 +4,9 @@ import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
+
 data class CreateWorkoutPlanUiState(
-    val workoutPlanSession: WorkoutPlanSession,
+    val workoutPlanSession: WorkoutPlanSession?,
     val eventSink: (CreateWorkoutPlanUiEvent) -> Unit,
 ) : CircuitUiState
 
@@ -18,7 +19,7 @@ sealed interface CreateWorkoutPlanUiEvent : CircuitUiEvent {
     ) : CreateWorkoutPlanUiEvent
 
     data class OnSetWeightChanged(
-        val setId : Long,
+        val setId: Long,
         val setWeight: Int,
     ) : CreateWorkoutPlanUiEvent
 

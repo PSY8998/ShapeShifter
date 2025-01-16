@@ -76,65 +76,67 @@ internal fun CreateWorkoutPlan(
     uiState: CreateWorkoutPlanUiState,
     modifier: Modifier = Modifier,
 ) {
-    NestedScaffold(
-        modifier = modifier
-            .fillMaxSize(),
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
+    if(uiState.workoutPlanSession != null) {
+        NestedScaffold(
+            modifier = modifier
                 .fillMaxSize(),
-        ) {
-            CreateWorkoutPlanTopBar(
-                planName = uiState.workoutPlanSession.workoutPlan.name,
-                onSave = {
-                    uiState.eventSink(
-                        CreateWorkoutPlanUiEvent.OnSaveWorkout(
-                            workoutPlanSession = uiState.workoutPlanSession
-                        ),
-                    )
-                },
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                    .padding(top = paddingValues.calculateTopPadding())
+                    .fillMaxSize(),
             ) {
-                uiState.workoutPlanSession.exercisePlanSessions.forEach { exercisePlanSession ->
-                    exercisePlan(
-                        exercisePlanSession = exercisePlanSession,
-                        onAddSet = {
-                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercisePlan.id))
-                        },
-                        onSetWeightChanged = { id, weight ->
-                            uiState.eventSink(
-                                CreateWorkoutPlanUiEvent.OnSetWeightChanged(
-                                    setId = id,
-                                    setWeight = weight,
-                                ),
-                            )
-                        },
-                        onSetRepsChanged = { id, reps ->
-                            uiState.eventSink(
-                                CreateWorkoutPlanUiEvent.OnSetRepsChanged(
-                                    setId = id,
-                                    setReps = reps,
-                                ),
-                            )
-                        },
-                    )
-                }
+                CreateWorkoutPlanTopBar(
+                    planName = uiState.workoutPlanSession.workoutPlan.name,
+                    onSave = {
+                        uiState.eventSink(
+                            CreateWorkoutPlanUiEvent.OnSaveWorkout(
+                                workoutPlanSession = uiState.workoutPlanSession
+                            ),
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
 
-                item {
-                    AddExercise(
-                        onAddExercise = {
-                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
-                        },
-                    )
-                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    uiState.workoutPlanSession.exercisePlanSessions.forEach { exercisePlanSession ->
+                        exercisePlan(
+                            exercisePlanSession = exercisePlanSession,
+                            onAddSet = {
+                                uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercisePlan.id))
+                            },
+                            onSetWeightChanged = { id, weight ->
+                                uiState.eventSink(
+                                    CreateWorkoutPlanUiEvent.OnSetWeightChanged(
+                                        setId = id,
+                                        setWeight = weight,
+                                    ),
+                                )
+                            },
+                            onSetRepsChanged = { id, reps ->
+                                uiState.eventSink(
+                                    CreateWorkoutPlanUiEvent.OnSetRepsChanged(
+                                        setId = id,
+                                        setReps = reps,
+                                    ),
+                                )
+                            },
+                        )
+                    }
 
+                    item {
+                        AddExercise(
+                            onAddExercise = {
+                                uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
+                            },
+                        )
+                    }
+
+                }
             }
         }
     }

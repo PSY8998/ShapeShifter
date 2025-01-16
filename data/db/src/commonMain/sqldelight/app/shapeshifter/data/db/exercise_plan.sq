@@ -3,7 +3,8 @@
 CREATE TABLE IF NOT EXISTS exercise_plan (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `exercise_id` INTEGER NOT NULL,
-    `workout_plan_id` INTEGER NOT NULL
+    `workout_plan_id` INTEGER NOT NULL,
+    FOREIGN KEY (`workout_plan_id`) REFERENCES workout_plan(`id`) ON DELETE CASCADE
 );
 
 insert:

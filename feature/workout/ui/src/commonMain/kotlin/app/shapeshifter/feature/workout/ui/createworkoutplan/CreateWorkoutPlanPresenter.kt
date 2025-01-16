@@ -1,14 +1,11 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
@@ -19,26 +16,20 @@ import app.shapeshifter.data.models.plans.ExercisePlanSession
 import app.shapeshifter.data.models.plans.SetPlan
 import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
-import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
-import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FetchExercisesUseCase
+import app.shapeshifter.feature.workout.domain.FetchWorkoutPlanSessionsUseCase
 import app.shapeshifter.feature.workout.domain.SaveWorkoutUseCase
+import app.shapeshifter.feature.workout.domain.SelectWorkoutPlanUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.concurrent.atomic.AtomicInteger
-import kotlinx.collections.immutable.persistentHashMapOf
-import kotlinx.collections.immutable.toPersistentHashMap
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @Inject
 class CreateWorkoutPlanPresenterFactory(
@@ -62,40 +53,34 @@ class CreateWorkoutPlanPresenter(
     @Assisted private val screen: CreateWorkoutPlanScreen,
     private val fetchExercisesUseCase: FetchExercisesUseCase,
     private val saveWorkoutUseCase: SaveWorkoutUseCase,
+    private val selectWorkoutPlanUseCase: SelectWorkoutPlanUseCase,
 ) : Presenter<CreateWorkoutPlanUiState> {
 
     @Composable
     override fun present(): CreateWorkoutPlanUiState {
 
-        val workoutPlan = remember {
-            mutableStateOf(
-                WorkoutPlan(
-                    id = 0,
-                    routineId = screen.routineId,
-                    name = screen.planName,
-                ),
-            )
-        }
-        val exercisePlans = rememberSaveable { mutableStateOf<List<ExercisePlan>>(emptyList()) }
-        val exercises = rememberSaveable { mutableStateOf<List<Exercise>>(emptyList()) }
-        val setPlans = rememberSaveable { mutableStateOf<List<SetPlan>>(emptyList()) }
+        var workoutPlanSession by rememberRetained { mutableStateOf<WorkoutPlanSession?>(null) }
+        var workoutPlan by rememberRetained { mutableStateOf<WorkoutPlan?>(null) }
+        var exercisePlans by rememberRetained { mutableStateOf<List<ExercisePlan>>(emptyList()) }
+        var exercises by rememberRetained { mutableStateOf<List<Exercise>>(emptyList()) }
+        var setPlans by rememberRetained { mutableStateOf<List<SetPlan>>(emptyList()) }
 
         val currentExercisePlanId = rememberSaveable { AtomicInteger(0) }
 
-        val currentSetPlanId = rememberSaveable {AtomicInteger(0)}
+        val currentSetPlanId = rememberSaveable { AtomicInteger(0) }
 
         val scope = rememberCoroutineScope()
 
         val answeringNavigator =
             rememberAnsweringNavigator<ExercisesScreen.Result.SelectedExercises>(navigator) { result ->
-               val selectedExerciseIds = result.exerciseIds
-                exercises.value +=
+                val selectedExerciseIds = result.exerciseIds
+                exercises +=
                     fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
 
-                exercisePlans.value += selectedExerciseIds.map {
+                exercisePlans += selectedExerciseIds.map {
                     ExercisePlan(
                         id = currentExercisePlanId.incrementAndGet().toLong(),
-                        workoutPlanId = 0,
+                        workoutPlanId = workoutPlan?.id ?: 0,
                         exerciseId = it,
                         index = PositiveInt(0),
                     )
@@ -109,7 +94,7 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
-                    setPlans.value += SetPlan(
+                    setPlans += SetPlan(
                         id = currentSetPlanId.incrementAndGet().toLong(),
                         exercisePlanId = event.exercisePlanId,
                         index = PositiveInt(0),
@@ -119,8 +104,8 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnSetWeightChanged -> {
-                    setPlans.value = setPlans.value.map { plan ->
-                        if(plan.id == event.setId){
+                    setPlans = setPlans.map { plan ->
+                        if (plan.id == event.setId) {
                             plan.copy(weight = event.setWeight)
                         } else
                             plan
@@ -128,15 +113,15 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnSetRepsChanged -> {
-                    setPlans.value = setPlans.value.map { plan ->
-                        if(plan.id == event.setId){
+                    setPlans = setPlans.map { plan ->
+                        if (plan.id == event.setId) {
                             plan.copy(reps = event.setReps)
                         } else
                             plan
                     }
                 }
 
-                is CreateWorkoutPlanUiEvent.OnSaveWorkout ->{
+                is CreateWorkoutPlanUiEvent.OnSaveWorkout -> {
                     scope.launch {
                         saveWorkoutUseCase(
                             params = event.workoutPlanSession,
@@ -146,18 +131,48 @@ class CreateWorkoutPlanPresenter(
                 }
             }
         }
-        return CreateWorkoutPlanUiState(
-            eventSink = ::eventSink,
-            workoutPlanSession = WorkoutPlanSession(
-                workoutPlan = workoutPlan.value,
-                exercisePlanSessions = exercisePlans.value.map { plan ->
-                    ExercisePlanSession(
-                        exercisePlan = plan,
-                        exercise = exercises.value.find { exercise -> exercise.id == plan.exerciseId }!!,
-                        setPlans = setPlans.value.filter { it.exercisePlanId == plan.id },
+
+        LaunchedEffect(screen) {
+            when (val intent = screen.intent) {
+                is CreateWorkoutPlanScreen.Intent.NewWorkoutPlan -> {
+                    workoutPlan = WorkoutPlan(
+                        id = 0,
+                        routineId = intent.routineId,
+                        name = intent.planName,
                     )
-                },
-            ),
+                }
+
+                is CreateWorkoutPlanScreen.Intent.EditWorkoutPlan -> {
+                    val session = selectWorkoutPlanUseCase(
+                        params = SelectWorkoutPlanUseCase.Params(intent.workoutPlanId),
+                    ).getOrNull()
+                    workoutPlan = session?.workoutPlan
+                    exercisePlans = session?.exercisePlanSessions?.map { it.exercisePlan } ?: emptyList()
+                    exercises = session?.exercisePlanSessions?.map { it.exercise } ?: emptyList()
+                    setPlans = session?.exercisePlanSessions?.map { it.setPlans }?.flatten() ?: emptyList()
+                }
+            }
+        }
+
+        if (workoutPlan != null) {
+            LaunchedEffect(workoutPlan, exercisePlans, setPlans, exercises) {
+                workoutPlanSession = WorkoutPlanSession(
+                    workoutPlan = workoutPlan!!,
+                    exercisePlanSessions = exercisePlans.map { exercisePlan ->
+                        ExercisePlanSession(
+                            exercisePlan = exercisePlan,
+                            exercise = exercises.find { it.id == exercisePlan.exerciseId }!!,
+                            setPlans = setPlans.filter { it.exercisePlanId == exercisePlan.id },
+                        )
+                    },
+                )
+            }
+        }
+
+
+        return CreateWorkoutPlanUiState(
+            workoutPlanSession = workoutPlanSession,
+            eventSink = ::eventSink,
         )
     }
 
