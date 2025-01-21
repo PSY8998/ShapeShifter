@@ -1,5 +1,7 @@
 package app.shapeshifter.common.ui.compose.screens
 
+import android.content.Intent
+import android.os.Parcelable
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
@@ -13,4 +15,17 @@ import kotlinx.parcelize.Parcelize
  * - workoutId - this can be there in case resume workout or we created the workout before hand
  */
 @Parcelize
-data object TrackWorkoutScreen : Screen
+data class TrackWorkoutScreen(
+    val intent: Intent
+) : Screen {
+    @Parcelize
+    sealed interface Intent : Parcelable {
+        @Parcelize
+        data object StartQuickWorkout: Intent
+
+        @Parcelize
+        data class StartSavedWorkout(
+            val workoutPlanId: Long,
+        ) : Intent
+    }
+}

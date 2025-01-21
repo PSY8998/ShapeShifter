@@ -10,6 +10,7 @@ import app.shapeshifter.data.db.Workout_plan
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.plans.ExercisePlan
+import app.shapeshifter.data.models.plans.WorkoutPlan
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
@@ -20,6 +21,16 @@ class SqlDelightExercisePlanEntityDao(
     private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
 ) : SqlDelightEntityDao<ExercisePlan> {
+
+    fun updateOrInsert(entity: ExercisePlan) : Long {
+        return if (entity.id == 0L) {
+            insert(entity)
+        } else {
+            update(entity)
+            entity.id
+        }
+    }
+
     override fun insert(entity: ExercisePlan): Long {
         return transactionRunner {
             db.exercise_planQueries.insert(
@@ -32,7 +43,11 @@ class SqlDelightExercisePlanEntityDao(
     }
 
     override fun update(entity: ExercisePlan) {
-        TODO("Not yet implemented")
+        db.exercise_planQueries.update(
+            exerciseId = entity.exerciseId,
+            workoutPlanId = entity.workoutPlanId,
+            id = entity.id
+        )
     }
 
     override fun deleteEntity(entity: ExercisePlan) {

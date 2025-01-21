@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS set_plan (
     `exercise_plan_id` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL,
-    FOREIGN KEY (`exercise_plan_id`) REFERENCES exercise_plan(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`exercise_plan_id`) REFERENCES exercise_plan(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 insert:
@@ -20,6 +20,12 @@ nullIf(:id, 0),
 :weight,
 :reps
 );
+
+update:
+UPDATE set_plan SET
+    weight = :weight,
+    reps = :reps
+WHERE id = :id;
 
 selectAll:
 SELECT * FROM set_plan;

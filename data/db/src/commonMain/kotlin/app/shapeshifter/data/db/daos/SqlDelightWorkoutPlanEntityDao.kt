@@ -23,6 +23,16 @@ class SqlDelightWorkoutPlanEntityDao(
     private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
 ) : SqlDelightEntityDao<WorkoutPlan> {
+
+    fun updateOrInsert(entity: WorkoutPlan) : Long {
+        return if (entity.id.toInt() == 0) {
+            insert(entity)
+        } else {
+            update(entity)
+            entity.id
+        }
+    }
+
     override fun insert(entity: WorkoutPlan): Long {
         return transactionRunner {
             db.workout_planQueries.insert(
@@ -35,7 +45,11 @@ class SqlDelightWorkoutPlanEntityDao(
     }
 
     override fun update(entity: WorkoutPlan) {
-        TODO("Not yet implemented")
+        db.workout_planQueries.update(
+            routineId = entity.routineId,
+            name = entity.name,
+            id = entity.id,
+        )
     }
 
     override fun deleteEntity(entity: WorkoutPlan) {

@@ -16,21 +16,22 @@ class SaveWorkoutUseCase(
     override suspend fun doWork(params: WorkoutPlanSession) {
         val workoutPlan = params.workoutPlan
 
-        val workoutId = workoutPlanEntityDao.insert(
+        val workoutId = workoutPlanEntityDao.updateOrInsert(
             entity = workoutPlan,
         )
 
         for (exercisePlanSession in params.exercisePlanSessions) {
             val exercisePlan = exercisePlanSession.exercisePlan
-            val exercisePlanId = exercisePlanEntityDao.insert(
+            val exercisePlanId = exercisePlanEntityDao.updateOrInsert(
                 entity = exercisePlan.copy(
                     workoutPlanId = workoutId,
-                    id = 0,
+                    id = exercisePlan.id.takeIf { it > 0 } ?: 0,
                 ),
             )
             for (setPlan in exercisePlanSession.setPlans) {
-                setPlanEntityDao.insert(
+                setPlanEntityDao.updateOrInsert(
                     entity = setPlan.copy(
+                        id = setPlan.id.takeIf { it > 0 } ?: 0,
                         exercisePlanId = exercisePlanId,
                     ),
                 )

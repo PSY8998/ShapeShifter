@@ -65,7 +65,10 @@ class SavedWorkoutsPresenter(
                 }
 
                 is SavedWorkoutsUiEvent.OpenQuickWorkout -> {
-                    navigator.goTo(TrackWorkoutScreen)
+                    navigator.goTo(
+                        TrackWorkoutScreen
+                            (intent = TrackWorkoutScreen.Intent.StartQuickWorkout),
+                    )
                 }
 
                 is SavedWorkoutsUiEvent.DiscardWorkout -> {
@@ -81,7 +84,6 @@ class SavedWorkoutsPresenter(
                         discardWorkoutUseCase(
                             DiscardWorkoutUseCase.Params(event.workoutLog),
                         )
-                        navigator.goTo(TrackWorkoutScreen)
                     }
                 }
 
@@ -91,7 +93,7 @@ class SavedWorkoutsPresenter(
                             intent = CreateWorkoutPlanScreen.Intent.NewWorkoutPlan(
                                 planName = event.planName,
                                 routineId = event.routineId,
-                            )
+                            ),
                         ),
                     )
                 }
@@ -109,8 +111,20 @@ class SavedWorkoutsPresenter(
                         navigator.goTo(
                             CreateWorkoutPlanScreen(
                                 intent = CreateWorkoutPlanScreen.Intent.EditWorkoutPlan(
-                                    event.workoutPlanSession.workoutPlan.id
-                                )
+                                    event.workoutPlanSession.workoutPlan.id,
+                                ),
+                            ),
+                        )
+                    }
+                }
+
+                is SavedWorkoutsUiEvent.OnStartWorkoutPlan -> {
+                    scope.launch {
+                        navigator.goTo(
+                            TrackWorkoutScreen(
+                                intent = TrackWorkoutScreen.Intent.StartSavedWorkout(
+                                    event.workoutPlanSession.workoutPlan.id,
+                                ),
                             ),
                         )
                     }

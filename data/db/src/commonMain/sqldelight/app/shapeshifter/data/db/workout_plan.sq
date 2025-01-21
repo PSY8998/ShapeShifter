@@ -12,6 +12,12 @@ nullif(:id, 0),
 :name
 );
 
+update:
+UPDATE workout_plan SET
+    routine_id = :routineId,
+    name = :name
+WHERE id = :id;
+
 selectAll:
 SELECT * FROM workout_plan;
 

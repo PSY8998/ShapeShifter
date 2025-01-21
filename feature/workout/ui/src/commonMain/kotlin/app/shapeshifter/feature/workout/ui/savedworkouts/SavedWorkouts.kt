@@ -136,6 +136,9 @@ internal fun SavedWorkouts(
                 onDeleteWorkoutPlan = {
                     eventSink(SavedWorkoutsUiEvent.OnDeleteWorkoutPlan(it))
                 },
+                onStartWorkoutPlan = {
+                    eventSink(SavedWorkoutsUiEvent.OnStartWorkoutPlan(it))
+                },
             )
         }
     }
@@ -151,6 +154,7 @@ private fun SavedWorkoutsScrollingContent(
     ) -> Unit,
     onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
     onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
+    onStartWorkoutPlan: (WorkoutPlanSession) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -195,6 +199,7 @@ private fun SavedWorkoutsScrollingContent(
                 workoutPlanSessions = workoutPlanSessions,
                 onEditWorkoutPlan = onEditWorkoutPlan,
                 onDeleteWorkoutPlan = onDeleteWorkoutPlan,
+                onStartWorkoutPlan = onStartWorkoutPlan,
             )
         }
 
@@ -330,6 +335,7 @@ private fun MyRoutine(
     ) -> Unit,
     onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
     onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
+    onStartWorkoutPlan: (WorkoutPlanSession) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -431,7 +437,7 @@ private fun MyRoutine(
                             workoutPlanSession = workoutPlanSession,
                             onEditWorkoutPlan = { onEditWorkoutPlan(workoutPlanSession) },
                             onDeleteWorkoutPlan = { onDeleteWorkoutPlan(workoutPlanSession) },
-                            onStartWorkoutPlan = {},
+                            onStartWorkoutPlan = {onStartWorkoutPlan(workoutPlanSession)},
                         )
                     }
                 }

@@ -26,6 +26,7 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import java.util.concurrent.atomic.AtomicInteger
@@ -65,9 +66,9 @@ class CreateWorkoutPlanPresenter(
         var exercises by rememberRetained { mutableStateOf<List<Exercise>>(emptyList()) }
         var setPlans by rememberRetained { mutableStateOf<List<SetPlan>>(emptyList()) }
 
-        val currentExercisePlanId = rememberSaveable { AtomicInteger(0) }
+        val currentExercisePlanId = rememberSaveable { AtomicInteger(-1) }
 
-        val currentSetPlanId = rememberSaveable { AtomicInteger(0) }
+        val currentSetPlanId = rememberSaveable { AtomicInteger(-1) }
 
         val scope = rememberCoroutineScope()
 
@@ -76,15 +77,19 @@ class CreateWorkoutPlanPresenter(
                 val selectedExerciseIds = result.exerciseIds
                 exercises +=
                     fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
-
-                exercisePlans += selectedExerciseIds.map {
-                    ExercisePlan(
-                        id = currentExercisePlanId.incrementAndGet().toLong(),
-                        workoutPlanId = workoutPlan?.id ?: 0,
-                        exerciseId = it,
-                        index = PositiveInt(0),
-                    )
+                try {
+                    exercisePlans += selectedExerciseIds.map {
+                        ExercisePlan(
+                            id = currentExercisePlanId.decrementAndGet().toLong(),
+                            workoutPlanId = workoutPlan?.id ?: 0,
+                            exerciseId = it,
+                            index = PositiveInt(0),
+                        )
+                    }
+                } catch (e: Exception) {
+                    currentSetPlanId.get()
                 }
+
             }
 
         fun eventSink(event: CreateWorkoutPlanUiEvent) {
@@ -95,7 +100,7 @@ class CreateWorkoutPlanPresenter(
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
                     setPlans += SetPlan(
-                        id = currentSetPlanId.incrementAndGet().toLong(),
+                        id = currentSetPlanId.decrementAndGet().toLong(),
                         exercisePlanId = event.exercisePlanId,
                         index = PositiveInt(0),
                         weight = SetPlan.Undefined,
@@ -132,7 +137,7 @@ class CreateWorkoutPlanPresenter(
             }
         }
 
-        LaunchedEffect(screen) {
+        LaunchedImpressionEffect {
             when (val intent = screen.intent) {
                 is CreateWorkoutPlanScreen.Intent.NewWorkoutPlan -> {
                     workoutPlan = WorkoutPlan(
@@ -147,9 +152,11 @@ class CreateWorkoutPlanPresenter(
                         params = SelectWorkoutPlanUseCase.Params(intent.workoutPlanId),
                     ).getOrNull()
                     workoutPlan = session?.workoutPlan
-                    exercisePlans = session?.exercisePlanSessions?.map { it.exercisePlan } ?: emptyList()
+                    exercisePlans =
+                        session?.exercisePlanSessions?.map { it.exercisePlan } ?: emptyList()
                     exercises = session?.exercisePlanSessions?.map { it.exercise } ?: emptyList()
-                    setPlans = session?.exercisePlanSessions?.map { it.setPlans }?.flatten() ?: emptyList()
+                    setPlans =
+                        session?.exercisePlanSessions?.map { it.setPlans }?.flatten() ?: emptyList()
                 }
             }
         }

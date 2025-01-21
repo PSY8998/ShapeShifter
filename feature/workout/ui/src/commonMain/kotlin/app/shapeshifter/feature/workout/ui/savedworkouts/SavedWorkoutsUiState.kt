@@ -37,4 +37,8 @@ sealed interface SavedWorkoutsUiEvent : CircuitUiEvent {
     data class OnDeleteWorkoutPlan(
         val workoutPlanSession: WorkoutPlanSession,
     ) : SavedWorkoutsUiEvent
+
+    data class OnStartWorkoutPlan(
+        val workoutPlanSession: WorkoutPlanSession,
+    ) : SavedWorkoutsUiEvent
 }
