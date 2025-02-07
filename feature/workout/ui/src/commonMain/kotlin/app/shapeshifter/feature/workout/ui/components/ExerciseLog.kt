@@ -8,13 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListItemInfo
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +50,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.Clock
 import app.shapeshifter.common.ui.compose.resources.Dimens
+import kotlin.math.abs
 
 @Composable
 fun ExerciseLog(
@@ -303,14 +310,13 @@ fun SetRestTimerBottomSheet(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimens.Padding.ExtraSmall),
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(Dimens.Padding.Small),
+                    .padding(horizontal = Dimens.Padding.Medium),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -321,21 +327,6 @@ fun SetRestTimerBottomSheet(
                     modifier = Modifier
                         .weight(1f),
                 )
-
-                IconButton(
-                    onClick = onDismiss,
-                    colors = IconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Close",
-                    )
-                }
             }
 
             Row(
@@ -345,36 +336,103 @@ fun SetRestTimerBottomSheet(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                NumberPicker(
-                    onValueSelected = { value ->
-                        selectedMinutes = value
-                    },
-                    initialValue = 2,
-                    range = minutes,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Dimens.Padding.Medium,
+                        alignment = Alignment.End
+                    ),
                     modifier = Modifier
-                        .padding(Dimens.Padding.Medium),
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    val minutesListState = rememberLazyListState()
+                    CentralScrollPicker(
+                        count = minutes.size,
+                        modifier = Modifier
+                            .fillMaxWidth(0.2f),
+                        listState = minutesListState,
+                        height = 200.dp,
+                    ) { index, isSelected ->
+                        val minute = minutes[index]
 
+                        if (isSelected) {
+                            LaunchedEffect(Unit) {
+                                selectedMinutes = minute
+                            }
+                        }
+
+                        Text(
+                            text = minutes[index].toString(),
+                            style = if (isSelected)
+                                MaterialTheme.typography.titleMedium
+                            else MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (isSelected) FontWeight.Bold else null,
+                            color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Gray,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = Dimens.Padding.Small),
+                        )
+                    }
+
+                    Text(
+                        text = "Minutes",
+                        fontWeight = FontWeight.Bold,
                     )
+                }
 
-                Text(
-                    text = "Minutes",
-                    fontWeight = FontWeight.Bold,
-                )
-
-                NumberPicker(
-                    onValueSelected = { value ->
-                        selectedSeconds = value
-                    },
-                    initialValue = 5,
-                    range = seconds,
+                Spacer(
                     modifier = Modifier
-                        .padding(Dimens.Padding.Medium),
+                        .width(Dimens.Padding.Large),
                 )
 
-                Text(
-                    text = "Seconds",
-                    fontWeight = FontWeight.Bold,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Dimens.Padding.Medium,
+                        alignment = Alignment.Start
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    val secondsListState = rememberLazyListState()
+                    CentralScrollPicker(
+                        count = minutes.size,
+                        modifier = Modifier
+                            .fillMaxWidth(0.2f),
+                        listState = secondsListState,
+                        height = 200.dp,
+                    ) { index, isSelected ->
+                        val second = seconds[index]
+
+                        if (isSelected) {
+                            LaunchedEffect(Unit) {
+                                selectedSeconds = second
+                            }
+                        }
+
+                        Text(
+                            text = seconds[index].toString(),
+                            style = if (isSelected)
+                                MaterialTheme.typography.titleMedium
+                            else MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (isSelected) FontWeight.Bold else null,
+                            color = if (isSelected) MaterialTheme.colorScheme.onSurface else Color.Gray,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = Dimens.Padding.Small),
+                        )
+                    }
+
+                    Text(
+                        text = "Seconds",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier,
+                    )
+                }
             }
             Button(
                 onClick = {
@@ -397,42 +455,67 @@ fun SetRestTimerBottomSheet(
 }
 
 @Composable
-fun NumberPicker(
-    initialValue: Int,
-    onValueSelected: (Int) -> Unit,
-    range: List<Int>,
-    modifier: Modifier,
+fun CentralScrollPicker(
+    count: Int,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+    height: Dp = 200.dp,
+    key: ((index: Int) -> Any)? = null,
+    contentType: (index: Int) -> Any? = { null },
+    content: @Composable (index: Int, isSelected: Boolean) -> Unit,
 ) {
-    val lazyListState = rememberLazyListState(initialValue - 1)
-    val centerOffset = 100.dp
+    var centerItemInfo: LazyListItemInfo? by remember { mutableStateOf(null) }
 
-    LazyColumn(
-        state = lazyListState,
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier,
-        contentPadding = PaddingValues(vertical = centerOffset),
-        flingBehavior = rememberSnapFlingBehavior(lazyListState),
-    ) {
-        items(range) { value ->
-            Text(
-                text = value.toString(),
-                modifier = Modifier
-                    .padding(Dimens.Padding.ExtraSmall),
-                textAlign = TextAlign.Center,
-                color = if (lazyListState.layoutInfo.visibleItemsInfo
-                        .firstOrNull { it.index == range.indexOf(value) }?.offset == 0
-                ) MaterialTheme.colorScheme.onSurface else Color.Gray,
-            )
+    val selectedIndex: Int? by remember {
+        derivedStateOf {
+            val index = centerItemInfo?.index ?: -1
+            if (index in 0..count) {
+                index
+            } else {
+                null
+            }
         }
     }
-    LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.firstVisibleItemIndex - 1 }
-            .collect { index ->
-                val selectedValue = range.getOrNull(index)
-                if (selectedValue != null) {
-                    onValueSelected(selectedValue)
+
+    // calculate closet item to center
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo }
+            .collect { layoutInfo ->
+                val currentCenterItem =
+                    layoutInfo.visibleItemsInfo.find { abs(it.offset) < (it.size / 2) }
+                if (currentCenterItem != null) {
+                    centerItemInfo = currentCenterItem
                 }
             }
+    }
+
+
+    val itemHeightInDp = with(LocalDensity.current) {
+        centerItemInfo?.size?.toDp() ?: 0.dp
+    }
+
+    LazyColumn(
+        state = listState,
+        flingBehavior = rememberSnapFlingBehavior(listState),
+        contentPadding = if (itemHeightInDp == 0.dp)
+            PaddingValues()
+        else {
+            PaddingValues(vertical = (height - itemHeightInDp) / 2)
+        },
+        modifier = modifier
+            .height(height),
+    ) {
+        items(
+            count = count,
+            key = key,
+            contentType = contentType,
+        ) { index ->
+            Box(
+                modifier = Modifier,
+            ) {
+                content(index, index == selectedIndex)
+            }
+        }
     }
 }
 
