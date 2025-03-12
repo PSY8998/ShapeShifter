@@ -4,7 +4,6 @@ import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
 import app.shapeshifter.data.db.daos.SetLogEntityDao
-import app.shapeshifter.data.db.daos.insert
 import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.SetLog

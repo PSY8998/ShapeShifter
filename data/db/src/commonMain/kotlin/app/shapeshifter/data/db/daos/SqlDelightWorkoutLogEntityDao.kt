@@ -6,7 +6,6 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.db.WorkoutSessions
 import app.shapeshifter.data.models.Exercise
 import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.workoutlog.ExerciseLog

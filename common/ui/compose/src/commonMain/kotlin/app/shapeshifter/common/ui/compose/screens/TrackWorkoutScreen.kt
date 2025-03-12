@@ -1,7 +1,5 @@
 package app.shapeshifter.common.ui.compose.screens
 
-import android.content.Intent
-import android.os.Parcelable
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
@@ -16,16 +14,5 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class TrackWorkoutScreen(
-    val intent: Intent
-) : Screen {
-    @Parcelize
-    sealed interface Intent : Parcelable {
-        @Parcelize
-        data object StartQuickWorkout: Intent
-
-        @Parcelize
-        data class StartSavedWorkout(
-            val workoutPlanId: Long,
-        ) : Intent
-    }
-}
+    val workoutPlanId : Long,
+) : Screen

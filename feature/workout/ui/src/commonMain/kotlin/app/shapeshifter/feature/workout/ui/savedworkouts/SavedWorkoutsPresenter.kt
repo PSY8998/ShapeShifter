@@ -13,7 +13,6 @@ import app.shapeshifter.feature.workout.domain.DeleteWorkoutPlanUseCase
 import app.shapeshifter.feature.workout.domain.DiscardWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.FetchWorkoutPlanSessionsUseCase
 import app.shapeshifter.feature.workout.domain.ObserveActiveWorkoutUseCase
-import app.shapeshifter.feature.workout.domain.StartWorkoutUseCase
 import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -66,8 +65,9 @@ class SavedWorkoutsPresenter(
 
                 is SavedWorkoutsUiEvent.OpenQuickWorkout -> {
                     navigator.goTo(
-                        TrackWorkoutScreen
-                            (intent = TrackWorkoutScreen.Intent.StartQuickWorkout),
+                        TrackWorkoutScreen(
+                            workoutPlanId = -1,
+                        ),
                     )
                 }
 
@@ -122,9 +122,7 @@ class SavedWorkoutsPresenter(
                     scope.launch {
                         navigator.goTo(
                             TrackWorkoutScreen(
-                                intent = TrackWorkoutScreen.Intent.StartSavedWorkout(
-                                    event.workoutPlanSession.workoutPlan.id,
-                                ),
+                                workoutPlanId = event.workoutPlanSession.workoutPlan.id
                             ),
                         )
                     }
