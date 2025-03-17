@@ -77,6 +77,10 @@ dependencies {
     //profile
     implementation(projects.feature.profile.ui)
 
+    //onboarding
+    implementation(projects.feature.onboarding.ui)
+    implementation(projects.feature.onboarding.data)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

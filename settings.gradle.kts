@@ -73,3 +73,6 @@ include(":data:supabase")
 
 include(":feature:workout:ui")
 include(":feature:workout:domain")
+
+include(":feature:onboarding:ui")
+include(":feature:onboarding:data")

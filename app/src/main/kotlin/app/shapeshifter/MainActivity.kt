@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
+import app.shapeshifter.common.ui.compose.screens.OnboardingScreen
 import app.shapeshifter.inject.ActivityComponent
 import app.shapeshifter.inject.ApplicationComponent
 import app.shapeshifter.inject.create
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         val component = ActivityComponent.create(this, applicationComponent)
 
         setContent {
-            val backStack = rememberSaveableBackStack(root = HomeScreen)
+            val backStack = rememberSaveableBackStack(root = OnboardingScreen)
             val navigator = rememberCircuitNavigator(backStack)
 
             component.shapeShifterContent(
