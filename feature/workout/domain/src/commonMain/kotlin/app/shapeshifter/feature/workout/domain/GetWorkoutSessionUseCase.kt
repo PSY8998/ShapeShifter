@@ -29,6 +29,8 @@ class GetWorkoutSessionUseCase(
             ).getOrNull()
             convertToWorkoutSession(workoutPlanSession)
         }
+
+
     }
 
     private fun convertToWorkoutSession(workoutPlanSession: WorkoutPlanSession?): WorkoutSession {

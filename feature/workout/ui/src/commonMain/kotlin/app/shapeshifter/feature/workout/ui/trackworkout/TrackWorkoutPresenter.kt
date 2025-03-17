@@ -2,6 +2,7 @@ package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -82,37 +83,33 @@ class TrackWorkoutPresenter(
     override fun present(): TrackWorkoutUiState {
         val scope = rememberCoroutineScope()
 
-        val workoutSessionFlow = MutableStateFlow<WorkoutSession?>(null)
+        var workoutLogId by rememberSaveable { mutableLongStateOf(screen.workoutLogId) }
 
-        var workoutId: Long by rememberSaveable { mutableLongStateOf(0L) }
-        val workoutSession by observeWorkoutDetailsUseCase.flow.collectAsRetainedState(null)
+        val workoutSession by observeWorkoutDetailsUseCase.flow.collectAsState(null)
 
-        LaunchedImpressionEffect(Unit) {
-            if (workoutSessionFlow.value == null) {
-                val insertedWorkoutId = createWorkoutUseCase(Unit)
+        if(workoutLogId != 0L) {
+            LaunchedEffect(workoutLogId) {
+                observeWorkoutDetailsUseCase(
+                    ObserveWorkoutDetailsUseCase.Params(
+                        workoutLogId = workoutLogId,
+                        workoutPlanId = screen.workoutPlanId,
+                    ),
+                )
+            }
+        }
+
+        LaunchedImpressionEffect(screen.workoutPlanId, screen.workoutLogId) {
+            val insertedWorkoutId = if (screen.workoutPlanId == WorkoutPlan.QuickWorkoutId) {
+                // Create an empty workout session
+                createWorkoutUseCase(CreateWorkoutUseCase.Params(workoutPlanId = WorkoutPlan.QuickWorkoutId))
                     .getOrNull()
+            } else {
+                // Create a workout session based on an existing workout plan session
+                createWorkoutUseCase(CreateWorkoutUseCase.Params(workoutPlanId = screen.workoutPlanId))
+                    .getOrNull()
+            } ?: 0L
 
-                workoutId = insertedWorkoutId ?: 0
-            }
-        }
-
-        LaunchedEffect(screen.workoutPlanId) {
-            val session = getWorkoutSessionUseCase(
-                GetWorkoutSessionUseCase.Params(screen.workoutPlanId),
-            ).getOrNull()
-            if (session != null) {
-                workoutSessionFlow.value = session
-                workoutId = session.workoutLog.id
-            }
-        }
-
-        LaunchedEffect(workoutId) {
-            observeWorkoutDetailsUseCase(
-                ObserveWorkoutDetailsUseCase.Params(
-                    workoutLogId = workoutId,
-                    workoutPlanId = screen.workoutPlanId,
-                ),
-            )
+            workoutLogId = insertedWorkoutId
         }
 
         val selectExercisesNavigator =
@@ -130,7 +127,7 @@ class TrackWorkoutPresenter(
 
                             addExerciseUseCase(
                                 AddExerciseLogUseCase.Params(
-                                    workoutLogId = workoutId,
+                                    workoutLogId = workoutLogId,
                                     exerciseIds = listOf(selectedExerciseId),
                                     workoutPlanId = WorkoutPlan.QuickWorkoutId,
                                     index = deletedLog?.index ?: 0,
@@ -142,10 +139,10 @@ class TrackWorkoutPresenter(
                     is ExercisesScreen.Result.SelectedExercises -> {
                         val selectedExerciseIds = result.exerciseIds
                         scope.launch {
-                            if (workoutId != 0L) {
+                            if (workoutLogId != 0L) {
                                 addExerciseUseCase(
                                     AddExerciseLogUseCase.Params(
-                                        workoutLogId = workoutId,
+                                        workoutLogId = workoutLogId,
                                         exerciseIds = selectedExerciseIds,
                                         workoutPlanId = WorkoutPlan.QuickWorkoutId,
                                         index = 0,
@@ -231,7 +228,7 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnReorderExercises -> {
                     scope.launch {
-                        navigator.goTo(ExerciseSequenceScreen(workoutId))
+                        navigator.goTo(ExerciseSequenceScreen(workoutLogId))
                     }
                 }
 

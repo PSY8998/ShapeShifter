@@ -14,5 +14,6 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class TrackWorkoutScreen(
-    val workoutPlanId : Long,
+    val workoutPlanId: Long,
+    val workoutLogId: Long,
 ) : Screen

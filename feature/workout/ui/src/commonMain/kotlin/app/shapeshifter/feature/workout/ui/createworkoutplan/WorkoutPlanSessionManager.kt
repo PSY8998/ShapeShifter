@@ -52,7 +52,7 @@ class WorkoutPlanSessionManager {
     }
 
     // Add a new exercise to the current plan.
-    fun addExercise(
+    private fun addExercise(
         exercise: Exercise,
         index: Int,
     ) {

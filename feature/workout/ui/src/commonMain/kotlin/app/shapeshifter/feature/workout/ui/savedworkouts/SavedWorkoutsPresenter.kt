@@ -67,6 +67,7 @@ class SavedWorkoutsPresenter(
                     navigator.goTo(
                         TrackWorkoutScreen(
                             workoutPlanId = -1,
+                            workoutLogId = 0,
                         ),
                     )
                 }
@@ -122,7 +123,8 @@ class SavedWorkoutsPresenter(
                     scope.launch {
                         navigator.goTo(
                             TrackWorkoutScreen(
-                                workoutPlanId = event.workoutPlanSession.workoutPlan.id
+                                workoutPlanId = event.workoutPlanSession.workoutPlan.id,
+                                workoutLogId = 0,
                             ),
                         )
                     }

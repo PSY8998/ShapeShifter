@@ -20,7 +20,6 @@ import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.collectLatest
@@ -118,8 +117,8 @@ class CreateWorkoutPlanPresenter(
                             id = 0,
                             exercisePlanId = event.exercisePlanId,
                             index = PositiveInt(0),
-                            weight = SetPlan.Undefined,
-                            reps = SetPlan.Undefined,
+                            weight = 0,
+                            reps = 0,
                         ),
                     )
                 }
