@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.shapeshifter
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
+import app.shapeshifter.common.ui.compose.screens.OnboardingScreen
 import app.shapeshifter.common.ui.compose.screens.ProfileScreen
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
 import com.slack.circuit.backstack.SaveableBackStack
@@ -69,7 +70,7 @@ fun Root(
         modifier = modifier,
         bottomBar = {
             AnimatedVisibility(
-                visible = backStack.isAtRoot,
+                visible = navigator.showRootNavigation(),
                 exit = hideBelow,
                 enter = showFromBelow,
             ) {
@@ -222,6 +223,12 @@ private fun Navigator.resetRootIfDifferent(
     if (backStack.size > 1 || backStack.lastOrNull() != screen) {
         resetRoot(screen, saveState, restoreState)
     }
+}
+
+private fun Navigator.showRootNavigation(
+): Boolean{
+    val backStack = peekBackStack()
+    return backStack.size == 1 && backStack.first() != OnboardingScreen
 }
 
 private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)

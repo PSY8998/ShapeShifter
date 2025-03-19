@@ -1,11 +1,12 @@
 package app.shapeshifter.feature.onboarding.data
 
-data class Onboarding(
+data class OnboardingPage(
     val title: String,
     val description: String,
 )
 
 val onboardingPages = listOf(
-    Onboarding("Welcome", "Are you ready"),
-    Onboarding("User info", "Weight and Height")
+    OnboardingPage("Welcome", "Are you ready"),
+    OnboardingPage("User info", "Weight and Height"),
+    OnboardingPage("Start your journey", "Have fun")
 )
