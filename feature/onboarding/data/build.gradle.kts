@@ -14,6 +14,7 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
                 api(projects.common.ui.compose)
+                implementation(projects.data.datastore)
 
                 implementation(libs.circuit.foundation)
 
@@ -29,4 +30,5 @@ kotlin {
 }
 dependencies {
 
+    implementation(libs.androidx.datastore.core)
 }

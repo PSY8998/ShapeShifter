@@ -1,17 +1,18 @@
 package app.shapeshifter.inject
 
 import android.app.Application
+import android.content.Context
 import app.shapeshifter.common.imageloading.ImageLoadingComponent
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.core.base.inject.ApplicationCoroutineScope
 import app.shapeshifter.core.base.inject.ApplicationScope
+import app.shapeshifter.data.datastore.createDataStore.DataStoreComponent
 import app.shapeshifter.data.db.SqlDelightDatabaseComponent
 import app.shapeshifter.data.supabase.SupabaseComponent
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 
 @ApplicationScope
@@ -20,9 +21,9 @@ abstract class ApplicationComponent(
     @get:Provides val application: Application,
 ) : SqlDelightDatabaseComponent,
     SupabaseComponent,
+    DataStoreComponent,
     ImageLoadingComponent {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @ApplicationScope
     @Provides
     fun provideCoroutineDispatchers(): AppCoroutineDispatchers = AppCoroutineDispatchers(
@@ -38,6 +39,11 @@ abstract class ApplicationComponent(
     fun provideApplicationCoroutineScope(
         dispatchers: AppCoroutineDispatchers,
     ): ApplicationCoroutineScope = CoroutineScope(dispatchers.main + SupervisorJob())
+
+
+    @ApplicationScope
+    @Provides
+    fun provideApplicationContext(): Context = application
 
     companion object
 }

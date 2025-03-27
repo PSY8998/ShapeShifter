@@ -35,6 +35,7 @@ abstract class ActivityComponent(
     ExerciseSequenceComponent,
     OnboardingComponent {
     abstract val shapeShifterContent: ShapeShifterContent
+    abstract val mainViewModelFactory: MainViewModelFactory
 
     @ActivityScope
     @Provides

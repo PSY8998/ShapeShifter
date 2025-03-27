@@ -3,6 +3,7 @@ package app.shapeshifter.feature.onboarding.ui
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import app.shapeshifter.common.ui.compose.screens.OnboardingScreen
+import app.shapeshifter.feature.onboarding.data.OnboardingPreferences
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter

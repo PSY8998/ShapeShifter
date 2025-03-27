@@ -70,6 +70,7 @@ include(":core:base")
 include(":data:db")
 include(":data:models")
 include(":data:supabase")
+include(":data:datastore")
 
 include(":feature:workout:ui")
 include(":feature:workout:domain")

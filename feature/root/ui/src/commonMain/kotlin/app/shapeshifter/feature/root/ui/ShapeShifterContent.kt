@@ -19,7 +19,6 @@ typealias ShapeShifterContent = @Composable (
     modifier: Modifier,
 ) -> Unit
 
-@OptIn(ExperimentalCoilApi::class)
 @Inject
 @Composable
 fun ShapeShifterContent(

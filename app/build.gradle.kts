@@ -55,6 +55,7 @@ dependencies {
     implementation(projects.common.ui.compose)
     implementation(projects.data.db)
     implementation(projects.data.supabase)
+    implementation(projects.data.datastore)
     implementation(projects.domain)
 
     implementation(projects.common.imageloading)
@@ -81,6 +82,7 @@ dependencies {
     implementation(projects.feature.onboarding.ui)
     implementation(projects.feature.onboarding.data)
 
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -99,4 +101,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.splashscreen)
+
 }
