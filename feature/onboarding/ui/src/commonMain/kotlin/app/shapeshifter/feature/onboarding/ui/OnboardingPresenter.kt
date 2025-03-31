@@ -2,6 +2,7 @@ package app.shapeshifter.feature.onboarding.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,7 +44,7 @@ class OnboardingPresenter(
 ) : Presenter<OnboardingUiState> {
     @Composable
     override fun present(): OnboardingUiState {
-        var currentPageIndex by remember { mutableStateOf(0) }
+        var currentPageIndex by remember { mutableIntStateOf(0) }
         var age by remember { mutableStateOf("") }
         var weight by remember { mutableStateOf("") }
         var height by remember { mutableStateOf("") }
