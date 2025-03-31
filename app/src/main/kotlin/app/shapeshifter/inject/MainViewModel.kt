@@ -13,5 +13,4 @@ class MainViewModel(
 ): ViewModel(){
 
     val isOnboardingCompleted = onboardingPreferences.isCompleted
-        .map { true }
 }
