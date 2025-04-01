@@ -14,6 +14,7 @@ import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
+import app.shapeshifter.common.ui.compose.screens.PostWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
@@ -213,7 +214,7 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnFinishWorkout -> {
                     scope.launch {
-                        navigator.goTo(FinishWorkoutScreen(event.workoutSession.workoutLog.id))
+                        navigator.goTo(PostWorkoutScreen)
 //                        val result = finishWorkoutUseCase(
 //                            params = FinishWorkoutUseCase.Params(
 //                                workoutSession = event.workoutSession,

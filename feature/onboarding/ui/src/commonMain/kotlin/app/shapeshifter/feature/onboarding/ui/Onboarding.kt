@@ -15,26 +15,19 @@ package app.shapeshifter.feature.onboarding.ui
  import androidx.compose.material3.Text
  import androidx.compose.material3.TextButton
  import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+ import androidx.compose.runtime.LaunchedEffect
  import androidx.compose.ui.Alignment
  import androidx.compose.ui.Modifier
  import androidx.compose.ui.text.style.TextAlign
  import androidx.compose.ui.unit.dp
  import app.shapeshifter.common.ui.compose.resources.Dimens
  import app.shapeshifter.common.ui.compose.screens.OnboardingScreen
- import app.shapeshifter.feature.onboarding.data.OnboardingPage
  import app.shapeshifter.feature.onboarding.data.onboardingPages
  import com.slack.circuit.runtime.CircuitContext
  import com.slack.circuit.runtime.screen.Screen
  import com.slack.circuit.runtime.ui.Ui
  import com.slack.circuit.runtime.ui.ui
  import me.tatarka.inject.annotations.Inject
-
-
-
 
 
 @Inject
