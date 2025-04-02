@@ -520,4 +520,3 @@ fun CentralScrollPicker(
 }
 
 val pattern = Regex("^\\d*\$")
-

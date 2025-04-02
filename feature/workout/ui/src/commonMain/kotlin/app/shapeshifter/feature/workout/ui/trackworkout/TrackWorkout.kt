@@ -1,7 +1,9 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -12,34 +14,42 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -232,7 +243,7 @@ private fun TrackWorkout(
                                             state.eventSink(
                                                 TrackWorkoutUiEvent.OnReplaceExercise(
                                                     exerciseLog = exerciseSession.exerciseLog,
-                                                )
+                                                ),
                                             )
                                         },
                                     )
@@ -270,13 +281,20 @@ private fun TrackWorkout(
                             }
                             if (targetState.restTimeDurationInSecs > 0) {
                                 RestTimer(
+                                    restTimeDurationInSecs = targetState.restTimeDurationInSecs / 1000,
                                     modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(Dimens.Padding.Medium)
                                         .align(Alignment.BottomCenter),
-                                    restTimeDurationInSecs = targetState.restTimeDurationInSecs,
-                                    onComplete = {
-                                        state.eventSink(TrackWorkoutUiEvent.OnCompleteRestTime)
-                                    },
                                 )
+//                                RestTimer(
+//                                    modifier = Modifier
+//                                        .align(Alignment.BottomCenter),
+//                                    restTimeDurationInSecs = targetState.restTimeDurationInSecs,
+//                                    onComplete = {
+//                                        state.eventSink(TrackWorkoutUiEvent.OnCompleteRestTime)
+//                                    },
+//                                )
                             }
                         }
 
@@ -308,7 +326,7 @@ private fun LazyListScope.exerciseLog(
         ExerciseLog(
             name = exerciseSession.exercise.name,
             onReorderExercises = { onReorderExercises(exerciseLog.id) },
-            onReplaceExercise = { onReplaceExercise(exerciseLog)},
+            onReplaceExercise = { onReplaceExercise(exerciseLog) },
             onRemoveExercise = { onRemoveExercise(exerciseLog) },
             updateRestTime = onUpdateRestTime,
             modifier = Modifier,
@@ -820,4 +838,160 @@ private fun RestTimer(
     }
 }
 
+@Composable
+fun RestTimer(
+    restTimeDurationInSecs: Long,
+    modifier: Modifier = Modifier,
+) {
 
+    var isTimerRunning by remember { mutableStateOf(false) }
+    var remainingTime by remember { mutableLongStateOf(0) }
+
+    val progress = remember { Animatable(initialValue = 0f) }
+
+    LaunchedEffect(restTimeDurationInSecs) {
+        remainingTime = restTimeDurationInSecs
+        isTimerRunning = true
+    }
+
+    LaunchedEffect(restTimeDurationInSecs) {
+        progress.snapTo(0f)
+        progress.animateTo(
+            1f,
+            animationSpec = tween(
+                durationMillis = restTimeDurationInSecs.toInt() * 1000,
+                easing = LinearEasing,
+            ),
+        )
+    }
+
+    if (isTimerRunning) {
+        LaunchedEffect(Unit) {
+            while (remainingTime > 0) {
+                delay(1000L)
+                remainingTime -= 1
+            }
+            isTimerRunning = false
+        }
+    }
+
+    Card(
+        shape = MaterialTheme.shapes.extraLarge,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .padding(Dimens.Padding.ExtraMedium),
+                ) {
+                    Text(
+                        text = "Rest Timer",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.Padding.ExtraSmall),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(color = MaterialTheme.colorScheme.onSurface)
+                                .padding(
+                                    vertical = Dimens.Padding.Smallest,
+                                    horizontal = Dimens.Padding.ExtraSmall,
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "-15",
+                                color = Color.Black,
+                            )
+                        }
+                        Text(
+                            text = "${(remainingTime / 60)}:" +
+                                "${remainingTime % 60}",
+                            style = MaterialTheme.typography.headlineLarge,
+                            modifier = Modifier
+                                .padding(top = Dimens.Padding.Small),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(color = MaterialTheme.colorScheme.onSurface)
+                                .padding(vertical = 2.dp, horizontal = Dimens.Padding.ExtraSmall),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "+15",
+                                color = Color.Black,
+                            )
+                        }
+                    }
+
+                }
+
+                Box(
+                    modifier = Modifier
+                        .padding(Dimens.Padding.Small)
+                        .weight(0.4f)
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.4f,
+                            ),
+                            shape = MaterialTheme.shapes.extraLarge,
+                        ),
+                ) {
+                    CircularProgressIndicator(
+                        progress = { progress.value },
+                        color = MaterialTheme.colorScheme.onSurface,
+                        strokeWidth = 16.dp,
+                        strokeCap = StrokeCap.Round,
+                        trackColor = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.2f,
+                        ),
+                        modifier = Modifier
+                            .padding(Dimens.Padding.Small)
+                            .fillMaxSize(),
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .padding(Dimens.Padding.Large)
+                            .fillMaxSize()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceContainer,
+                                shape = CircleShape,
+                            )
+                            .align(Alignment.Center),
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Start rest timer",
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                            modifier = Modifier
+                                .size(32.dp)
+                                .align(Alignment.Center),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
