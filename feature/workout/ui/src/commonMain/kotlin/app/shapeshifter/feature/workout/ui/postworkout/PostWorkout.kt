@@ -21,20 +21,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.shapeshifter.common.ui.compose.resources.Medal
 import app.shapeshifter.common.ui.compose.screens.PostWorkoutScreen
+import app.shapeshifter.common.ui.compose.theme.DarkBackground
+import app.shapeshifter.common.ui.compose.theme.DarkPrimary
+import app.shapeshifter.common.ui.compose.theme.DarkSecondary
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 
-// Define Colors (adjust as needed to match image)
-private val DarkBackground = Color(0xFF121212)
-private val CardBackground = Color(0xFF1E1E1E) // Slightly lighter dark grey for cards
-private val TitlePurple = Color(0xFFD0BCFF) // A purple accent for titles
-private val CheckmarkGreen = Color(0xFF4CAF50)
-private val ProgressTrackColor = Color.Gray.copy(alpha = 0.3f)
-private val ProgressCyan = Color(0xFF00BCD4) // Adjusted cyan
-private val ProgressOrange = Color(0xFFFF9800) // Adjusted orange/red
+// Theme colors
+private val AccentPurple = Color(0xFFD0BCFF) // Keeping purple for accents
+private val ProgressCyan = Color(0xFF03DAC5) // Material design cyan
+private val ProgressOrange = Color(0xFFFF8800) // Adjusted orange
+private val ProgressTrackColor = DarkPrimary.copy(alpha = 0.2f)
 
 @Inject
 class PostWorkoutUiFactory : Ui.Factory {
@@ -59,26 +59,29 @@ fun PostWorkout(
         modifier = modifier
             .fillMaxSize()
     ) { padding ->
-        CompositionLocalProvider(LocalContentColor provides Color.White) {
+        CompositionLocalProvider(LocalContentColor provides DarkPrimary) {
             Surface(
                 modifier = modifier.fillMaxSize(),
-                color = DarkBackground, // Dark background for the whole screen
+                color = DarkBackground, // Using theme background
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .padding(horizontal = 16.dp)
                         .padding(top = padding.calculateTopPadding()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     // Header: Checkmark + Title
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
                     ) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = "Completed",
-                            tint = CheckmarkGreen,
+                            tint = ProgressCyan,
                             modifier = Modifier.size(32.dp),
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -89,14 +92,14 @@ fun PostWorkout(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Duration Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
-                        colors = CardDefaults.cardColors(containerColor = CardBackground),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        colors = CardDefaults.cardColors(containerColor = DarkSecondary),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     ) {
                         Column(
                             modifier = Modifier
@@ -114,27 +117,27 @@ fun PostWorkout(
                             Text(
                                 text = "Total Duration",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray, // Subdued color for label
+                                color = DarkPrimary.copy(alpha = 0.7f), // Slightly subdued
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Exercises Completed Section
                     SectionTitle("Exercises Completed")
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(horizontal = 4.dp), // Padding for row edges
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp), // Padding for row edges
                     ) {
                         items(state.completedExercises, key = { it.id }) { exercise ->
                             ExerciseCard(exercise = exercise)
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Stats Section (Sets & Calories)
                     Row(
@@ -170,10 +173,13 @@ fun PostWorkout(
 
                     // Records Section (Conditional)
                     if (state.achievedRecords.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                         SectionTitle("Records")
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
                             state.achievedRecords.forEach { record ->
                                 RecordItem(record = record)
                             }
@@ -185,7 +191,9 @@ fun PostWorkout(
 
                     // Bottom Action Buttons
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly, // Space out buttons
                     ) {
                         SmallActionButton(
@@ -211,7 +219,7 @@ private fun SectionTitle(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        color = TitlePurple,
+        color = AccentPurple,
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .fillMaxWidth()
@@ -223,15 +231,15 @@ private fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 @Composable
 private fun ExerciseCard(exercise: ExerciseInfo, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.size(width = 110.dp, height = 110.dp), // Square-ish card
+        modifier = modifier.size(width = 120.dp, height = 110.dp), // Slightly wider cards
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = CardBackground),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSecondary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center, // Center content vertically
         ) {
@@ -239,12 +247,12 @@ private fun ExerciseCard(exercise: ExerciseInfo, modifier: Modifier = Modifier) 
                 imageVector = Icons.Filled.Person, // Placeholder Icon
                 contentDescription = exercise.name,
                 modifier = Modifier.size(40.dp), // Larger icon
-                tint = LocalContentColor.current.copy(alpha = 0.8f), // Slightly muted icon
+                tint = DarkPrimary, // Using theme color
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = exercise.name,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 2, // Allow wrapping
             )
@@ -262,15 +270,17 @@ private fun StatProgressCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.aspectRatio(1f), // Make it square
+        modifier = modifier
+            .aspectRatio(1f) // Make it square
+            .padding(4.dp), // Add some padding around the card
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = CardBackground),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSecondary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp), // Padding inside card
+                .padding(16.dp), // Padding inside card
             contentAlignment = Alignment.Center, // Center everything in the Box
         ) {
             // Background track indicator
@@ -278,7 +288,7 @@ private fun StatProgressCard(
                 progress = { 1f }, // Full circle
                 modifier = Modifier.matchParentSize(), // Fill the box
                 color = ProgressTrackColor,
-                strokeWidth = 8.dp, // Adjust thickness
+                strokeWidth = 10.dp, // Thicker stroke
                 strokeCap = StrokeCap.Round,
             )
             // Actual progress indicator
@@ -286,7 +296,7 @@ private fun StatProgressCard(
                 progress = { progress },
                 modifier = Modifier.matchParentSize(),
                 color = color,
-                strokeWidth = 8.dp,
+                strokeWidth = 10.dp,
                 strokeCap = StrokeCap.Round,
             )
             // Text content inside the circle
@@ -299,8 +309,8 @@ private fun StatProgressCard(
                 )
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DarkPrimary.copy(alpha = 0.7f),
                 )
             }
         }
@@ -310,32 +320,38 @@ private fun StatProgressCard(
 // Helper for Record Items
 @Composable
 private fun RecordItem(record: RecordInfo, modifier: Modifier = Modifier) {
-    // Using a Row directly instead of Card for a simpler look like the image
-    Row(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(vertical = 4.dp, horizontal = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSecondary.copy(alpha = 0.7f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Icon(
-            imageVector = Medal,
-            contentDescription = "Records",
-            tint = Color.Unspecified,
+        Row(
             modifier = Modifier
-                .size(24.dp),
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = record.name,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-        )
-        Spacer(modifier = Modifier.weight(1f)) // Push value to the end
-        Text(
-            text = record.value,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-        )
+                .fillMaxWidth()
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Medal,
+                contentDescription = "Record",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(28.dp),
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = record.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            Spacer(modifier = Modifier.weight(1f)) // Push value to the end
+            Text(
+                text = record.value,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }
 
@@ -347,16 +363,19 @@ private fun SmallActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TextButton(
-        // Use TextButton for less emphasis
+    Button(
         onClick = onClick,
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp), // Smaller padding
+        colors = ButtonDefaults.buttonColors(
+            containerColor = DarkSecondary,
+            contentColor = DarkPrimary,
+        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = text, modifier = Modifier.size(18.dp)) // Smaller icon
-            Spacer(Modifier.width(4.dp))
-            Text(text, style = MaterialTheme.typography.labelMedium) // Smaller text
+            Icon(icon, contentDescription = text, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(text, style = MaterialTheme.typography.labelLarge)
         }
     }
 }

@@ -199,17 +199,6 @@ class TrackWorkoutPresenter(
                     }
                 }
 
-                is TrackWorkoutUiEvent.OnFinishWorkout -> {
-                    scope.launch {
-                        finishWorkoutUseCase(
-                            params = FinishWorkoutUseCase.Params(
-                                workoutSession = event.workoutSession,
-                            ),
-                        )
-                        navigator.goTo(PostWorkoutScreen(workoutLogId))
-                    }
-                }
-
                 is TrackWorkoutUiEvent.OnFinishWorkoutWithDate -> {
                     scope.launch {
                         finishWorkoutUseCase(
