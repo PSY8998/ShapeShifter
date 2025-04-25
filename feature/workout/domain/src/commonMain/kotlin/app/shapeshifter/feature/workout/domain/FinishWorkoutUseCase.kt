@@ -22,9 +22,19 @@ class FinishWorkoutUseCase(
         }
 
         return withContext(dispatchers.databaseWrite) {
+            // Calculate workout duration based on start time and current time
+            val workoutLog = params.workoutSession.workoutLog
+            val startTime = workoutLog.startTimeInMillis
+            val currentTime = System.currentTimeMillis()
+            val duration = currentTime - startTime
+
+            // Use the same duration but apply it to the custom date if provided
+            val effectiveStartTime = startTime
+            val effectiveFinishTime = effectiveStartTime + duration
+
             dao.upsert(
-                entity = params.workoutSession.workoutLog.copy(
-                    finishTimeInMillis = System.currentTimeMillis(),
+                entity = workoutLog.copy(
+                    finishTimeInMillis = effectiveFinishTime,
                 ),
             )
         }

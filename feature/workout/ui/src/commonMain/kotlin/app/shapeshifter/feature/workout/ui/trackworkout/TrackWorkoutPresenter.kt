@@ -5,22 +5,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
-import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.common.ui.compose.screens.FinishWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
+import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.PostWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.data.models.plans.WorkoutPlan
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
@@ -31,10 +24,8 @@ import app.shapeshifter.feature.workout.domain.FinishedSetUseCase
 import app.shapeshifter.feature.workout.domain.GetWorkoutSessionUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.RemoveExerciseLogUseCase
-import app.shapeshifter.feature.workout.domain.SelectWorkoutPlanUseCase
 import app.shapeshifter.feature.workout.domain.UpdateRestTimeUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
-import com.slack.circuit.retained.collectAsRetainedState
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -42,8 +33,6 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import shapeshifter.feature.workout.ui.generated.resources.Res
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Inject
@@ -79,7 +68,6 @@ class TrackWorkoutPresenter(
     private val getWorkoutSessionUseCase: GetWorkoutSessionUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
-
     @Composable
     override fun present(): TrackWorkoutUiState {
         val scope = rememberCoroutineScope()
@@ -88,12 +76,11 @@ class TrackWorkoutPresenter(
 
         val workoutSession by observeWorkoutDetailsUseCase.flow.collectAsState(null)
 
-        if(workoutLogId != 0L) {
+        if (workoutLogId != 0L) {
             LaunchedEffect(workoutLogId) {
                 observeWorkoutDetailsUseCase(
                     ObserveWorkoutDetailsUseCase.Params(
                         workoutLogId = workoutLogId,
-                        workoutPlanId = screen.workoutPlanId,
                     ),
                 )
             }
@@ -214,12 +201,27 @@ class TrackWorkoutPresenter(
 
                 is TrackWorkoutUiEvent.OnFinishWorkout -> {
                     scope.launch {
-                        navigator.goTo(PostWorkoutScreen)
-//                        val result = finishWorkoutUseCase(
-//                            params = FinishWorkoutUseCase.Params(
-//                                workoutSession = event.workoutSession,
-//                            ),
-//                        )
+                        finishWorkoutUseCase(
+                            params = FinishWorkoutUseCase.Params(
+                                workoutSession = event.workoutSession,
+                            ),
+                        )
+                        navigator.goTo(PostWorkoutScreen(workoutLogId))
+                    }
+                }
+
+                is TrackWorkoutUiEvent.OnFinishWorkoutWithDate -> {
+                    scope.launch {
+                        finishWorkoutUseCase(
+                            params = FinishWorkoutUseCase.Params(
+                                workoutSession = event.workoutSession.copy(
+                                    workoutLog = event.workoutSession.workoutLog.copy(
+                                        startTimeInMillis = event.selectedDate,
+                                    ),
+                                ),
+                            ),
+                        )
+                        navigator.goTo(PostWorkoutScreen(workoutLogId))
                     }
                 }
 

@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.mapNotNull
 
 interface WorkoutEntityDao : EntityDao<WorkoutLog> {
     fun observeWorkoutWithExercisesAndSets(
-        workoutPlanId: Long,
         workoutLogId: Long,
     ): Flow<WorkoutSession>
 
@@ -68,7 +67,6 @@ class SqlDelightWorkoutEntityDao(
     }
 
     override fun observeWorkoutWithExercisesAndSets(
-        workoutPlanId: Long,
         workoutLogId: Long,
     ): Flow<WorkoutSession> {
         // Cache for previousWorkout results

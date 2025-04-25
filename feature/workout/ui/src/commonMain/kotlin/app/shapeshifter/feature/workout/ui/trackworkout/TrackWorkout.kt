@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -29,27 +30,41 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +80,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -136,15 +152,11 @@ private fun TrackWorkout(
                 modifier = Modifier
                     .fillMaxWidth(),
                 startTimeInSecs = startTime,
+                state = state,
                 onBack = {
                     state.eventSink(TrackWorkoutUiEvent.GoBack)
                 },
-                onFinish = {
-                    val workoutSession = state.asFilled()?.workoutSession
-                    if (workoutSession != null) {
-                        state.eventSink(TrackWorkoutUiEvent.OnFinishWorkout(workoutSession))
-                    }
-                },
+                contentPadding = PaddingValues(),
             )
 
             HorizontalDivider(
@@ -186,11 +198,9 @@ private fun TrackWorkout(
                                 modifier = Modifier,
                                 contentPadding = PaddingValues(
                                     top = Dimens.Padding.Medium,
-                                    bottom = paddingValues.calculateBottomPadding()
-                                        + Dimens.Padding.Largest,
+                                    bottom = paddingValues.calculateBottomPadding() + Dimens.Padding.Largest,
                                 ),
                             ) {
-
                                 targetState.workoutSession.exerciseSessions.forEach { exerciseSession ->
                                     exerciseLog(
                                         exerciseSession = exerciseSession,
@@ -478,65 +488,60 @@ private fun LazyListScope.itemDivider(
 private fun TrackWorkoutTopBar(
     modifier: Modifier = Modifier,
     startTimeInSecs: Long,
+    state: TrackWorkoutUiState,
     onBack: () -> Unit,
-    onFinish: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    Column(
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    Row(
         modifier = modifier
+            .fillMaxWidth()
             .padding(contentPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
+        // Left side button with weight 1
+        IconButton(
+            onClick = {
+                onBack()
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = Dimens.Padding.Medium,
-                )
-                .padding(
-                    end = Dimens.Padding.Medium,
-                    start = Dimens.Padding.Small,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
+                .weight(1f)
+                .wrapContentWidth(align = Alignment.Start),
         ) {
-            IconButton(
-                onClick = {
-                    onBack()
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .wrapContentWidth(align = Alignment.Start),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                    modifier = Modifier,
-                    contentDescription = "",
-                )
-            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                modifier = Modifier,
+                contentDescription = "",
+            )
+        }
 
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    "Track Workout",
-                    modifier = Modifier,
-                )
+        // Center column with weight 2
+        Column(
+            modifier = Modifier
+                .weight(2f) // Use more weight to keep it centered
+                .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                "Track Workout",
+                modifier = Modifier,
+            )
 
-                WorkoutTimer(
-                    startTimeInSecs = startTimeInSecs,
-                )
-            }
+            WorkoutTimer(
+                startTimeInSecs = startTimeInSecs,
+            )
+        }
 
+        // Right side button with weight 1
+        Box(modifier = Modifier.weight(1f)) {
             Button(
                 onClick = {
-                    onFinish()
+                    showDatePicker = true
                 },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
-                    .weight(1f)
-                    .wrapContentWidth(align = Alignment.End),
+                    .align(Alignment.CenterEnd),
                 contentPadding = PaddingValues(
                     vertical = 8.dp,
                     horizontal = 16.dp,
@@ -545,6 +550,24 @@ private fun TrackWorkoutTopBar(
                 Text("Finish")
             }
         }
+    }
+
+    if (showDatePicker) {
+        DatePickerBottomSheet(
+            onDismiss = { showDatePicker = false },
+            onConfirm = { selectedDate ->
+                showDatePicker = false
+                val workoutSession = state.asFilled()?.workoutSession
+                if (workoutSession != null) {
+                    state.eventSink(
+                        TrackWorkoutUiEvent.OnFinishWorkoutWithDate(
+                            workoutSession = workoutSession,
+                            selectedDate = selectedDate,
+                        ),
+                    )
+                }
+            },
+        )
     }
 }
 
@@ -838,6 +861,60 @@ private fun RestTimer(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerBottomSheet(
+    onDismiss: () -> Unit,
+    onConfirm: (Long) -> Unit,
+) {
+    var isVisible by remember { mutableStateOf(true) }
+
+    if (!isVisible) {
+        onDismiss()
+        return
+    }
+
+    val sheetState = rememberModalBottomSheetState(
+        confirmValueChange = {
+            it != SheetValue.Hidden
+        },
+    )
+
+    val currentTimeMillis = remember { System.currentTimeMillis() }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = currentTimeMillis,
+        initialDisplayMode = DisplayMode.Input,
+    )
+
+    // Time selection state
+    val calendar = remember { java.util.Calendar.getInstance() }
+    calendar.timeInMillis = currentTimeMillis
+
+    var hour by remember { mutableIntStateOf(calendar.get(java.util.Calendar.HOUR_OF_DAY)) }
+    var minute by remember { mutableIntStateOf(calendar.get(java.util.Calendar.MINUTE)) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+        ),
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(600.dp)
+                .padding(horizontal = Dimens.Padding.Medium, vertical = Dimens.Padding.Small),
+            contentPadding = PaddingValues(bottom = Dimens.Padding.ExtraLarge),
+        ) {
+            item {
+                Text(
+                    text = "Set workout date",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = Dimens.Padding.Medium),
+                )
+            }
 @Composable
 fun RestTimer(
     restTimeDurationInSecs: Long,
@@ -901,6 +978,206 @@ fun RestTimer(
                         style = MaterialTheme.typography.titleMedium,
                     )
 
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Dimens.Padding.Medium),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = datePickerState.selectedDateMillis?.let {
+                            val dateFormat = java.text.SimpleDateFormat(
+                                "MMM dd, yyyy",
+                                java.util.Locale.getDefault(),
+                            )
+                            dateFormat.format(java.util.Date(it))
+                        } ?: "",
+                        onValueChange = { },
+                        readOnly = true,
+                        label = { Text("Date") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    datePickerState.displayMode = DisplayMode.Picker
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.DateRange,
+                                    contentDescription = "Show calendar",
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                    )
+                }
+            }
+
+            item {
+                if (datePickerState.displayMode == DisplayMode.Picker) {
+                    DatePicker(
+                        state = datePickerState,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = DatePickerDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            titleContentColor = MaterialTheme.colorScheme.onSurface,
+                            headlineContentColor = MaterialTheme.colorScheme.onSurface,
+                            weekdayContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            subheadContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            yearContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            currentYearContentColor = MaterialTheme.colorScheme.primary,
+                            selectedYearContentColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedYearContainerColor = MaterialTheme.colorScheme.primary,
+                            dayContentColor = MaterialTheme.colorScheme.onSurface,
+                            selectedDayContentColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedDayContainerColor = MaterialTheme.colorScheme.primary,
+                            todayContentColor = MaterialTheme.colorScheme.primary,
+                            todayDateBorderColor = MaterialTheme.colorScheme.primary,
+                        ),
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Dimens.Padding.Medium),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "Time: ",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(end = Dimens.Padding.Small),
+                    )
+
+                    OutlinedTextField(
+                        value = hour.toString(),
+                        onValueChange = { newValue ->
+                            val newHour = newValue.toIntOrNull()
+                            if (newHour != null && newHour in 0..23) {
+                                hour = newHour
+                            }
+                        },
+                        modifier = Modifier.width(100.dp),
+                        label = { Text("Hour") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                    )
+
+                    Text(
+                        text = ":",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(horizontal = Dimens.Padding.ExtraSmall),
+                    )
+
+                    OutlinedTextField(
+                        value = minute.toString(),
+                        onValueChange = { newValue ->
+                            val newMinute = newValue.toIntOrNull()
+                            if (newMinute != null && newMinute in 0..59) {
+                                minute = newMinute
+                            }
+                        },
+                        modifier = Modifier.width(100.dp),
+                        label = { Text("Min") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        ),
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = Dimens.Padding.Medium,
+                            bottom = Dimens.Padding.Large,
+                        ),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(
+                        onClick = {
+                            isVisible = false
+                        },
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Button(
+                        onClick = {
+                            val selectedDate =
+                                datePickerState.selectedDateMillis ?: currentTimeMillis
+
+                            val resultCalendar = java.util.Calendar.getInstance()
+                            resultCalendar.timeInMillis = selectedDate
+
+                            resultCalendar.set(java.util.Calendar.HOUR_OF_DAY, hour)
+                            resultCalendar.set(java.util.Calendar.MINUTE, minute)
+                            resultCalendar.set(java.util.Calendar.SECOND, 0)
+                            resultCalendar.set(java.util.Calendar.MILLISECOND, 0)
+
+                            onConfirm(resultCalendar.timeInMillis)
+                            isVisible = false
+                        },
+                        modifier = Modifier.padding(start = Dimens.Padding.Small),
+                    ) {
+                        Text("Confirm")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrackWorkoutFinishButtonAction(
+    state: TrackWorkoutUiState.Filled,
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    Button(
+        onClick = { showDatePicker = true },
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier
+            .wrapContentWidth(align = Alignment.End),
+        contentPadding = PaddingValues(
+            vertical = 8.dp,
+            horizontal = 16.dp,
+        ),
+    ) {
+        Text("Finish")
+    }
+
+    if (showDatePicker) {
+        DatePickerBottomSheet(
+            onDismiss = { showDatePicker = false },
+            onConfirm = { selectedDate ->
+                showDatePicker = false
+                state.eventSink(
+                    TrackWorkoutUiEvent.OnFinishWorkoutWithDate(
+                        workoutSession = state.workoutSession,
+                        selectedDate = selectedDate,
+                    ),
+                )
+            },
+        )
+    }
+}
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(Dimens.Padding.ExtraSmall),

@@ -6,10 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
-import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
-import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
@@ -62,7 +59,6 @@ class ExerciseSequencePresenter(
                 observeWorkoutDetailsUseCase(
                     params = ObserveWorkoutDetailsUseCase.Params(
                         workoutLogId = screen.workoutLogId,
-                        workoutPlanId = WorkoutPlan.QuickWorkoutId,
                     ),
                 )
             }
