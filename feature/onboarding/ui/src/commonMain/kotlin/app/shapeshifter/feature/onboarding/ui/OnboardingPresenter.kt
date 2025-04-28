@@ -45,21 +45,17 @@ class OnboardingPresenter(
     @Composable
     override fun present(): OnboardingUiState {
         var currentPageIndex by remember { mutableIntStateOf(0) }
-        var age by remember { mutableStateOf("") }
-        var weight by remember { mutableStateOf("") }
-        var height by remember { mutableStateOf("") }
+        var selectedGoal by remember { mutableStateOf("") }
 
         val scope = rememberCoroutineScope()
-        val pageCount = onboardingPages.size // Get page count from imported list
+        val pageCount = onboardingPages.size
 
-        // Determine if next should be enabled based on current page and input state
-        val isNextEnabled by remember(currentPageIndex, age, weight, height) {
+        // Determine if next should be enabled based on current page and goal selection
+        val isNextEnabled by remember(currentPageIndex, selectedGoal) {
             mutableStateOf(
                 when (currentPageIndex) {
-                    1 -> age.isNotBlank() // Index 1 = Age page
-                    2 -> weight.isNotBlank() // Index 2 = Weight page
-                    3 -> height.isNotBlank() // Index 3 = Height page
-                    else -> true // Always enabled for Welcome and Finish pages
+                    1 -> selectedGoal.isNotBlank() // Goal selection page
+                    else -> true // Always enabled for other pages
                 },
             )
         }
@@ -81,12 +77,13 @@ class OnboardingPresenter(
                     }
                 }
 
-                is OnboardingUiEvent.UpdateAge -> age = event.value
-                is OnboardingUiEvent.UpdateWeight -> weight = event.value
-                is OnboardingUiEvent.UpdateHeight -> height = event.value
+                is OnboardingUiEvent.SelectGoal -> {
+                    selectedGoal = event.goal
+                }
+
                 is OnboardingUiEvent.Finish -> scope.launch {
-                    // TODO: Save age, weight, height if required by the app logic
-                    // Example: onboardingPreferences.saveUserDetails(age, weight, height)
+                    // Save the selected goal if needed
+                    // Example: onboardingPreferences.saveUserGoal(selectedGoal)
                     onboardingPreferences.setCompleted(true)
                     navigator.resetRoot(HomeScreen) // Navigate to HomeScreen after finish
                 }
@@ -95,9 +92,7 @@ class OnboardingPresenter(
 
         return OnboardingUiState(
             currentPageIndex = currentPageIndex,
-            age = age,
-            weight = weight,
-            height = height,
+            selectedGoal = selectedGoal,
             isNextEnabled = isNextEnabled,
             eventSink = ::eventSink,
         )

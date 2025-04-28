@@ -5,11 +5,9 @@ data class OnboardingPage(
     val description: String,
 )
 
-
 val onboardingPages = listOf(
-    OnboardingPage("Welcome", "Let's get started!"), // Updated description
-    OnboardingPage("Age", "What's your age?"), // New Age step
-    OnboardingPage("Weight", "What's your weight?"), // New Weight step
-    OnboardingPage("Height", "What's your height?"), // New Height step
-    OnboardingPage("Start your journey", "You're all set!") // Updated description
+    OnboardingPage("Welcome", "Your personal workout companion."),
+    OnboardingPage("Pick Your Goal", "What's your top priority?"),
+    OnboardingPage("Track & Analyze", "See your progress at a glance."),
+    OnboardingPage("Plan & Quick Starts", "Create custom plans or hit play instantly."),
 )
