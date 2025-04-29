@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -33,8 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -43,6 +46,7 @@ import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 @Inject
 class HomeUiFactory : Ui.Factory {
@@ -162,7 +166,7 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Column(
@@ -175,14 +179,14 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                     Icon(
                         imageVector = Icons.Filled.DateRange,
                         contentDescription = "Next Workout",
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Text(
                         text = "Next Workout",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -193,19 +197,19 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                     text = it.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
                 Text(
                     text = it.scheduledFor,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
                 Text(
                     text = "Duration: ${it.duration}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
@@ -232,10 +236,14 @@ fun DailyLoggingSection(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .border(width = 2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
         )
     ) {
         Column(
@@ -246,7 +254,7 @@ fun DailyLoggingSection(
                 text = "Daily Log",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -259,13 +267,13 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Weight",
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Text(
                     text = "Current Weight: ${String.format("%.1f", weight)} kg",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -290,13 +298,13 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Filled.Face,
                     contentDescription = "Sleep",
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Text(
                     text = "Sleep Quality: ${sleepQuality.toInt()}/5",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -319,13 +327,13 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Outlined.Face,
                     contentDescription = "Soreness",
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Text(
                     text = "Soreness Level: ${sorenessLevel.toInt()}/5",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -440,7 +448,7 @@ fun WeeklyStatisticsSection(
                     )
 
                     val changeText = if (statistics.weightChange <= 0)
-                        "${Math.abs(statistics.weightChange)} kg lost"
+                        "${abs(statistics.weightChange)} kg lost"
                     else
                         "${statistics.weightChange} kg gained"
 
