@@ -3,14 +3,11 @@ package app.shapeshifter.feature.home.ui
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-
-class EmptyUiState : CircuitUiState
 
 @Inject
 class HomePresenterFactory(
@@ -32,9 +29,11 @@ class HomePresenterFactory(
 class HomePresenter(
     @Assisted private val screen: HomeScreen,
     @Assisted private val navigator: Navigator,
-) : Presenter<EmptyUiState> {
+) : Presenter<HomeUiState> {
     @Composable
-    override fun present(): EmptyUiState {
-        return EmptyUiState()
+    override fun present(): HomeUiState {
+        return HomeUiState(
+            // Add properties here as needed
+        )
     }
 }

@@ -1,6 +1,6 @@
 package app.shapeshifter.feature.home.ui
 
-import androidx.compose.foundation.Image
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,41 +25,39 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.screens.HomeScreen
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.vectorResource
-import shapeshifter.feature.home.ui.generated.resources.Res
-import shapeshifter.feature.home.ui.generated.resources.rope_skip
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Inject
 class HomeUiFactory : Ui.Factory {
     override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
         return when (screen) {
             is HomeScreen -> {
-                ui<EmptyUiState> { _, modifier ->
-                    Home(modifier)
+                ui<HomeUiState> { state, modifier ->
+                    HomeScreen(
+                        userName = state.userName,
+                        nextWorkout = state.nextWorkout,
+                        currentWeight = state.currentWeight,
+                        goalWeight = state.goalWeight,
+                        weeklyStatistics = state.weeklyStatistics,
+                        modifier = modifier
+                    )
                 }
             }
 
@@ -68,37 +66,17 @@ class HomeUiFactory : Ui.Factory {
     }
 }
 
-data class NextWorkoutInfo(
-    val name: String,
-    val scheduledFor: String,
-    val duration: String
-)
-
-data class WeeklyStatistics(
-    val caloriesBurnt: Int,
-    val weightChange: Float,
-    val focusedMuscles: List<String>
-)
-
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-internal fun Home(
+internal fun HomeScreen(
+    userName: String,
+    nextWorkout: NextWorkoutInfo?,
+    currentWeight: Float,
+    goalWeight: Float,
+    weeklyStatistics: WeeklyStatistics,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
-    val userName = "Athlete"
-    val nextWorkout = NextWorkoutInfo(
-        name = "Upper Body Strength",
-        scheduledFor = "Today, 5:00 PM",
-        duration = "45 min"
-    )
-    val currentWeight = 70f
-    val goalWeight = 65f
-    val weeklyStatistics = WeeklyStatistics(
-        caloriesBurnt = 3500,
-        weightChange = -0.5f,
-        focusedMuscles = listOf("Chest", "Back", "Arms")
-    )
 
     Scaffold(
         modifier = modifier,
@@ -177,75 +155,71 @@ fun GreetingSection(userName: String) {
 
 @Composable
 fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Column(
+    nextWorkout?.let {
+        Card(
             modifier = Modifier
-                .padding(16.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            )
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.DateRange,
-                    contentDescription = "Next Workout",
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.DateRange,
+                        contentDescription = "Next Workout",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+
+                    Text(
+                        text = "Next Workout",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Next Workout",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (nextWorkout != null) {
-                Text(
-                    text = nextWorkout.name,
+                    text = it.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
                 Text(
-                    text = nextWorkout.scheduledFor,
+                    text = it.scheduledFor,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
                 Text(
-                    text = "Duration: ${nextWorkout.duration}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            } else {
-                Text(
-                    text = "No upcoming workouts scheduled",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-
-                Text(
-                    text = "Let's plan your next session!",
+                    text = "Duration: ${it.duration}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }
+    } ?: run {
+        Text(
+            text = "No upcoming workout scheduled",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun DailyLoggingSection(
     currentWeight: Float,
@@ -367,6 +341,7 @@ fun DailyLoggingSection(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun WeeklyStatisticsSection(
     statistics: WeeklyStatistics,
