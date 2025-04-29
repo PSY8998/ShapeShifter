@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -127,7 +128,7 @@ fun GreetingSection(userName: String) {
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
@@ -137,20 +138,20 @@ fun GreetingSection(userName: String) {
             Text(
                 text = greeting,
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = userName,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = "How are you feeling today?",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
@@ -166,7 +167,7 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = Color(0xFFE6F2FF) // Light blue color
             )
         ) {
             Column(
@@ -179,14 +180,14 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                     Icon(
                         imageVector = Icons.Filled.DateRange,
                         contentDescription = "Next Workout",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = Color(0xFF333333) // Dark gray color for better contrast
                     )
 
                     Text(
                         text = "Next Workout",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = Color(0xFF333333), // Dark gray color for better contrast
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -197,19 +198,19 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
                     text = it.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = Color(0xFF333333), // Dark gray color for better contrast
                 )
 
                 Text(
                     text = it.scheduledFor,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = Color(0xFF333333), // Dark gray color for better contrast
                 )
 
                 Text(
                     text = "Duration: ${it.duration}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = Color(0xFF333333), // Dark gray color for better contrast
                 )
             }
         }
@@ -237,10 +238,10 @@ fun DailyLoggingSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .border(width = 2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(16.dp)),
+            .border(width = 2.dp, color = MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -267,7 +268,7 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = "Weight",
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
@@ -298,7 +299,7 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Filled.Face,
                     contentDescription = "Sleep",
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
@@ -327,7 +328,7 @@ fun DailyLoggingSection(
                 Icon(
                     imageVector = Icons.Outlined.Face,
                     contentDescription = "Soreness",
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
@@ -362,7 +363,7 @@ fun WeeklyStatisticsSection(
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
@@ -373,7 +374,7 @@ fun WeeklyStatisticsSection(
                 text = "Weekly Statistics",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -388,7 +389,7 @@ fun WeeklyStatisticsSection(
                 Card(
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
@@ -403,14 +404,14 @@ fun WeeklyStatisticsSection(
                     Text(
                         text = "Calories Burnt",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
                         text = "${statistics.caloriesBurnt} kcal",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -429,7 +430,7 @@ fun WeeklyStatisticsSection(
                 Card(
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
@@ -444,7 +445,7 @@ fun WeeklyStatisticsSection(
                     Text(
                         text = "Weight Progress",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     val changeText = if (statistics.weightChange <= 0)
@@ -456,13 +457,13 @@ fun WeeklyStatisticsSection(
                         text = changeText,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
                         text = "Current: ${String.format("%.1f", currentWeight)} kg • Goal: ${String.format("%.1f", goalWeight)} kg",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -479,7 +480,7 @@ fun WeeklyStatisticsSection(
                 Card(
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
@@ -487,7 +488,7 @@ fun WeeklyStatisticsSection(
                         imageVector = Icons.Filled.Check,
                         contentDescription = "Muscles",
                         modifier = Modifier.padding(4.dp),
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -495,14 +496,14 @@ fun WeeklyStatisticsSection(
                     Text(
                         text = "Focused Muscles",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
                         text = statistics.focusedMuscles.joinToString(", "),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
