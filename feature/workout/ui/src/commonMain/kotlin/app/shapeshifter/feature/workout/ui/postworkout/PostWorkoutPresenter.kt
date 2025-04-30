@@ -84,9 +84,7 @@ class PostWorkoutPresenter(
             session?.exerciseSessions?.map { exerciseSession ->
                 // Assuming ExerciseAndSets has an 'exercise' property of type ExerciseEntity
                 // And ExerciseEntity has 'id' and 'name'
-                exerciseSession.exercise.let { exercise ->
-                    ExerciseInfo(id = exercise.id, name = exercise.name)
-                }
+                ExerciseInfo(id = exerciseSession.exerciseLog.id, name = exerciseSession.exercise.name)
             } ?: emptyList()
         }
 

@@ -481,8 +481,6 @@ private fun TrackWorkoutTopBar(
     onBack: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -524,39 +522,11 @@ private fun TrackWorkoutTopBar(
 
         // Right side button with weight 1
         Box(modifier = Modifier.weight(1f)) {
-            Button(
-                onClick = {
-                    showDatePicker = true
-                },
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd),
-                contentPadding = PaddingValues(
-                    vertical = 8.dp,
-                    horizontal = 16.dp,
-                ),
-            ) {
-                Text("Finish")
+            val filledState = state.asFilled()
+            if (filledState != null) {
+                TrackWorkoutFinishButtonAction(filledState)
             }
         }
-    }
-
-    if (showDatePicker) {
-        DatePickerBottomSheet(
-            onDismiss = { showDatePicker = false },
-            onConfirm = { selectedDate ->
-                showDatePicker = false
-                val workoutSession = state.asFilled()?.workoutSession
-                if (workoutSession != null) {
-                    state.eventSink(
-                        TrackWorkoutUiEvent.OnFinishWorkoutWithDate(
-                            workoutSession = workoutSession,
-                            selectedDate = selectedDate,
-                        ),
-                    )
-                }
-            },
-        )
     }
 }
 
@@ -753,7 +723,7 @@ fun DatePickerBottomSheet(
                 .padding(horizontal = Dimens.Padding.Medium, vertical = Dimens.Padding.Small),
             contentPadding = PaddingValues(bottom = Dimens.Padding.ExtraLarge),
         ) {
-            item {
+            item(key = "title") {
                 Text(
                     text = "Set workout date",
                     style = MaterialTheme.typography.titleLarge,
@@ -761,7 +731,7 @@ fun DatePickerBottomSheet(
                 )
             }
 
-            item {
+            item(key = "date_selector") {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -801,7 +771,7 @@ fun DatePickerBottomSheet(
                 }
             }
 
-            item {
+            item(key = "date_picker") {
                 if (datePickerState.displayMode == DisplayMode.Picker) {
                     DatePicker(
                         state = datePickerState,
@@ -826,7 +796,7 @@ fun DatePickerBottomSheet(
                 }
             }
 
-            item {
+            item(key = "time_selector") {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -884,7 +854,7 @@ fun DatePickerBottomSheet(
                 }
             }
 
-            item {
+            item(key = "action_buttons") {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -904,19 +874,25 @@ fun DatePickerBottomSheet(
 
                     Button(
                         onClick = {
-                            val selectedDate =
-                                datePickerState.selectedDateMillis
-                                    ?: currentTimeMillis
+                            try {
+                                val selectedDate =
+                                    datePickerState.selectedDateMillis
+                                        ?: System.currentTimeMillis()
 
-                            val resultCalendar = Calendar.getInstance()
-                            resultCalendar.timeInMillis = selectedDate
+                                val resultCalendar = Calendar.getInstance()
+                                resultCalendar.timeInMillis = selectedDate
 
-                            resultCalendar.set(Calendar.HOUR_OF_DAY, hour)
-                            resultCalendar.set(Calendar.MINUTE, minute)
-                            resultCalendar.set(Calendar.SECOND, 0)
-                            resultCalendar.set(Calendar.MILLISECOND, 0)
+                                resultCalendar.set(Calendar.HOUR_OF_DAY, hour.coerceIn(0, 23))
+                                resultCalendar.set(Calendar.MINUTE, minute.coerceIn(0, 59))
+                                resultCalendar.set(Calendar.SECOND, 0)
+                                resultCalendar.set(Calendar.MILLISECOND, 0)
 
-                            onConfirm(resultCalendar.timeInMillis)
+                                onConfirm(resultCalendar.timeInMillis)
+                            } catch (e: Exception) {
+                                // If there's any exception when setting date/time,
+                                // just use current time as fallback
+                                onConfirm(System.currentTimeMillis())
+                            }
                             isVisible = false
                         },
                         modifier = Modifier.padding(start = Dimens.Padding.Small),
@@ -1094,17 +1070,20 @@ private fun TrackWorkoutFinishButtonAction(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
-    Button(
-        onClick = { showDatePicker = true },
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier
-            .wrapContentWidth(align = Alignment.End),
-        contentPadding = PaddingValues(
-            vertical = 8.dp,
-            horizontal = 16.dp,
-        ),
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
     ) {
-        Text("Finish")
+        Button(
+            onClick = { showDatePicker = true },
+            shape = MaterialTheme.shapes.small,
+            contentPadding = PaddingValues(
+                vertical = 8.dp,
+                horizontal = 16.dp,
+            ),
+        ) {
+            Text("Finish")
+        }
     }
 
     if (showDatePicker) {
