@@ -1,6 +1,5 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -15,14 +14,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,11 +38,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,17 +51,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -78,12 +73,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
@@ -107,6 +100,10 @@ import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.painterResource
 import shapeshifter.feature.workout.ui.generated.resources.Res
 import shapeshifter.feature.workout.ui.generated.resources.ic_dumbbell_workout
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -289,6 +286,7 @@ private fun TrackWorkout(
                                     )
                                 }
                             }
+
                             if (targetState.restTimeDurationInSecs > 0) {
                                 RestTimer(
                                     restTimeDurationInSecs = targetState.restTimeDurationInSecs / 1000,
@@ -297,17 +295,8 @@ private fun TrackWorkout(
                                         .padding(Dimens.Padding.Medium)
                                         .align(Alignment.BottomCenter),
                                 )
-//                                RestTimer(
-//                                    modifier = Modifier
-//                                        .align(Alignment.BottomCenter),
-//                                    restTimeDurationInSecs = targetState.restTimeDurationInSecs,
-//                                    onComplete = {
-//                                        state.eventSink(TrackWorkoutUiEvent.OnCompleteRestTime)
-//                                    },
-//                                )
                             }
                         }
-
                     }
 
                     is TrackWorkoutUiState.Initial -> {}
@@ -717,150 +706,6 @@ private fun DiscardWorkout(
     }
 }
 
-@SuppressLint("DefaultLocale")
-@Composable
-private fun RestTimer(
-    modifier: Modifier = Modifier,
-    restTimeDurationInSecs: Long,
-    onComplete: () -> Unit,
-) {
-    var isTimerRunning by remember { mutableStateOf(false) }
-    var remainingTime by remember { mutableLongStateOf(0) }
-    val progress = remainingTime / restTimeDurationInSecs.toFloat()
-
-    LaunchedEffect(restTimeDurationInSecs) {
-        remainingTime = restTimeDurationInSecs / 1000
-        isTimerRunning = true
-    }
-
-    if (isTimerRunning) {
-        LaunchedEffect(Unit) {
-            while (remainingTime > 0) {
-                delay(1000L)
-                remainingTime -= 1
-            }
-            onComplete()
-            isTimerRunning = false
-        }
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom,
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterVertically),
-            elevation = CardDefaults.elevatedCardElevation(Dimens.Padding.Small),
-            shape = RoundedCornerShape(Dimens.Padding.Medium),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            ),
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(Dimens.Padding.Small),
-                horizontalArrangement = Arrangement.Absolute.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (isTimerRunning) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Dimens.Padding.Small),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = when {
-                                remainingTime > 30 -> "Crushing it! Take a breather before the next set 💪"
-                                remainingTime > 15 -> "Almost there! Get ready for the next set"
-                                else -> "Time to get back at it—go hard or go home!"
-                            },
-                        )
-
-                        Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier,
-                        ) {
-                            Text(
-                                text = String.format(
-                                    "%02d:%02d",
-                                    remainingTime / 60,
-                                    remainingTime % 60,
-                                ),
-                                style = TextStyle(
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.Bold,
-                                ),
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(Color.Gray.copy(alpha = 0.3f)),
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .fillMaxWidth()
-                                        .background(
-                                            when {
-                                                remainingTime > 30 -> Color.Green
-                                                remainingTime > 15 -> Color.Yellow
-                                                else -> Color.Red
-                                            },
-                                        ),
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Dimens.Padding.Small),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = "Ready for the next set!",
-                        )
-
-                        Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier,
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp),
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(Dimens.Padding.ExtraSmall))
-
-                            Text(
-                                text = "",
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerBottomSheet(
@@ -887,11 +732,11 @@ fun DatePickerBottomSheet(
     )
 
     // Time selection state
-    val calendar = remember { java.util.Calendar.getInstance() }
+    val calendar = remember { Calendar.getInstance() }
     calendar.timeInMillis = currentTimeMillis
 
-    var hour by remember { mutableIntStateOf(calendar.get(java.util.Calendar.HOUR_OF_DAY)) }
-    var minute by remember { mutableIntStateOf(calendar.get(java.util.Calendar.MINUTE)) }
+    var hour by remember { mutableIntStateOf(calendar.get(Calendar.HOUR_OF_DAY)) }
+    var minute by remember { mutableIntStateOf(calendar.get(Calendar.MINUTE)) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -915,68 +760,6 @@ fun DatePickerBottomSheet(
                     modifier = Modifier.padding(bottom = Dimens.Padding.Medium),
                 )
             }
-@Composable
-fun RestTimer(
-    restTimeDurationInSecs: Long,
-    modifier: Modifier = Modifier,
-) {
-
-    var isTimerRunning by remember { mutableStateOf(false) }
-    var remainingTime by remember { mutableLongStateOf(0) }
-
-    val progress = remember { Animatable(initialValue = 0f) }
-
-    LaunchedEffect(restTimeDurationInSecs) {
-        remainingTime = restTimeDurationInSecs
-        isTimerRunning = true
-    }
-
-    LaunchedEffect(restTimeDurationInSecs) {
-        progress.snapTo(0f)
-        progress.animateTo(
-            1f,
-            animationSpec = tween(
-                durationMillis = restTimeDurationInSecs.toInt() * 1000,
-                easing = LinearEasing,
-            ),
-        )
-    }
-
-    if (isTimerRunning) {
-        LaunchedEffect(Unit) {
-            while (remainingTime > 0) {
-                delay(1000L)
-                remainingTime -= 1
-            }
-            isTimerRunning = false
-        }
-    }
-
-    Card(
-        shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        ),
-        modifier = modifier,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .weight(0.6f)
-                        .padding(Dimens.Padding.ExtraMedium),
-                ) {
-                    Text(
-                        text = "Rest Timer",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
 
             item {
                 Row(
@@ -987,11 +770,11 @@ fun RestTimer(
                 ) {
                     OutlinedTextField(
                         value = datePickerState.selectedDateMillis?.let {
-                            val dateFormat = java.text.SimpleDateFormat(
+                            val dateFormat = SimpleDateFormat(
                                 "MMM dd, yyyy",
-                                java.util.Locale.getDefault(),
+                                Locale.getDefault(),
                             )
-                            dateFormat.format(java.util.Date(it))
+                            dateFormat.format(Date(it))
                         } ?: "",
                         onValueChange = { },
                         readOnly = true,
@@ -1000,7 +783,8 @@ fun RestTimer(
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    datePickerState.displayMode = DisplayMode.Picker
+                                    datePickerState.displayMode =
+                                        DisplayMode.Picker
                                 },
                             ) {
                                 Icon(
@@ -1121,15 +905,16 @@ fun RestTimer(
                     Button(
                         onClick = {
                             val selectedDate =
-                                datePickerState.selectedDateMillis ?: currentTimeMillis
+                                datePickerState.selectedDateMillis
+                                    ?: currentTimeMillis
 
-                            val resultCalendar = java.util.Calendar.getInstance()
+                            val resultCalendar = Calendar.getInstance()
                             resultCalendar.timeInMillis = selectedDate
 
-                            resultCalendar.set(java.util.Calendar.HOUR_OF_DAY, hour)
-                            resultCalendar.set(java.util.Calendar.MINUTE, minute)
-                            resultCalendar.set(java.util.Calendar.SECOND, 0)
-                            resultCalendar.set(java.util.Calendar.MILLISECOND, 0)
+                            resultCalendar.set(Calendar.HOUR_OF_DAY, hour)
+                            resultCalendar.set(Calendar.MINUTE, minute)
+                            resultCalendar.set(Calendar.SECOND, 0)
+                            resultCalendar.set(Calendar.MILLISECOND, 0)
 
                             onConfirm(resultCalendar.timeInMillis)
                             isVisible = false
@@ -1145,39 +930,68 @@ fun RestTimer(
 }
 
 @Composable
-private fun TrackWorkoutFinishButtonAction(
-    state: TrackWorkoutUiState.Filled,
+fun RestTimer(
+    restTimeDurationInSecs: Long,
+    modifier: Modifier = Modifier,
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
 
-    Button(
-        onClick = { showDatePicker = true },
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier
-            .wrapContentWidth(align = Alignment.End),
-        contentPadding = PaddingValues(
-            vertical = 8.dp,
-            horizontal = 16.dp,
-        ),
-    ) {
-        Text("Finish")
+    var isTimerRunning by remember { mutableStateOf(false) }
+    var remainingTime by remember { mutableLongStateOf(0) }
+
+    val progress = remember { Animatable(initialValue = 0f) }
+
+    LaunchedEffect(restTimeDurationInSecs) {
+        remainingTime = restTimeDurationInSecs
+        isTimerRunning = true
     }
 
-    if (showDatePicker) {
-        DatePickerBottomSheet(
-            onDismiss = { showDatePicker = false },
-            onConfirm = { selectedDate ->
-                showDatePicker = false
-                state.eventSink(
-                    TrackWorkoutUiEvent.OnFinishWorkoutWithDate(
-                        workoutSession = state.workoutSession,
-                        selectedDate = selectedDate,
-                    ),
-                )
-            },
+    LaunchedEffect(restTimeDurationInSecs) {
+        progress.snapTo(0f)
+        progress.animateTo(
+            1f,
+            animationSpec = tween(
+                durationMillis = restTimeDurationInSecs.toInt() * 1000,
+                easing = LinearEasing,
+            ),
         )
     }
-}
+
+    if (isTimerRunning) {
+        LaunchedEffect(Unit) {
+            while (remainingTime > 0) {
+                delay(1000L)
+                remainingTime -= 1
+            }
+            isTimerRunning = false
+        }
+    }
+
+    Card(
+        shape = MaterialTheme.shapes.extraLarge,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .padding(Dimens.Padding.ExtraMedium),
+                ) {
+                    Text(
+                        text = "Rest Timer",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(Dimens.Padding.ExtraSmall),
@@ -1219,7 +1033,6 @@ private fun TrackWorkoutFinishButtonAction(
                             )
                         }
                     }
-
                 }
 
                 Box(
@@ -1270,5 +1083,42 @@ private fun TrackWorkoutFinishButtonAction(
                 }
             }
         }
+
+    }
+
+}
+
+@Composable
+private fun TrackWorkoutFinishButtonAction(
+    state: TrackWorkoutUiState.Filled,
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    Button(
+        onClick = { showDatePicker = true },
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier
+            .wrapContentWidth(align = Alignment.End),
+        contentPadding = PaddingValues(
+            vertical = 8.dp,
+            horizontal = 16.dp,
+        ),
+    ) {
+        Text("Finish")
+    }
+
+    if (showDatePicker) {
+        DatePickerBottomSheet(
+            onDismiss = { showDatePicker = false },
+            onConfirm = { selectedDate ->
+                showDatePicker = false
+                state.eventSink(
+                    TrackWorkoutUiEvent.OnFinishWorkoutWithDate(
+                        workoutSession = state.workoutSession,
+                        selectedDate = selectedDate,
+                    ),
+                )
+            },
+        )
     }
 }
