@@ -2,25 +2,62 @@ package app.shapeshifter
 
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
+import org.jetbrains.kotlin.gradle.dsl.KotlinSingleTargetExtension
+
+fun Project.configureKotlinMultiplatform(
+    enableWarningsAsErrors: Boolean = true,
+    compilerOptions: KotlinCommonCompilerOptions.() -> Unit,
+) {
+    kotlinMultiplatform {
+        setProjectToolChainVersion()
+
+        targets.configureEach {
+            compilations.configureEach {
+                compileTaskProvider.configure {
+                    compilerOptions {
+                        setProjectDefaults(enableWarningsAsErrors)
+                        compilerOptions()
+                    }
+                }
+            }
+        }
+    }
+}
 
 fun Project.configureKotlin(
     enableWarningsAsErrors: Boolean = true,
     compilerOptions: KotlinCommonCompilerOptions.() -> Unit = {},
 ) {
+
     kotlin {
         setProjectToolChainVersion()
-
-        compilerOptions {
-            compilerOptions()
-            setProjectDefaults(enableWarningsAsErrors)
+        target.compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    setProjectDefaults(enableWarningsAsErrors)
+                    compilerOptions()
+                }
+            }
         }
     }
 }
 
-fun Project.kotlin(action: KotlinProjectExtension.() -> Unit) {
-    val kotlinProjectExtension = extensions.findByType(KotlinProjectExtension::class.java)
+fun Project.kotlinMultiplatform(action: KotlinMultiplatformExtension.() -> Unit) {
+    val kotlinProjectExtension = extensions.findByType(KotlinMultiplatformExtension::class.java)
+
+    if (kotlinProjectExtension != null) {
+        action(kotlinProjectExtension)
+    } else {
+        throw IllegalStateException(
+            "kotlin compiler options are only supported in android, jvm and multiplatform modules",
+        )
+    }
+}
+
+fun Project.kotlin(action: KotlinSingleTargetExtension<*>.() -> Unit) {
+    val kotlinProjectExtension = extensions.findByType(KotlinSingleTargetExtension::class.java)
 
     if (kotlinProjectExtension != null) {
         action(kotlinProjectExtension)
@@ -33,16 +70,6 @@ fun Project.kotlin(action: KotlinProjectExtension.() -> Unit) {
 
 fun KotlinProjectExtension.setProjectToolChainVersion() {
     jvmToolchain(17)
-}
-
-fun KotlinProjectExtension.compilerOptions(
-    action: KotlinCommonCompilerOptions.() -> Unit,
-) {
-    targets.forEach { target ->
-        target.compilations.configureEach {
-            compilerOptions.configure(action)
-        }
-    }
 }
 
 fun KotlinCommonCompilerOptions.setProjectDefaults(

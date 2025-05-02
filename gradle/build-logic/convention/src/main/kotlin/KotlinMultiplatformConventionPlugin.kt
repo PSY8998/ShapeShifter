@@ -1,4 +1,5 @@
 import app.shapeshifter.configureKotlin
+import app.shapeshifter.configureKotlinMultiplatform
 import app.shapeshifter.configureSpotless
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,8 +35,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             }
         }
 
-        // apply this after targets are configured
-        configureKotlin(enableWarningsAsErrors = false) {
+        configureKotlinMultiplatform(enableWarningsAsErrors = false) {
             freeCompilerArgs.add("-Xexpect-actual-classes")
         }
 

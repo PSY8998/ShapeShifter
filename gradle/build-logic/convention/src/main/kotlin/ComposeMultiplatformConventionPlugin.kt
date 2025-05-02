@@ -1,5 +1,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
@@ -23,7 +25,9 @@ fun Project.configureCompose() {
             metricsDestination.set(composeReports)
         }
 
-        stabilityConfigurationFile.set(rootProject.file("compose-stability.conf"))
+        stabilityConfigurationFiles.addAll(
+            RegularFile { rootProject.file("compose-stability.conf") },
+        )
     }
 }
 
