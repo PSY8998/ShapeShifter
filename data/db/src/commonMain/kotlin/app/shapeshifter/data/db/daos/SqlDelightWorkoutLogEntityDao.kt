@@ -139,6 +139,7 @@ class SqlDelightWorkoutEntityDao(
                                 exerciseId = item.exercise_id,
                                 workoutPlanId = item.workout_plan_id,
                                 workoutLogId = item.workout_log_id,
+                                setTypeId = item.set_type_id ?: 2,
                             )
                         }
 
@@ -243,6 +244,7 @@ class SqlDelightWorkoutEntityDao(
                                         exerciseId = item.exercise_id,
                                         workoutPlanId = item.workout_plan_id,
                                         workoutLogId = item.workout_log_id,
+                                        setTypeId = item.set_type_id ?: 2,
                                     )
                                 }
 
@@ -319,6 +321,7 @@ class SqlDelightWorkoutEntityDao(
             prevWeight = PositiveInt(0),
             completed = true,
             finishTime = 0,
+            setTypeId = previousSetForWorkout.set_type_id,
         )
 
     }

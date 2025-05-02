@@ -86,6 +86,7 @@ class CreateWorkoutUseCase(
                             prevWeight = PositiveInt(0),
                             completed = false,
                             finishTime = 0,
+                            setTypeId = 2,
                         )
                     }
                     setLogEntityDao.insert(setLogs)

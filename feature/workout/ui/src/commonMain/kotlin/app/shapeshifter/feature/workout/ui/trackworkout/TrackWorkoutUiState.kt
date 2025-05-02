@@ -77,5 +77,9 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
         val exerciseLog: ExerciseLog,
     ): TrackWorkoutUiEvent
 
+    data class OnUpdateSet(
+        val setLog: SetLog,
+    ): TrackWorkoutUiEvent
+
     data object OnCompleteRestTime: TrackWorkoutUiEvent
 }

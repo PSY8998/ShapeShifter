@@ -25,6 +25,7 @@ import app.shapeshifter.feature.workout.domain.GetWorkoutSessionUseCase
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.RemoveExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.UpdateRestTimeUseCase
+import app.shapeshifter.feature.workout.domain.UpdateSetLogUseCase
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -66,6 +67,7 @@ class TrackWorkoutPresenter(
     private val removeExerciseLogUseCase: RemoveExerciseLogUseCase,
     private val updateRestTimeUseCase: UpdateRestTimeUseCase,
     private val getWorkoutSessionUseCase: GetWorkoutSessionUseCase,
+    private val updateSetLogUseCase: UpdateSetLogUseCase,
 ) : Presenter<TrackWorkoutUiState> {
 
     @Composable
@@ -253,6 +255,16 @@ class TrackWorkoutPresenter(
                                 restTimeDurationInSecs = ((event.minutes * 60) + event.seconds).toLong(),
                                 exerciseLog = event.exerciseLog,
                             ),
+                        )
+                    }
+                }
+
+                is TrackWorkoutUiEvent.OnUpdateSet -> {
+                    scope.launch {
+                        updateSetLogUseCase(
+                            params = UpdateSetLogUseCase.Params(
+                                setLog = event.setLog,
+                            )
                         )
                     }
                 }

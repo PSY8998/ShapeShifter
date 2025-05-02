@@ -51,6 +51,7 @@ class AddExerciseLogUseCase(
                         exerciseId = exerciseId,
                         workoutPlanId = params.workoutPlanId,
                         workoutLogId = params.workoutLogId,
+                        setTypeId = 2,
                     )
 
                     setLogEntityDao.insert(set)

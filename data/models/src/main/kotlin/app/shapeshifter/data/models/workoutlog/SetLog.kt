@@ -17,7 +17,7 @@ data class SetLog(
     val prevWeight: PositiveInt,
     val completed: Boolean,
     val finishTime: Long,
-    val setTypeId: Long = 2,
+    val setTypeId: Long,
 ) : Entity {
 
     fun isValid(): Boolean {

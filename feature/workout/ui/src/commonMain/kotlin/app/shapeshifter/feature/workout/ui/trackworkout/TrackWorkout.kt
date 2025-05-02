@@ -254,6 +254,13 @@ private fun TrackWorkout(
                                                 ),
                                             )
                                         },
+                                        onUpdateSet = {
+                                            state.eventSink(
+                                                TrackWorkoutUiEvent.OnUpdateSet(
+                                                    it,
+                                                ),
+                                            )
+                                        },
                                     )
                                 }
 
@@ -316,6 +323,7 @@ private fun LazyListScope.exerciseLog(
     onReplaceExercise: (exerciseLog: ExerciseLog) -> Unit,
     onRemoveExercise: (exerciseLog: ExerciseLog) -> Unit,
     onUpdateRestTime: (Int, Int) -> Unit,
+    onUpdateSet: (setLog: SetLog) -> Unit,
 ) {
     val exerciseLog = exerciseSession.exerciseLog
 
@@ -429,13 +437,7 @@ private fun LazyListScope.exerciseLog(
                     isBeingTracked = true,
                     setType = SetType.fromId(set.setTypeId),
                     onSetTypeChange = { newType ->
-                        onCompleteSet(
-                            set.copy(
-                                setTypeId = newType.id,
-                                weight = set.weight,
-                                reps = set.reps,
-                            ),
-                        )
+                        onUpdateSet(set.copy(setTypeId = newType.id))
                     },
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),

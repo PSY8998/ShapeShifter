@@ -115,6 +115,7 @@ class SqlDelightExerciseLogEntityDao(
                 workoutPlanId = session.workout_plan_id,
                 exerciseId = session.exercise_id,
                 exercisePlanId = exerciseLog.id,
+                setTypeId = session.set_type_id,
             )
         }
 
