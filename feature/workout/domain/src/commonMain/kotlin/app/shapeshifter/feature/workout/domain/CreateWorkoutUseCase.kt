@@ -2,21 +2,15 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
-import app.shapeshifter.data.db.daos.ExerciseEntityDao
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
 import app.shapeshifter.data.db.daos.SetLogEntityDao
 import app.shapeshifter.data.db.daos.WorkoutEntityDao
-import app.shapeshifter.data.db.daos.insert
 import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
-import java.util.logging.Logger
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
@@ -80,7 +74,7 @@ class CreateWorkoutUseCase(
                     val setLogs = exercisePlanSession.setPlans.map { setPlan ->
                         SetLog(
                             id = 0,
-                            setTypeIndex = setPlan.index,
+                            setIndex = setPlan.index,
                             exerciseLogId = exerciseLogId,
                             exercisePlanId = exercisePlanSession.exercisePlan.id,
                             exerciseId = exercisePlanSession.exercise.id,

@@ -17,7 +17,7 @@ class CreateSetUseCase(
         val setLog = SetLog(
             id = 0L,
             exerciseLogId = params.exerciseLogId,
-            setTypeIndex = PositiveInt(1),
+            setIndex = PositiveInt(1),
             weight = PositiveInt(0),
             reps = PositiveInt(0),
             prevWeight = PositiveInt(0),

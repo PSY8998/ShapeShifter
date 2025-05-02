@@ -51,7 +51,7 @@ class GetWorkoutSessionUseCase(
                     sets = exercisePlanSession.setPlans.map { setPlan ->
                         SetLog(
                             id = setPlan.id,
-                            setTypeIndex = setPlan.index,
+                            setIndex = setPlan.index,
                             exerciseLogId = exercisePlanSession.exercisePlan.id,
                             exercisePlanId = exercisePlanSession.exercisePlan.id,
                             exerciseId = exercisePlanSession.exercise.id,

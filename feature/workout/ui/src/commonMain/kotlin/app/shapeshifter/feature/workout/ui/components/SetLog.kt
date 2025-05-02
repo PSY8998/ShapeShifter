@@ -7,6 +7,7 @@ import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -25,13 +26,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
+import app.shapeshifter.data.models.SetType
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 
@@ -70,10 +78,18 @@ fun SetLog(
     modifier: Modifier = Modifier,
     prevWeight: Int? = null,
     prevReps: Int? = null,
+    setType: SetType = SetType.NORMAL,
+    onSetTypeChange: ((SetType) -> Unit)? = null,
 ) {
     var isCompleted by remember(isChecked) {
         mutableStateOf(isChecked)
     }
+    var showSetTypeBottomSheet by remember { mutableStateOf(false) }
+
+    // Using remember with setType as key helps ensure the UI updates when the type changes
+    var currentSetType by remember(setType) { mutableStateOf(setType) }
+
+    val pattern = Regex("^\\d*$")
 
     Row(
         modifier = modifier
@@ -88,14 +104,36 @@ fun SetLog(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = (index + 1).toString(),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium,
+        Row(
             modifier = Modifier
-                .weight(1f),
-        )
+                .weight(1f)
+                .clickable(enabled = onSetTypeChange != null) { showSetTypeBottomSheet = true },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                // Show set type abbreviation on the left
+                Text(
+                    text = currentSetType.abbreviation,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(end = 4.dp),
+                )
+
+                // Show the set number
+                Text(
+                    text = (index + 1).toString(),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
 
         if (isBeingTracked) {
             Text(
@@ -115,7 +153,7 @@ fun SetLog(
         BasicTextField(
             value = setWeight,
             onValueChange = {
-                if (pattern.matches(it)) {
+                if (pattern.matchEntire(it) != null) {
                     setWeight = it
                 }
             },
@@ -164,7 +202,7 @@ fun SetLog(
         BasicTextField(
             value = setReps,
             onValueChange = {
-                if (pattern.matches(it)) {
+                if (pattern.matchEntire(it) != null) {
                     setReps = it
                 }
             },
@@ -237,6 +275,88 @@ fun SetLog(
                 tint = if (isCompleted) MaterialTheme.colorScheme.onPrimary
                 else MaterialTheme.colorScheme.onSecondary,
             )
+        }
+    }
+
+    if (showSetTypeBottomSheet && onSetTypeChange != null) {
+        SetTypeBottomSheet(
+            onDismiss = { showSetTypeBottomSheet = false },
+            onSelectSetType = {
+                // Debug print to verify set type change
+                println("Set type changed to: ${it.label} (${it.id})")
+                currentSetType = it
+                onSetTypeChange(it)
+                showSetTypeBottomSheet = false
+            },
+            currentSetType = currentSetType,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SetTypeBottomSheet(
+    onDismiss: () -> Unit,
+    onSelectSetType: (SetType) -> Unit,
+    currentSetType: SetType,
+) {
+    val sheetState = rememberModalBottomSheetState(
+        confirmValueChange = {
+            it != SheetValue.Hidden
+        },
+    )
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+        ) {
+            Text(
+                text = "Select Set Type",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(
+                    horizontal = Dimens.Padding.Medium,
+                    vertical = Dimens.Padding.Small,
+                ),
+            )
+
+            SetType.values().forEach { setType ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelectSetType(setType) }
+                        .padding(
+                            horizontal = Dimens.Padding.Medium,
+                            vertical = Dimens.Padding.Medium,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = setType.label,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = if (setType == currentSetType) FontWeight.Bold else FontWeight.Normal,
+                        color = if (setType == currentSetType) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    if (setType == currentSetType) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Selected",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+            }
         }
     }
 }

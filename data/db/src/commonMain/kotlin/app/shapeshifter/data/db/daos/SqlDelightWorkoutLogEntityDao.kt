@@ -112,7 +112,7 @@ class SqlDelightWorkoutEntityDao(
                             val cacheKey = Triple(
                                 item.workout_plan_id,
                                 item.exercise_id,
-                                item.set_type_index ?: 0,
+                                item.set_index ?: 0,
                             )
 
                             // Retrieve previous set from cache or compute if not cached
@@ -120,14 +120,14 @@ class SqlDelightWorkoutEntityDao(
                                 previousWorkout(
                                     workoutPlanId = item.workout_plan_id,
                                     exerciseId = item.exercise_id,
-                                    setTypeIndex = item.set_type_index ?: 0,
+                                    setTypeIndex = item.set_index ?: 0,
                                     currentExerciseLogId = item.exercise_log_id,
                                 )
                             }
 
                             SetLog(
                                 id = item.set_log_id,
-                                setTypeIndex = PositiveInt(item.set_type_index?.toInt() ?: 0),
+                                setIndex = PositiveInt(item.set_index?.toInt() ?: 0),
                                 weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
                                 reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
                                 prevReps = previousSet?.reps ?: PositiveInt(0),
@@ -214,7 +214,7 @@ class SqlDelightWorkoutEntityDao(
                                     val cacheKey = Triple(
                                         item.workout_plan_id,
                                         item.exercise_id,
-                                        item.set_type_index ?: 0,
+                                        item.set_index ?: 0,
                                     )
 
                                     // Retrieve previous set from cache or compute if not cached
@@ -222,15 +222,15 @@ class SqlDelightWorkoutEntityDao(
                                         previousWorkout(
                                             workoutPlanId = item.workout_plan_id,
                                             exerciseId = item.exercise_id,
-                                            setTypeIndex = item.set_type_index ?: 0,
+                                            setTypeIndex = item.set_index ?: 0,
                                             currentExerciseLogId = item.exercise_log_id,
                                         )
                                     }
 
                                     SetLog(
                                         id = item.set_log_id,
-                                        setTypeIndex = PositiveInt(
-                                            item.set_type_index?.toInt() ?: 0,
+                                        setIndex = PositiveInt(
+                                            item.set_index?.toInt() ?: 0,
                                         ),
                                         weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
                                         reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
@@ -288,13 +288,13 @@ class SqlDelightWorkoutEntityDao(
             .previousExerciseSetForWorkout(
                 workoutPlanId = workoutPlanId,
                 exerciseId = exerciseId,
-                setTypeIndex = setTypeIndex,
+                setIndex = setTypeIndex,
                 currentExerciseLogId = currentExerciseLogId,
             ).executeAsOneOrNull()
             ?: db.set_logQueries
                 .previousExerciseSetForIndex(
                     exerciseId = exerciseId,
-                    setTypeIndex = setTypeIndex,
+                    setIndex = setTypeIndex,
                     currentExerciseLogId = currentExerciseLogId,
                 ).executeAsOneOrNull()
             ?: db.set_logQueries
@@ -307,7 +307,7 @@ class SqlDelightWorkoutEntityDao(
 
         return SetLog(
             id = previousSetForWorkout.id,
-            setTypeIndex = PositiveInt(previousSetForWorkout.set_type_index.toInt()),
+            setIndex = PositiveInt(previousSetForWorkout.set_index.toInt()),
             exerciseLogId = previousSetForWorkout.exercise_log_id,
             exercisePlanId = previousSetForWorkout.exercise_plan_id,
             exerciseId = previousSetForWorkout.exercise_id,

@@ -103,7 +103,7 @@ class SqlDelightExerciseLogEntityDao(
         val setLogs = sessions.map { session ->
             SetLog(
                 id = session.set_log_id,
-                setTypeIndex = PositiveInt(0),
+                setIndex = PositiveInt(0),
                 prevReps = PositiveInt(session.set_prev_reps?.toInt() ?: 0),
                 prevWeight = PositiveInt(session.set_prev_weight?.toInt() ?: 0),
                 reps = PositiveInt(session.set_log_reps.toInt()),

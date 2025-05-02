@@ -18,7 +18,7 @@ class SqlDelightSetLogEntityDao(
         ).executeAsOneOrNull()
 
         // update set index
-        val setIndex = lastSet?.set_type_index?.toInt()?.let { it + 1 } ?: 0
+        val setIndex = lastSet?.set_index?.toInt()?.let { it + 1 } ?: 0
 
         return transactionRunner {
             db.set_logQueries.insert(
@@ -28,10 +28,11 @@ class SqlDelightSetLogEntityDao(
                 workoutPlanId = entity.workoutPlanId,
                 exerciseId = entity.exerciseId,
                 exercisePlanId = entity.exercisePlanId,
-                setTypeIndex = setIndex.toLong(),
+                setIndex = setIndex.toLong(),
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
                 finishTime = entity.finishTime,
+                setTypeId = entity.setTypeId,
             )
 
             db.set_logQueries.lastInsertRowId().executeAsOne()
@@ -44,6 +45,7 @@ class SqlDelightSetLogEntityDao(
             weight = entity.weight.value.toLong(),
             reps = entity.reps.value.toLong(),
             finishTime = entity.finishTime,
+            setTypeId = entity.setTypeId,
             id = entity.id,
         )
     }

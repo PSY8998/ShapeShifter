@@ -5,7 +5,7 @@ import app.shapeshifter.data.models.PositiveInt
 
 data class SetLog(
     override val id: Long,
-    val setTypeIndex: PositiveInt,
+    val setIndex: PositiveInt,
     val exerciseLogId: Long,
     val exercisePlanId: Long?,
     val exerciseId: Long,
@@ -17,6 +17,7 @@ data class SetLog(
     val prevWeight: PositiveInt,
     val completed: Boolean,
     val finishTime: Long,
+    val setTypeId: Long = 2,
 ) : Entity {
 
     fun isValid(): Boolean {
@@ -27,10 +28,6 @@ data class SetLog(
         if (reps.value <= 0) {
             return false
         }
-
-//        if (finishTime <= 0) {
-//            return false
-//        }
 
         return true
     }

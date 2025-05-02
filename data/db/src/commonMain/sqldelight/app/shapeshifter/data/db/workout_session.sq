@@ -18,7 +18,7 @@ SELECT
     slog.finish_time AS set_finish_time,
     slog.weight,
     slog.reps,
-    slog.set_type_index
+    slog.set_index
 FROM
     workout_log wlog
 LEFT JOIN
@@ -52,7 +52,7 @@ SELECT
     slog.finish_time AS set_finish_time,
     slog.weight,
     slog.reps,
-    slog.set_type_index
+    slog.set_index
 FROM
     workout_log wlog
 LEFT JOIN

@@ -81,6 +81,7 @@ import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
 import app.shapeshifter.data.models.PositiveInt
+import app.shapeshifter.data.models.SetType
 import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.data.models.workoutlog.SetLog
@@ -426,6 +427,16 @@ private fun LazyListScope.exerciseLog(
                     prevReps = set.prevReps.value,
                     prevWeight = set.prevWeight.value,
                     isBeingTracked = true,
+                    setType = SetType.fromId(set.setTypeId),
+                    onSetTypeChange = { newType ->
+                        onCompleteSet(
+                            set.copy(
+                                setTypeId = newType.id,
+                                weight = set.weight,
+                                reps = set.reps,
+                            ),
+                        )
+                    },
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),
                 )

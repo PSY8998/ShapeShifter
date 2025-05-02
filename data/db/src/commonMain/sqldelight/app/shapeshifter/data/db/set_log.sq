@@ -5,11 +5,13 @@ CREATE TABLE IF NOT EXISTS set_log (
     `exercise_plan_id` INTEGER,
     `exercise_log_id` INTEGER NOT NULL,
     `exercise_id` INTEGER NOT NULL,
-    `set_type_index` INTEGER NOT NULL,
+    `set_type_id` INTEGER NOT NULL DEFAULT 2,
+    `set_index` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL,
     `finish_time` INTEGER NOT NULL,
-    FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`set_type_id`) REFERENCES `set_type`(`id`) ON UPDATE CASCADE
 );
 
 -- indices
@@ -17,6 +19,7 @@ CREATE INDEX IF NOT EXISTS `index_set_workout_log_id` ON `set_log` (`workout_log
 CREATE INDEX IF NOT EXISTS `index_set_workout_plan_id` ON `set_log` (`workout_plan_id`);
 CREATE INDEX IF NOT EXISTS `index_set_exercise_plan_id` ON `set_log` (`exercise_plan_id`);
 CREATE INDEX IF NOT EXISTS `index_set_exercise_log_id` ON `set_log` (`exercise_log_id`);
+CREATE INDEX IF NOT EXISTS `index_set_set_type_id` ON `set_log` (`set_type_id`);
 
 insert:
 INSERT INTO set_log(
@@ -26,7 +29,8 @@ INSERT INTO set_log(
     exercise_plan_id,
     exercise_log_id,
     exercise_id,
-    set_type_index,
+    set_type_id,
+    set_index,
     weight,
     reps,
     finish_time
@@ -38,7 +42,8 @@ VALUES (
     :exercisePlanId,
     :exerciseLogId,
     :exerciseId,
-    :setTypeIndex,
+    :setTypeId,
+    :setIndex,
     :weight,
     :reps,
     :finishTime
@@ -47,6 +52,7 @@ VALUES (
 update:
 UPDATE set_log SET
     exercise_log_id = :exerciseLogId,
+    set_type_id = :setTypeId,
     weight = :weight,
     reps = :reps,
     finish_time = :finishTime
@@ -63,7 +69,7 @@ SELECT *
 FROM set_log
 WHERE workout_plan_id = :workoutPlanId
 AND exercise_id = :exerciseId
-AND set_type_index = :setTypeIndex
+AND set_index = :setIndex
 AND exercise_log_id < :currentExerciseLogId
 ORDER BY id DESC
 LIMIT 1;
@@ -72,7 +78,7 @@ previousExerciseSetForIndex:
 SELECT *
 FROM set_log
 WHERE exercise_id = :exerciseId
-AND set_type_index = :setTypeIndex
+AND set_index = :setIndex
 AND exercise_log_id < :currentExerciseLogId
 ORDER BY id DESC
 LIMIT 1;
@@ -82,7 +88,7 @@ SELECT *
 FROM set_log
 WHERE exercise_id = :exerciseId
 AND exercise_log_id < :currentExerciseLogId
-ORDER BY set_type_index DESC, id DESC
+ORDER BY set_index DESC, id DESC
 LIMIT 1;
 
 exerciseLastSet:

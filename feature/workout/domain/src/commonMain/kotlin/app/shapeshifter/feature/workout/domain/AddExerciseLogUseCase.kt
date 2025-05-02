@@ -40,7 +40,7 @@ class AddExerciseLogUseCase(
                     val set = SetLog(
                         id = 0L,
                         exerciseLogId = exerciseLogId,
-                        setTypeIndex = PositiveInt(0),
+                        setIndex = PositiveInt(0),
                         weight = PositiveInt(0),
                         reps = PositiveInt(0),
                         prevReps = PositiveInt(0),

@@ -1,0 +1,35 @@
+CREATE TABLE IF NOT EXISTS set_type (
+    `id` INTEGER PRIMARY KEY NOT NULL,
+    `name` TEXT NOT NULL,
+    `description` TEXT
+);
+
+-- Inserting predefined set types
+INSERT OR IGNORE INTO set_type(id, name, description)
+VALUES
+    (1, 'Warmup Set', 'A lighter set used to prepare the muscles before heavier work'),
+    (2, 'Normal Set', 'A standard working set'),
+    (3, 'Failure Set', 'A set performed until muscle failure'),
+    (4, 'Drop Set', 'A technique where weight is reduced after reaching failure to continue the set'),
+    (5, 'Super Set', 'Two exercises performed back-to-back with no rest between them');
+
+-- Queries
+getAll:
+SELECT * FROM set_type;
+
+getById:
+SELECT * FROM set_type
+WHERE id = :id;
+
+insert:
+INSERT INTO set_type(id, name, description)
+VALUES (:id, :name, :description);
+
+update:
+UPDATE set_type
+SET name = :name, description = :description
+WHERE id = :id;
+
+delete:
+DELETE FROM set_type
+WHERE id = :id;
