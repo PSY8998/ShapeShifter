@@ -7,6 +7,7 @@ import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -18,11 +19,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.toggleable
@@ -115,15 +119,34 @@ fun SetLog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
-                // Show set type abbreviation on the left
-                Text(
-                    text = currentSetType.abbreviation,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 4.dp),
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(end = 8.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(26.dp)
+                            .background(
+                                color = Color(currentSetType.colorHex).copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = Color(currentSetType.colorHex),
+                                shape = RoundedCornerShape(4.dp),
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = currentSetType.abbreviation,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(currentSetType.colorHex),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
 
                 // Show the set number
                 Text(
@@ -282,8 +305,6 @@ fun SetLog(
         SetTypeBottomSheet(
             onDismiss = { showSetTypeBottomSheet = false },
             onSelectSetType = {
-                // Debug print to verify set type change
-                println("Set type changed to: ${it.label} (${it.id})")
                 currentSetType = it
                 onSetTypeChange(it)
                 showSetTypeBottomSheet = false
@@ -329,7 +350,7 @@ fun SetTypeBottomSheet(
                 ),
             )
 
-            SetType.values().forEach { setType ->
+            SetType.entries.forEach { setType ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -340,6 +361,31 @@ fun SetTypeBottomSheet(
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // Color indicator
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                color = Color(setType.colorHex).copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = Color(setType.colorHex),
+                                shape = RoundedCornerShape(4.dp),
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = setType.abbreviation,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(setType.colorHex),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
                     Text(
                         text = setType.label,
                         style = MaterialTheme.typography.bodyLarge,
