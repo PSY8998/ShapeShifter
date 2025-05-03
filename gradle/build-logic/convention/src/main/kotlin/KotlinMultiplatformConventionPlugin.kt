@@ -1,4 +1,3 @@
-import app.shapeshifter.configureKotlin
 import app.shapeshifter.configureKotlinMultiplatform
 import app.shapeshifter.configureSpotless
 import org.gradle.api.Plugin
@@ -17,7 +16,11 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
         extensions.configure<KotlinMultiplatformExtension> {
             applyDefaultHierarchyTemplate()
 
-            androidTarget()
+            jvm()
+
+            if (pluginManager.hasPlugin("com.android.library")) {
+                androidTarget()
+            }
 
             metadata {
                 compilations.configureEach {

@@ -47,6 +47,7 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 rootProject.name = "ShapeShifter"
 
 include(":app")
+include(":desktop-app")
 
 include(":feature:root:ui")
 include(":feature:home:ui")
