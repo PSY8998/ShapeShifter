@@ -34,9 +34,6 @@ kotlin {
             api(libs.supabase.database)
             api(libs.kotlinx.serialization)
             implementation(libs.ktor.client.core)
-        }
-
-        jvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
     }
