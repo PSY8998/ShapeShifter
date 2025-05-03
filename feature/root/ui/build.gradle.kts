@@ -14,6 +14,7 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
                 api(projects.common.ui.compose)
+                implementation(projects.feature.onboarding.data)
 
                 implementation(libs.circuit.foundation)
                 implementation(libs.circuit.overlay)

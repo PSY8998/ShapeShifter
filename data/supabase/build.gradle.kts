@@ -30,9 +30,9 @@ kotlin {
             implementation(projects.data.models)
 
             implementation(libs.kotlininject.runtime)
-            implementation(project.dependencies.platform(libs.supabase.bom))
-            implementation(libs.supabase.database)
-            implementation(libs.kotlinx.serialization)
+            api(project.dependencies.platform(libs.supabase.bom))
+            api(libs.supabase.database)
+            api(libs.kotlinx.serialization)
         }
 
         androidMain.dependencies {

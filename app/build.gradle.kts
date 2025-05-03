@@ -50,39 +50,7 @@ ksp {
 }
 
 dependencies {
-    // core
-    implementation(projects.core.base)
-    implementation(projects.common.ui.compose)
-    implementation(projects.data.db)
-    implementation(projects.data.supabase)
-    implementation(projects.data.datastore)
-    implementation(projects.domain)
-
-    implementation(projects.common.imageloading)
-
-    // features
-    implementation(projects.feature.root.ui)
-
-    // home
-    implementation(projects.feature.home.ui)
-
-    // exercise
-    implementation(projects.feature.exercise.ui)
-    implementation(projects.feature.exercise.data)
-    implementation(projects.feature.exercise.domain)
-
-    // workout
-    implementation(projects.feature.workout.ui)
-    implementation(projects.feature.workout.domain)
-
-    //profile
-    implementation(projects.feature.profile.ui)
-
-    //onboarding
-    implementation(projects.feature.onboarding.ui)
-    implementation(projects.feature.onboarding.data)
-
-
+    implementation(projects.shared.prod)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -101,5 +69,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.androidx.splashscreen)
-
 }

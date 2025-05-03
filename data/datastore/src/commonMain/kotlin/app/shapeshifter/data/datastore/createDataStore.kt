@@ -11,5 +11,3 @@ fun createDataStore(producePath: () -> String): DataStore<Preferences> =
         migrations = emptyList(),
         produceFile = { producePath().toPath() },
     )
-
-internal const val dataStoreFileName = "shapeshifter.preferences"

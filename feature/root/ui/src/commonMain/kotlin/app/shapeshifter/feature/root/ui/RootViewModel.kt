@@ -1,16 +1,13 @@
-package app.shapeshifter.inject
+package app.shapeshifter.feature.root.ui
 
-import androidx.lifecycle.ViewModel
 import app.shapeshifter.feature.onboarding.data.OnboardingPreferences
 import me.tatarka.inject.annotations.Inject
-import kotlinx.coroutines.flow.map
 
-typealias MainViewModelFactory = () -> MainViewModel
+typealias RootViewModelFactory = () -> RootViewModel
 
 @Inject
-class MainViewModel(
+class RootViewModel(
     private val onboardingPreferences: OnboardingPreferences,
-): ViewModel(){
-
+){
     val isOnboardingCompleted = onboardingPreferences.isCompleted
 }

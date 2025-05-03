@@ -49,6 +49,9 @@ rootProject.name = "ShapeShifter"
 include(":app")
 include(":desktop-app")
 
+include(":shared:common")
+include(":shared:prod")
+
 include(":feature:root:ui")
 include(":feature:home:ui")
 

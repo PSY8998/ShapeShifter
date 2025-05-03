@@ -3,13 +3,13 @@ package app.shapeshifter
 import android.app.Application
 import android.os.Build
 import android.os.StrictMode
-import app.shapeshifter.inject.ApplicationComponent
-import app.shapeshifter.inject.create
+import app.shapeshifter.shared.prod.AndroidApplicationComponent
+import app.shapeshifter.shared.prod.create
 
 class ShapeShifterApplication : Application() {
 
-    val component: ApplicationComponent by lazy {
-        ApplicationComponent.create(this)
+    val component: AndroidApplicationComponent by lazy {
+        AndroidApplicationComponent.create(this)
     }
 
     override fun onCreate() {
