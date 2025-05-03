@@ -18,23 +18,17 @@ kotlin {
 
                 api(libs.coil.compose)
                 implementation(libs.circuit.overlay)
+                implementation(libs.circuit.runtime)
             }
         }
     }
 
-    targets.configureEach {
-        val isAndroidTarget = platformType == KotlinPlatformType.androidJvm
-        compilations.configureEach {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    if (isAndroidTarget) {
-                        freeCompilerArgs.addAll(
-                            "-P",
-                            "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=app.shapeshifter.common.ui.compose.screens.Parcelize",
-                        )
-                    }
-                }
-            }
+    androidTarget {
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                "-P",
+                "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=app.shapeshifter.common.ui.compose.screens.Parcelize",
+            )
         }
     }
 }

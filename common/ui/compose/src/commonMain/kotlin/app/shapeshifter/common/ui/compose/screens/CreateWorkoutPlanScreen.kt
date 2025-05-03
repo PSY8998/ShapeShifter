@@ -8,7 +8,7 @@ data class CreateWorkoutPlanScreen(
 ) : Screen {
 
     @Parcelize
-    sealed interface Intent {
+    sealed interface Intent: Parcelable {
         @Parcelize
         data class NewWorkoutPlan(
             val planName: String,

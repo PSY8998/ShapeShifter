@@ -51,6 +51,9 @@ buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
 # DataStore
 androidx-datastore-preference = "androidx.datastore:datastore-preferences:1.1.5"
 androidx-datastore = "androidx.datastore:datastore:1.1.5"
+androidx-datastore-preference-core = "androidx.datastore:datastore-preferences-core:1.1.5"
+androidx-datastore-preference-android = "androidx.datastore:datastore-preferences-android:1.1.5"
+androidx-datastore-preference-jvm = "androidx.datastore:datastore-preferences-jvm:1.1.5"
 
 # android target
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -83,6 +86,7 @@ circuit-retained = { module = "com.slack.circuit:circuit-retained", version.ref 
 circuit-effects = { module = "com.slack.circuit:circuitx-effects", version.ref = "circuit" }
 circuit-overlay = { module = "com.slack.circuit:circuit-overlay", version.ref = "circuit" }
 circuitx-overlay = { module = "com.slack.circuit:circuitx-overlays", version.ref = "circuit" }
+circuit-runtime = { module = "com.slack.circuit:circuit-runtime", version.ref = "circuit" }
 
 # dependency injection
 kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }

@@ -6,19 +6,18 @@ import com.slack.circuit.runtime.screen.Screen
 @Parcelize
 data class ExercisesScreen(
     val intent: Intent,
-) : Screen {
+) : Screen, Parcelable {
 
-    sealed interface Intent {
-        @Parcelize
+    @Parcelize
+    sealed interface Intent: Parcelable {
         data object SelectExercises : Intent
 
-        @Parcelize
         data class ReplaceExercise(val exerciseLogId: Long) : Intent
 
-        @Parcelize
         data object Exercises : Intent
     }
 
+    @Parcelize
     sealed interface Result : PopResult {
         @Parcelize
         data class SelectedExercises(

@@ -14,7 +14,7 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
                 api(projects.common.ui.compose)
-                implementation(projects.data.datastore)
+                api(projects.data.datastore)
 
                 implementation(libs.circuit.foundation)
 
@@ -25,8 +25,19 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.components.resources)
 
-                implementation(libs.androidx.datastore)
-                implementation(libs.androidx.datastore.preference)
+                implementation(libs.androidx.datastore.preference.core)
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.datastore.preference.android)
+            }
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.androidx.datastore.preference.jvm)
             }
         }
     }
