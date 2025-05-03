@@ -13,8 +13,6 @@ kotlin {
             dependencies {
                 implementation(projects.core.base)
                 implementation(libs.kotlininject.runtime)
-                api(libs.androidx.datastore)
-                api(libs.androidx.datastore.preference)
                 api(libs.androidx.datastore.preference.core)
             }
         }

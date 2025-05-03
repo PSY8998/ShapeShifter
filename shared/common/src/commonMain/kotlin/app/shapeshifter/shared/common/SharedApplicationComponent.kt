@@ -4,6 +4,7 @@ import app.shapeshifter.common.imageloading.ImageLoadingComponent
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.core.base.inject.ApplicationCoroutineScope
 import app.shapeshifter.core.base.inject.ApplicationScope
+import app.shapeshifter.data.datastore.DataStoreComponent
 import app.shapeshifter.data.db.SqlDelightDatabaseComponent
 import app.shapeshifter.data.supabase.SupabaseComponent
 import app.shapeshifter.feature.root.ui.RootViewModelFactory
@@ -18,10 +19,10 @@ interface SharedApplicationComponent :
     SharedPlatformApplicationComponent,
     SqlDelightDatabaseComponent,
     SupabaseComponent,
-    ImageLoadingComponent {
+    ImageLoadingComponent,
+    DataStoreComponent {
 
     val rootViewModel: RootViewModelFactory
-
 
     @ApplicationScope
     @Provides

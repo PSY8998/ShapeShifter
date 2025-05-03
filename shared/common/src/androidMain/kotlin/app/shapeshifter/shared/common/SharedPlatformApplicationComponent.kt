@@ -4,11 +4,9 @@ import android.app.Application
 import android.content.Context
 import app.shapeshifter.core.base.inject.ApplicationScope
 import app.shapeshifter.core.base.inject.CachePath
-import app.shapeshifter.data.datastore.createDataStore.DataStoreComponent
 import me.tatarka.inject.annotations.Provides
 
-actual interface SharedPlatformApplicationComponent :
-    DataStoreComponent {
+actual interface SharedPlatformApplicationComponent {
 
     @ApplicationScope
     @Provides

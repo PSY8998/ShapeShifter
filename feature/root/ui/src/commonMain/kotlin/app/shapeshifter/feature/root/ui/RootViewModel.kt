@@ -7,7 +7,7 @@ typealias RootViewModelFactory = () -> RootViewModel
 
 @Inject
 class RootViewModel(
-    private val onboardingPreferences: OnboardingPreferences,
+    onboardingPreferences: OnboardingPreferences,
 ){
     val isOnboardingCompleted = onboardingPreferences.isCompleted
 }

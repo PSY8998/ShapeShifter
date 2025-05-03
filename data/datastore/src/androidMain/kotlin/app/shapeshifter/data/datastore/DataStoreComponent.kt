@@ -1,20 +1,20 @@
-package app.shapeshifter.dara.datastore
+package app.shapeshifter.data.datastore
 
+import android.content.Context
 import app.shapeshifter.core.base.inject.ApplicationScope
-import app.shapeshifter.core.base.inject.CachePath
 import app.shapeshifter.core.base.inject.DataStorePath
 import me.tatarka.inject.annotations.Provides
-import java.io.File
 
-interface DataStoreComponent {
+actual interface DataStoreComponent {
     @Provides
     @DataStorePath
     @ApplicationScope
     fun provideDataStore(
-        @CachePath cachePath: String
+        context: Context,
     ): (name: String) -> String {
         return { name ->
-            File(cachePath).resolve(name).absolutePath
+            context.filesDir.resolve(name).absolutePath
         }
     }
 }
+

@@ -15,6 +15,7 @@ kotlin {
             dependencies {
                 api(projects.core.base)
                 api(projects.common.ui.compose)
+                api(projects.data.datastore)
                 api(projects.data.db)
                 api(projects.data.supabase)
                 api(projects.data.datastore)
