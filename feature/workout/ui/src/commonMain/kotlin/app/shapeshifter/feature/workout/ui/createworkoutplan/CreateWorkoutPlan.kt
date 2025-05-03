@@ -76,7 +76,7 @@ internal fun CreateWorkoutPlan(
     uiState: CreateWorkoutPlanUiState,
     modifier: Modifier = Modifier,
 ) {
-    if(uiState.workoutPlanSession != null) {
+    if (uiState.workoutPlanSession != null) {
         NestedScaffold(
             modifier = modifier
                 .fillMaxSize(),
@@ -91,7 +91,7 @@ internal fun CreateWorkoutPlan(
                     onSave = {
                         uiState.eventSink(
                             CreateWorkoutPlanUiEvent.OnSaveWorkout(
-                                workoutPlanSession = uiState.workoutPlanSession
+                                workoutPlanSession = uiState.workoutPlanSession,
                             ),
                         )
                     },
@@ -107,7 +107,11 @@ internal fun CreateWorkoutPlan(
                         exercisePlan(
                             exercisePlanSession = exercisePlanSession,
                             onAddSet = {
-                                uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddSet(exercisePlanSession.exercisePlan.id))
+                                uiState.eventSink(
+                                    CreateWorkoutPlanUiEvent.OnAddSet(
+                                        exercisePlanSession.exercisePlan.id,
+                                    ),
+                                )
                             },
                             onSetWeightChanged = { id, weight ->
                                 uiState.eventSink(
@@ -133,6 +137,8 @@ internal fun CreateWorkoutPlan(
                             onAddExercise = {
                                 uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
                             },
+                            modifier = Modifier
+                                .padding(horizontal = Dimens.Padding.Medium),
                         )
                     }
 
