@@ -1,30 +1,36 @@
 package app.shapeshifter
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import app.shapeshifter.common.ui.compose.screens.HomeScreen
+import app.shapeshifter.shared.prod.DesktopApplicationComponent
+import app.shapeshifter.shared.prod.WindowComponent
+import app.shapeshifter.shared.prod.create
+import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.rememberCircuitNavigator
 
 fun main() = application {
+    val applicationComponent = remember {
+        DesktopApplicationComponent.create()
+    }
+
     Window(
         title = "ShapeShifter",
         onCloseRequest = ::exitApplication,
     ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            Button(
-                onClick = {}
-            ) {
-                Text("Click Me!")
-            }
-
-            Button(
-                onClick = {}
-            ) {
-                Text("Click Me!")
-            }
+        val component = remember(applicationComponent) {
+            WindowComponent.create(applicationComponent)
         }
+
+        val backstack = rememberSaveableBackStack(listOf(HomeScreen))
+        val navigator = rememberCircuitNavigator(backstack) { /* no-op */ }
+
+        component.shapeShifterContent(
+            backstack,
+            navigator,
+            Modifier,
+        )
     }
 }

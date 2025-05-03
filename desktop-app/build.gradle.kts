@@ -15,8 +15,11 @@ kotlin {
     sourceSets {
         jvmMain {
             dependencies {
+                implementation(projects.shared.prod)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlin.coroutines.swing)
+
+                implementation(libs.circuit.foundation)
             }
         }
     }

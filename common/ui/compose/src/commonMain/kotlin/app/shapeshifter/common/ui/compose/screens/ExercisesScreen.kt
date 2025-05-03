@@ -1,16 +1,14 @@
 package app.shapeshifter.common.ui.compose.screens
 
-import android.os.Parcelable
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ExercisesScreen(
     val intent: Intent,
 ) : Screen {
 
-    sealed interface Intent : Parcelable {
+    sealed interface Intent {
         @Parcelize
         data object SelectExercises : Intent
 

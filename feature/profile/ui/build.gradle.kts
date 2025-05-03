@@ -13,6 +13,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.core.base)
+                implementation(projects.data.models)
+                implementation(projects.feature.workout.domain)
+                implementation(projects.feature.workout.ui)
                 api(projects.common.ui.compose)
 
                 implementation(libs.circuit.foundation)
@@ -26,9 +29,4 @@ kotlin {
             }
         }
     }
-}
-dependencies {
-    implementation(project(":data:models"))
-    implementation(project(":feature:workout:domain"))
-    implementation(project(":feature:workout:ui"))
 }

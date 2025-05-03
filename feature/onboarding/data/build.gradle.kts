@@ -24,11 +24,10 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.components.resources)
+
+                implementation(libs.androidx.datastore)
+                implementation(libs.androidx.datastore.preference)
             }
         }
     }
-}
-dependencies {
-
-    implementation(libs.androidx.datastore.core)
 }

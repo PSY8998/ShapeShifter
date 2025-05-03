@@ -1,6 +1,5 @@
 package app.shapeshifter.feature.home.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -224,7 +223,6 @@ fun NextWorkoutSection(nextWorkout: NextWorkoutInfo?) {
     }
 }
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun DailyLoggingSection(
     currentWeight: Float,
@@ -350,7 +348,6 @@ fun DailyLoggingSection(
     }
 }
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun WeeklyStatisticsSection(
     statistics: WeeklyStatistics,

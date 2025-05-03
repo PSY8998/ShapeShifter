@@ -12,7 +12,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.core.base)
-                implementation(libs.androidx.datastore.core)
+                implementation(libs.androidx.datastore)
+                implementation(libs.androidx.datastore.preference)
                 implementation(libs.kotlininject.runtime)
             }
         }

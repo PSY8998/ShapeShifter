@@ -33,10 +33,11 @@ kotlin {
             api(project.dependencies.platform(libs.supabase.bom))
             api(libs.supabase.database)
             api(libs.kotlinx.serialization)
+            implementation(libs.ktor.client.core)
         }
 
-        androidMain.dependencies {
-            implementation(libs.ktor.cio)
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }
