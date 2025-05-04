@@ -56,6 +56,7 @@ import app.shapeshifter.data.models.plans.ExercisePlanSession
 import app.shapeshifter.data.models.plans.SetPlan
 import app.shapeshifter.feature.workout.ui.components.pattern
 import app.shapeshifter.feature.workout.ui.createworkoutplan.components.EmptyWorkout
+import app.shapeshifter.feature.workout.ui.createworkoutplan.components.ExerciseTypeRadarChart
 import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -123,6 +124,12 @@ internal fun CreateWorkoutPlan(
                             .padding(bottom = Dimens.Padding.Medium)
                             .fillMaxWidth(),
                     )
+                }
+
+                item(
+                    key = "radar_chart"
+                ) {
+                    ExerciseTypeRadarChart()
                 }
 
                 uiState.workoutPlanSession?.exercisePlanSessions?.forEach { exercisePlanSession ->

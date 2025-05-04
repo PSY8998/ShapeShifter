@@ -111,6 +111,8 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "
 calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version = "2.6.0-beta01" }
 dateTimePicker = { module = "com.github.commandiron:WheelPickerCompose", version = "1.1.11" }
 
+aayChart = { module = "io.github.thechance101:chart", version = "1.1.0" }
+
 # test
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
