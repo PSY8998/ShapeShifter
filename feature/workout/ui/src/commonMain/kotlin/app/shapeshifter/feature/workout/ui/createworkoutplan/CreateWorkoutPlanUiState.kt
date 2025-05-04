@@ -4,7 +4,6 @@ import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
-
 data class CreateWorkoutPlanUiState(
     val workoutPlanSession: WorkoutPlanSession?,
     val eventSink: (CreateWorkoutPlanUiEvent) -> Unit,

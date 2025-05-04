@@ -36,6 +36,15 @@ class WorkoutPlanSessionManager {
 
     // Load an existing workout plan for editing.
     fun loadExistingPlan(existingPlan: WorkoutPlanSession) {
+        val exerciseId: Int =
+            (existingPlan.exercisePlanSessions.minByOrNull { it.exercisePlan.id }?.exercisePlan?.id?.toInt()
+                ?: 0) - 1
+        val setPlans = existingPlan.exercisePlanSessions.map { it.setPlans }.flatten()
+        val setId =
+            (setPlans.minByOrNull { it.id }?.id?.toInt() ?: 0) - 1
+
+        newExercisePlanTempIdCounter.set(exerciseId)
+        newSetPlanTempIdCounter.set(setId)
         _currentPlan.value = existingPlan
     }
 
@@ -60,7 +69,7 @@ class WorkoutPlanSessionManager {
             ?: return
         val exerciseWithId = ExercisePlanSession(
             exercisePlan = ExercisePlan(
-                id = newExercisePlanTempIdCounter.getAndDecrement().toLong(),
+                id = newExercisePlanTempIdCounter.decrementAndGet().toLong(),
                 workoutPlanId = workoutPlan.id,
                 exerciseId = exercise.id,
                 index = PositiveInt(index),
@@ -120,7 +129,7 @@ class WorkoutPlanSessionManager {
         exercisePlanId: Long, newSetPlan: SetPlan,
     ) {
         val setPlanWithId = if (newSetPlan.id == 0L) {
-            newSetPlan.copy(id = newSetPlanTempIdCounter.getAndDecrement().toLong())
+            newSetPlan.copy(id = newSetPlanTempIdCounter.decrementAndGet().toLong())
         } else {
             newSetPlan
         }

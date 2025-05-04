@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,6 +50,7 @@ import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.data.models.plans.ExercisePlanSession
 import app.shapeshifter.data.models.plans.SetPlan
 import app.shapeshifter.feature.workout.ui.components.pattern
+import app.shapeshifter.feature.workout.ui.createworkoutplan.components.EmptyWorkout
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -76,73 +78,87 @@ internal fun CreateWorkoutPlan(
     uiState: CreateWorkoutPlanUiState,
     modifier: Modifier = Modifier,
 ) {
-    if (uiState.workoutPlanSession != null) {
-        NestedScaffold(
-            modifier = modifier
+    NestedScaffold(
+        modifier = modifier
+            .fillMaxSize(),
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(top = paddingValues.calculateTopPadding())
-                    .fillMaxSize(),
-            ) {
-                CreateWorkoutPlanTopBar(
-                    planName = uiState.workoutPlanSession.workoutPlan.name,
-                    onSave = {
+        ) {
+            CreateWorkoutPlanTopBar(
+                planName = uiState.workoutPlanSession?.workoutPlan?.name ?: "",
+                onSave = {
+                    if (uiState.workoutPlanSession != null) {
                         uiState.eventSink(
                             CreateWorkoutPlanUiEvent.OnSaveWorkout(
                                 workoutPlanSession = uiState.workoutPlanSession,
                             ),
                         )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                )
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    uiState.workoutPlanSession.exercisePlanSessions.forEach { exercisePlanSession ->
-                        exercisePlan(
-                            exercisePlanSession = exercisePlanSession,
-                            onAddSet = {
-                                uiState.eventSink(
-                                    CreateWorkoutPlanUiEvent.OnAddSet(
-                                        exercisePlanSession.exercisePlan.id,
-                                    ),
-                                )
-                            },
-                            onSetWeightChanged = { id, weight ->
-                                uiState.eventSink(
-                                    CreateWorkoutPlanUiEvent.OnSetWeightChanged(
-                                        setId = id,
-                                        setWeight = weight,
-                                    ),
-                                )
-                            },
-                            onSetRepsChanged = { id, reps ->
-                                uiState.eventSink(
-                                    CreateWorkoutPlanUiEvent.OnSetRepsChanged(
-                                        setId = id,
-                                        setReps = reps,
-                                    ),
-                                )
-                            },
-                        )
                     }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+            )
 
-                    item {
-                        AddExercise(
-                            onAddExercise = {
-                                uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
-                            },
-                            modifier = Modifier
-                                .padding(horizontal = Dimens.Padding.Medium),
-                        )
-                    }
-
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                uiState.workoutPlanSession?.exercisePlanSessions?.forEach { exercisePlanSession ->
+                    exercisePlan(
+                        exercisePlanSession = exercisePlanSession,
+                        onAddSet = {
+                            uiState.eventSink(
+                                CreateWorkoutPlanUiEvent.OnAddSet(
+                                    exercisePlanSession.exercisePlan.id,
+                                ),
+                            )
+                        },
+                        onSetWeightChanged = { id, weight ->
+                            uiState.eventSink(
+                                CreateWorkoutPlanUiEvent.OnSetWeightChanged(
+                                    setId = id,
+                                    setWeight = weight,
+                                ),
+                            )
+                        },
+                        onSetRepsChanged = { id, reps ->
+                            uiState.eventSink(
+                                CreateWorkoutPlanUiEvent.OnSetRepsChanged(
+                                    setId = id,
+                                    setReps = reps,
+                                ),
+                            )
+                        },
+                    )
                 }
+
+                if (uiState.workoutPlanSession == null) {
+                    item(
+                        key = "empty_workout",
+                    ) {
+                        EmptyWorkout(
+                            modifier = Modifier,
+                        )
+                    }
+                }
+
+
+                item(
+                    key = "add_exercise",
+                ) {
+                    AddExercise(
+                        onAddExercise = {
+                            uiState.eventSink(CreateWorkoutPlanUiEvent.OnAddExercise)
+                        },
+                        modifier = Modifier
+                            .padding(top = Dimens.Padding.Medium)
+                            .padding(horizontal = Dimens.Padding.Medium),
+                    )
+                }
+
             }
         }
     }
@@ -155,17 +171,22 @@ private fun LazyListScope.exercisePlan(
     onSetWeightChanged: (id: Long, weight: Int) -> Unit,
     onSetRepsChanged: (id: Long, reps: Int) -> Unit,
 ) {
-    item {
+    item(
+        key = exercisePlanSession.exercisePlan.id.toString() + exercisePlanSession.exercise.name,
+    ) {
         ExercisePlan(exercisePlanSession.exercise.name)
     }
 
-    item {
+    item(
+        key = exercisePlanSession.exercisePlan.id.toString() + "titles",
+    ) {
         SetColumnTitles(
             modifier = Modifier,
         )
     }
 
     itemsIndexed(
+        key = { _, item -> "set_" + item.id },
         items = exercisePlanSession.setPlans,
     ) { index, setPlan ->
         SetPlanUi(
@@ -183,7 +204,9 @@ private fun LazyListScope.exercisePlan(
         )
     }
 
-    item {
+    item(
+        key = exercisePlanSession.exercisePlan.id.toString() + "add_set",
+    ) {
         AddNewSet(
             onAddSet = {
                 onAddSet()
@@ -284,8 +307,12 @@ fun AddExercise(
 @Composable
 fun ExercisePlan(
     name: String,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(
+        modifier = modifier
+            .padding(horizontal = Dimens.Padding.Medium),
+    ) {
         Text(
             text = name,
             style = MaterialTheme.typography.titleMedium,
