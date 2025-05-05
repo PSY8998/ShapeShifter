@@ -6,7 +6,7 @@ import app.shapeshifter.core.base.inject.DataStorePath
 import me.tatarka.inject.annotations.Provides
 import java.io.File
 
-interface DataStoreComponent {
+actual interface DataStoreComponent {
     @Provides
     @DataStorePath
     @ApplicationScope
