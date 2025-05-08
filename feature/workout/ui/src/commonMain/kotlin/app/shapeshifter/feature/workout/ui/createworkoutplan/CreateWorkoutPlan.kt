@@ -1,5 +1,6 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +23,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.forEachChange
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.then
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
@@ -35,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -211,7 +216,8 @@ private fun TitleAndNote(
                 minHeightInLines = 1,
                 maxHeightInLines = 2,
             ),
-            inputTransformation = InputTransformation.maxLength(50),
+            inputTransformation = InputTransformation.replaceChar('\n', ' ')
+                .then(InputTransformation.maxLength(50)),
             decorator = { innerTextField ->
                 if (titleTextState.text.isEmpty()) {
                     Text(
@@ -636,5 +642,39 @@ fun AddNewSet(
                 contentDescription = null,
             )
         }
+    }
+}
+
+@Stable
+fun InputTransformation.replaceChar(
+    inputChar: Char,
+    outPutChar: Char,
+): InputTransformation =
+    this.then(CharacterReplaceFilter(inputChar, outPutChar))
+
+
+private data class CharacterReplaceFilter(
+    private val inputChar: Char,
+    private val outPutChar: Char,
+) : InputTransformation {
+
+    @OptIn(ExperimentalFoundationApi::class)
+    override fun TextFieldBuffer.transformInput() {
+        changes.forEachChange { range, _ ->
+            if (!range.collapsed) {
+                val index = asCharSequence().indexOf('\n')
+                if (index != -1) {
+                    replace(
+                        index,
+                        index + 1,
+                        "",
+                    )
+                }
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return "InputTransformation.ReplaceCharacter(inputChar=$inputChar, outPutChar=$outPutChar)"
     }
 }
