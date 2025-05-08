@@ -662,12 +662,12 @@ private data class CharacterReplaceFilter(
     override fun TextFieldBuffer.transformInput() {
         changes.forEachChange { range, _ ->
             if (!range.collapsed) {
-                val index = asCharSequence().indexOf('\n')
+                val index = asCharSequence().indexOf(inputChar)
                 if (index != -1) {
                     replace(
                         index,
                         index + 1,
-                        "",
+                        outPutChar.toString(),
                     )
                 }
             }
