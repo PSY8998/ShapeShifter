@@ -21,6 +21,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -124,7 +127,7 @@ internal fun CreateWorkoutPlan(
                 }
 
                 item(
-                    key = "radar_chart"
+                    key = "radar_chart",
                 ) {
                     ExerciseTypeRadarChart()
                 }
@@ -204,6 +207,11 @@ private fun TitleAndNote(
                     fontWeight = FontWeight.Bold,
                 ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            lineLimits = TextFieldLineLimits.MultiLine(
+                minHeightInLines = 1,
+                maxHeightInLines = 2,
+            ),
+            inputTransformation = InputTransformation.maxLength(50),
             decorator = { innerTextField ->
                 if (titleTextState.text.isEmpty()) {
                     Text(
