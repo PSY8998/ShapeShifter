@@ -1,7 +1,6 @@
 package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.runtime.Immutable
-import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
@@ -27,7 +26,6 @@ sealed interface SavedWorkoutsUiEvent : CircuitUiEvent {
 
     data class CreateWorkoutPlan(
         val routineId: Long,
-        val planName: String,
     ) : SavedWorkoutsUiEvent
 
     data class OnEditWorkoutPlan(

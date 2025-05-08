@@ -123,8 +123,8 @@ internal fun SavedWorkouts(
                         eventSink(SavedWorkoutsUiEvent.OpenQuickWorkout)
                     }
                 },
-                onCreateWorkoutPlan = { routineId, planName ->
-                    eventSink(SavedWorkoutsUiEvent.CreateWorkoutPlan(routineId, planName))
+                onCreateWorkoutPlan = { routineId ->
+                    eventSink(SavedWorkoutsUiEvent.CreateWorkoutPlan(routineId))
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -150,7 +150,6 @@ private fun SavedWorkoutsScrollingContent(
     onStartQuickWorkout: () -> Unit,
     onCreateWorkoutPlan: (
         routineId: Long,
-        planName: String,
     ) -> Unit,
     onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
     onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
@@ -331,7 +330,6 @@ private fun MyRoutine(
     workoutPlanSessions: List<WorkoutPlanSession>,
     onCreateWorkoutPlan: (
         routineId: Long,
-        planName: String,
     ) -> Unit,
     onEditWorkoutPlan: (WorkoutPlanSession) -> Unit,
     onDeleteWorkoutPlan: (WorkoutPlanSession) -> Unit,
@@ -366,12 +364,7 @@ private fun MyRoutine(
                     )
                     .clip(shape = MaterialTheme.shapes.small)
                     .clickable {
-                        scope.launch {
-                            val result = overlayHost.showWorkoutPlanName()
-                            if (result is WorkoutPlanNameResult.AddExercisesToPlan) {
-                                onCreateWorkoutPlan(-1, result.name)
-                            }
-                        }
+                        onCreateWorkoutPlan(-1)
                     }
                     .padding(4.dp),
             ) {
@@ -437,7 +430,7 @@ private fun MyRoutine(
                             workoutPlanSession = workoutPlanSession,
                             onEditWorkoutPlan = { onEditWorkoutPlan(workoutPlanSession) },
                             onDeleteWorkoutPlan = { onDeleteWorkoutPlan(workoutPlanSession) },
-                            onStartWorkoutPlan = {onStartWorkoutPlan(workoutPlanSession)},
+                            onStartWorkoutPlan = { onStartWorkoutPlan(workoutPlanSession) },
                         )
                     }
                 }

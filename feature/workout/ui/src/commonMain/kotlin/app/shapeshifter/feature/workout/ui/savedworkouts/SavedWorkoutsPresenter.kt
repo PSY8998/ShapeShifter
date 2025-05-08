@@ -92,7 +92,6 @@ class SavedWorkoutsPresenter(
                     navigator.goTo(
                         CreateWorkoutPlanScreen(
                             intent = CreateWorkoutPlanScreen.Intent.NewWorkoutPlan(
-                                planName = event.planName,
                                 routineId = event.routineId,
                             ),
                         ),

@@ -23,12 +23,12 @@ class WorkoutPlanSessionManager {
     private val newSetPlanTempIdCounter = AtomicInteger(-1)
 
     // Create a new workout plan session.
-    fun createNewPlan(routineId: Long, name: String) {
+    fun createNewPlan(routineId: Long) {
         _currentPlan.value = WorkoutPlanSession(
             workoutPlan = WorkoutPlan(
                 id = 0,
                 routineId = routineId,
-                name = name,
+                name = "",
             ),
             exercisePlanSessions = emptyList(),
         )

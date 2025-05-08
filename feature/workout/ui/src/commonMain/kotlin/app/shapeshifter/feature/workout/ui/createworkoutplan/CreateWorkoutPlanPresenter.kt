@@ -45,7 +45,7 @@ class CreateWorkoutPlanPresenterFactory(
 class CreateWorkoutPlanPresenter(
     @Assisted private val navigator: Navigator,
     @Assisted private val screen: CreateWorkoutPlanScreen,
-    private val workoutPlanSessionManager: WorkoutPlanSessionManager,
+    private val workoutPlanSessionManagerProvider: Lazy<WorkoutPlanSessionManager>,
     private val fetchExercisesUseCase: FetchExercisesUseCase,
     private val saveWorkoutUseCase: SaveWorkoutUseCase,
     private val selectWorkoutPlanUseCase: SelectWorkoutPlanUseCase,
@@ -55,6 +55,8 @@ class CreateWorkoutPlanPresenter(
     override fun present(): CreateWorkoutPlanUiState {
 
         val scope = rememberCoroutineScope()
+
+        val workoutPlanSessionManager = rememberRetained { workoutPlanSessionManagerProvider.value }
 
         var workoutPlanSession by rememberRetained { mutableStateOf<WorkoutPlanSession?>(null) }
 
@@ -68,17 +70,22 @@ class CreateWorkoutPlanPresenter(
             when (val intent = screen.intent) {
                 is CreateWorkoutPlanScreen.Intent.NewWorkoutPlan -> {
                     val session = workoutPlanSession
-                    if(session != null) {
+                    if (session != null && session.workoutPlan.id != 0L) {
                         workoutPlanSessionManager.loadExistingPlan(
                             existingPlan = session,
                         )
                     } else {
-                        workoutPlanSessionManager.createNewPlan(
-                            routineId = intent.routineId,
-                            name = intent.planName,
-                        )
+                        val managerCurrentPlan = workoutPlanSessionManager.currentPlan.value
+                        if (managerCurrentPlan != null &&
+                            managerCurrentPlan.workoutPlan.id == 0L
+                        ) {
+                            // Already working on a new plan in the manager, let it be.
+                        } else {
+                            workoutPlanSessionManager.createNewPlan(
+                                routineId = intent.routineId,
+                            )
+                        }
                     }
-
                 }
 
                 is CreateWorkoutPlanScreen.Intent.EditWorkoutPlan -> {
@@ -99,7 +106,8 @@ class CreateWorkoutPlanPresenter(
                     fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
                 workoutPlanSessionManager.addExercises(
                     exercises = exercises,
-                    startIndex = 0, // TODO: provide correct startIndex
+                    startIndex = workoutPlanSessionManager.currentPlan.value?.exercisePlanSessions?.size
+                        ?: 0,
                 )
             }
 
@@ -110,13 +118,18 @@ class CreateWorkoutPlanPresenter(
                 }
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
+                    val currentExercisePlan = workoutPlanSessionManager.currentPlan.value
+                        ?.exercisePlanSessions
+                        ?.find { exercisePlanSession -> exercisePlanSession.exercisePlan.id == event.exercisePlanId }
+
+                    val nextIndex = currentExercisePlan?.setPlans?.size ?: 0
+
                     workoutPlanSessionManager.addSetPlanToExercise(
                         exercisePlanId = event.exercisePlanId,
-                        // TODO: provide previous set weight and reps
                         newSetPlan = SetPlan(
                             id = 0,
                             exercisePlanId = event.exercisePlanId,
-                            index = PositiveInt(0),
+                            index = PositiveInt(nextIndex),
                             weight = 0,
                             reps = 0,
                         ),
@@ -141,10 +154,13 @@ class CreateWorkoutPlanPresenter(
 
                 is CreateWorkoutPlanUiEvent.OnSaveWorkout -> {
                     scope.launch {
-                        saveWorkoutUseCase(
-                            params = event.workoutPlanSession,
-                        )
-                        navigator.pop()
+                        // Ensure the most up-to-date session from the manager is used for saving
+                        workoutPlanSessionManager.currentPlan.value?.let { currentSessionToSave ->
+                            saveWorkoutUseCase(
+                                params = currentSessionToSave,
+                            )
+                            navigator.pop()
+                        }
                     }
                 }
             }

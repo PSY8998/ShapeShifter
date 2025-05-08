@@ -1,0 +1,8 @@
+{
+  "rules" : [
+    "Keep composables stateless",
+    "Don't use composition locals",
+    "Don't use side effects",
+    "State down, events up"
+  ]
+}
