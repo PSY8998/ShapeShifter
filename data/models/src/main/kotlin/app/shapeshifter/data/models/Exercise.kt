@@ -10,3 +10,11 @@ data class Exercise(
     val secondaryMuscle: List<Muscles>,
     val imageUrl: String,
 ) : Entity
+
+data class ExerciseTemplate(
+    val id: Long,
+    val name: String,
+    val primaryMuscle: Muscles,
+    val secondaryMuscle: List<Muscles>,
+    val imageUrl: String,
+)

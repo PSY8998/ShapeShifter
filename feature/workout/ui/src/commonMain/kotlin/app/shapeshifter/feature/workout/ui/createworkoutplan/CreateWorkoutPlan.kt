@@ -230,6 +230,8 @@ private fun TitleAndNote(
                 }
                 innerTextField()
             },
+            modifier = Modifier
+                .fillMaxWidth(),
         )
 
         val noteTextState = rememberTextFieldState()
