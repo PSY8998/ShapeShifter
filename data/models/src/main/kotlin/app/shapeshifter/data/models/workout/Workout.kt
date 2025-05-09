@@ -22,7 +22,7 @@ data class WorkoutLog(
             startTime: Instant,
         ) = WorkoutLog(
             id = 0,
-            name = "",
+            name = name,
             note = null,
             workoutPlanId = null,
             startTime = startTime,
