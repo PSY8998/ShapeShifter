@@ -137,7 +137,7 @@ private fun TrackWorkout(
                 .fillMaxSize(),
         ) {
             val startTime by remember(state.asFilled()?.workoutSession?.workoutLog?.startTime) {
-                val time = state.asFilled()?.workoutSession?.workoutLog?.startTime?.inWholeMicroseconds
+                val time = state.asFilled()?.workoutSession?.workoutLog?.startTime?.toEpochMilliseconds()
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {

@@ -55,7 +55,7 @@ workout_log.rest_finish_at
 FROM workout_log
 LEFT JOIN workout_plan ON workout_log.workout_plan_id = workout_plan.id
 LEFT JOIN routine ON workout_plan.routine_id = routine.id
-WHERE workout_log.finish_time = 0
+WHERE workout_log.finish_time IS NULL
 LIMIT 1;
 
 delete:

@@ -5,11 +5,12 @@ import app.shapeshifter.data.models.metrics.WorkoutMetrics
 import app.shapeshifter.data.models.workout.ExerciseLog
 import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.data.models.workout.WorkoutLog
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.toLocalDateTime
 
 data class WorkoutSession(
     val workoutLog: WorkoutLog,
@@ -32,12 +33,15 @@ data class WorkoutSession(
     }
 
     fun formatStartTime(): String {
-        val formatter = DateTimeFormatter.ofPattern("EEEE, d MMM, yyyy")
-        val dateTime = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(workoutLog.startTime.inWholeMilliseconds),
-            ZoneId.systemDefault(),
-        )
-        return dateTime.format(formatter)
+        val formatPattern = "EEEE, d MMM, yyyy"
+
+        @OptIn(FormatStringsInDatetimeFormats::class)
+        val dateTimeFormat = LocalDateTime.Format {
+            byUnicodePattern(formatPattern)
+        }
+
+        val timeZone = TimeZone.currentSystemDefault()
+        return dateTimeFormat.format(workoutLog.startTime.toLocalDateTime(timeZone))
     }
 
 

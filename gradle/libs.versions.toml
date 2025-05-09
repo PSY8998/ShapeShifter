@@ -66,6 +66,7 @@ kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-co
 kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.26.0"
 kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+kotlinx-dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
 
 # databse
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }

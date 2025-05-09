@@ -5,8 +5,8 @@ import app.shapeshifter.data.db.daos.WorkoutEntityDao
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 @Inject
 class FinishWorkoutUseCase(
@@ -24,8 +24,8 @@ class FinishWorkoutUseCase(
         return withContext(dispatchers.databaseWrite) {
             // Calculate workout duration based on start time and current time
             val workoutLog = params.workoutSession.workoutLog
-            val startTime = workoutLog.startTime.inWholeMilliseconds
-            val currentTime = System.currentTimeMillis()
+            val startTime = workoutLog.startTime
+            val currentTime = Clock.System.now()
             val duration = currentTime - startTime
 
             // Use the same duration but apply it to the custom date if provided
@@ -34,7 +34,7 @@ class FinishWorkoutUseCase(
 
             dao.upsert(
                 entity = workoutLog.copy(
-                    finishTime = effectiveFinishTime.milliseconds,
+                    finishTime = effectiveFinishTime,
                 ),
             )
         }

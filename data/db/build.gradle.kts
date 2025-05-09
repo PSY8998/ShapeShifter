@@ -24,6 +24,7 @@ kotlin {
             implementation(libs.kotlininject.runtime)
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.sqldelight.coroutines)
+            implementation(libs.kotlinx.dateTime)
         }
 
         androidMain.dependencies {

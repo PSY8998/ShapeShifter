@@ -12,6 +12,8 @@ kotlin {
                 api(projects.domain)
                 implementation(projects.data.db)
 
+                implementation(libs.kotlinx.dateTime)
+
                 implementation(libs.kotlininject.runtime)
             }
         }

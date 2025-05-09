@@ -20,6 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.datetime.Instant
 
 interface WorkoutEntityDao {
     fun insert(entity: WorkoutLog): Long
@@ -52,8 +53,8 @@ class SqlDelightWorkoutEntityDao(
                 id = entity.id,
                 workoutPlanId = entity.workoutPlanId,
                 name = entity.name,
-                startTime = entity.startTime.inWholeMilliseconds,
-                finishTime = entity.finishTime?.inWholeMilliseconds,
+                startTime = entity.startTime.toEpochMilliseconds(),
+                finishTime = entity.finishTime?.toEpochMilliseconds(),
                 restFinishAt = 0,
             )
             db.workout_logQueries.lastInsertRowId().executeAsOne()
@@ -73,8 +74,8 @@ class SqlDelightWorkoutEntityDao(
         db.workout_logQueries.update(
             workoutPlanId = entity.workoutPlanId,
             name = entity.name,
-            startTime = entity.startTime.inWholeMilliseconds,
-            finishTime = entity.finishTime?.inWholeMilliseconds,
+            startTime = entity.startTime.toEpochMilliseconds(),
+            finishTime = entity.finishTime?.toEpochMilliseconds(),
             id = entity.id,
             restFinishAt = 0,
         )
@@ -100,8 +101,10 @@ class SqlDelightWorkoutEntityDao(
                     id = firstItem.workout_log_id,
                     workoutPlanId = firstItem.workout_plan_id,
                     name = firstItem.workout_log_name,
-                    startTime = firstItem.workout_start_time.milliseconds,
-                    finishTime = firstItem.workout_finish_time?.milliseconds,
+                    startTime = Instant.fromEpochMilliseconds(firstItem.workout_start_time),
+                    finishTime = firstItem.workout_finish_time?.let {
+                        Instant.fromEpochMilliseconds(it)
+                    },
                     note = "",
                 )
 
@@ -181,8 +184,10 @@ class SqlDelightWorkoutEntityDao(
                             id = firstItem.workout_log_id,
                             workoutPlanId = firstItem.workout_plan_id,
                             name = firstItem.workout_log_name,
-                            startTime = firstItem.workout_start_time.milliseconds,
-                            finishTime = firstItem.workout_finish_time?.milliseconds,
+                            startTime = Instant.fromEpochMilliseconds(firstItem.workout_start_time),
+                            finishTime = firstItem.workout_finish_time?.let {
+                                Instant.fromEpochMilliseconds(it)
+                            },
                             note = "",
                         )
 
@@ -278,8 +283,10 @@ class SqlDelightWorkoutEntityDao(
                     id = id,
                     workoutPlanId = workoutPlanId,
                     name = workoutLogName,
-                    startTime = startTime.milliseconds,
-                    finishTime = finishTime?.milliseconds,
+                    startTime = Instant.fromEpochMilliseconds(startTime),
+                    finishTime = finishTime?.let {
+                        Instant.fromEpochMilliseconds(it)
+                    },
                     note = "",
                 ),
             )

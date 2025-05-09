@@ -12,12 +12,10 @@ import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 @Inject
 class CreateWorkoutUseCase(
@@ -29,21 +27,20 @@ class CreateWorkoutUseCase(
     private val transactionRunner: DatabaseTransactionRunner,
 ) : UseCase<CreateWorkoutUseCase.Params, Long>() {
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun doWork(params: Params): Long = withContext(dispatchers.databaseRead) {
         val activeWorkout = workoutEntityDao.activeWorkout().firstOrNull()
         if (activeWorkout != null) {
             return@withContext activeWorkout.workout.id
         }
 
-        val startDuration = Clock.System.now().toEpochMilliseconds().milliseconds
+        val startTime = Clock.System.now()
 
         if (params.workoutPlanId == null) {
             return@withContext withContext(dispatchers.databaseWrite) {
                 workoutEntityDao.insert(
                     WorkoutLog.empty(
                         name = "Quick Workout",
-                        startTime = startDuration,
+                        startTime = startTime,
                     ),
                 )
             }
@@ -58,7 +55,7 @@ class CreateWorkoutUseCase(
                     id = 0,
                     workoutPlanId = workoutPlanSession.workoutPlan.id,
                     name = workoutPlanSession.workoutPlan.name,
-                    startTime = startDuration,
+                    startTime = startTime,
                     finishTime = null,
                     note = "",
                 )
@@ -86,7 +83,7 @@ class CreateWorkoutUseCase(
                     val setLogs = exercisePlanSession.setPlans.map { setPlan ->
                         SetLog(
                             id = 0,
-                            exerciseId = exercisePlanSession.exercise.id,
+                            exerciseId = exerciseLogId,
                             weight = setPlan.weight,
                             reps = setPlan.reps,
                             setTypeId = 2,

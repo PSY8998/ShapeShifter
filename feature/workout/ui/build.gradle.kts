@@ -16,6 +16,8 @@ kotlin {
             implementation(projects.data.models)
             implementation(projects.feature.workout.domain)
 
+            implementation(libs.kotlinx.dateTime)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

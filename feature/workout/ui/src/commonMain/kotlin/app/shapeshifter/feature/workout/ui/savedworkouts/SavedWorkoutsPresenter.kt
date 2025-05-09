@@ -66,7 +66,7 @@ class SavedWorkoutsPresenter(
                 is SavedWorkoutsUiEvent.OpenQuickWorkout -> {
                     navigator.goTo(
                         TrackWorkoutScreen(
-                            workoutPlanId = -1,
+                            workoutPlanId = null,
                             workoutLogId = 0,
                         ),
                     )

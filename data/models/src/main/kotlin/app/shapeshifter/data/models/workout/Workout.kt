@@ -1,6 +1,6 @@
 package app.shapeshifter.data.models.workout
 
-import kotlin.time.Duration
+import kotlinx.datetime.Instant
 
 interface Workout {
     val id: Long
@@ -13,11 +13,14 @@ data class WorkoutLog(
     override val name: String,
     override val note: String?,
     val workoutPlanId: Long?,
-    val startTime: Duration,
-    val finishTime: Duration?,
+    val startTime: Instant,
+    val finishTime: Instant?,
 ) : Workout {
     companion object {
-        fun empty(name: String, startTime: Duration) = WorkoutLog(
+        fun empty(
+            name: String,
+            startTime: Instant,
+        ) = WorkoutLog(
             id = 0,
             name = "",
             note = null,

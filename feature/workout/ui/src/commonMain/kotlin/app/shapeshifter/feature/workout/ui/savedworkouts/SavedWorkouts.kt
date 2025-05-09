@@ -552,7 +552,7 @@ private fun WorkoutTopBar(
                             .padding(top = Dimens.Padding.ExtraSmall),
                     ) {
                         Text(
-                            "${workoutSession.routine.name} ${workoutSession.plan?.name}",
+                            "${workoutSession.routine.name} ${workoutSession.workout.name}",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.Gray,

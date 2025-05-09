@@ -12,7 +12,7 @@ import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.datetime.Clock
 
 @Inject
 class GetWorkoutSessionUseCase(
@@ -21,11 +21,11 @@ class GetWorkoutSessionUseCase(
 ) : UseCase<GetWorkoutSessionUseCase.Params, WorkoutSession>() {
 
     override suspend fun doWork(params: Params): WorkoutSession {
-        return if (params.workoutPlanId == -1L) {
+        return if (params.workoutPlanId == null) {
             WorkoutSession(
                 workoutLog = WorkoutLog.empty(
                     name = "Quick Workout",
-                    startTime = System.currentTimeMillis().milliseconds
+                    startTime = Clock.System.now(),
                 ),
                 exerciseSessions = emptyList(),
             )
@@ -66,7 +66,7 @@ class GetWorkoutSessionUseCase(
                             previousWeight = Weight.ZERO,
                             previousReps = Reps.ZERO,
                         )
-                    }
+                    },
                 )
             }
         return WorkoutSession(
@@ -75,15 +75,15 @@ class GetWorkoutSessionUseCase(
                 workoutPlanId = workoutPlanSession.workoutPlan.id,
                 name = workoutPlanSession.workoutPlan.name,
                 note = "",
-                startTime = System.currentTimeMillis().milliseconds,
+                startTime = Clock.System.now(),
                 finishTime = null,
             ),
-            exerciseSessions = exerciseSessions
+            exerciseSessions = exerciseSessions,
         )
     }
 
 
     data class Params(
-        val workoutPlanId: Long,
+        val workoutPlanId: Long?,
     )
 }

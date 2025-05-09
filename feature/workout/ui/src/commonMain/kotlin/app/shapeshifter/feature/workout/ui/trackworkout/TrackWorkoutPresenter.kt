@@ -32,8 +32,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 
 @Inject
 class TrackWorkoutPresenterFactory(
@@ -207,7 +207,9 @@ class TrackWorkoutPresenter(
                             params = FinishWorkoutUseCase.Params(
                                 workoutSession = event.workoutSession.copy(
                                     workoutLog = event.workoutSession.workoutLog.copy(
-                                        startTime = event.selectedDate.milliseconds,
+                                        startTime = event.selectedDate.let {
+                                            Instant.fromEpochMilliseconds(it)
+                                        },
                                     ),
                                 ),
                             ),
