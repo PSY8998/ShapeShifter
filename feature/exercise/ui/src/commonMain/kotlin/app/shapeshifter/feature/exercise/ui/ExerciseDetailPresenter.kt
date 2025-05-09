@@ -2,7 +2,7 @@ package app.shapeshifter.feature.exercise.ui
 
 import androidx.compose.runtime.Composable
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.models.Muscles
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.Navigator
@@ -38,10 +38,11 @@ class ExerciseDetailPresenter(
             when (event) {
                 is ExerciseDetailUiEvent.GoBack -> navigator.pop()
                 is ExerciseDetailUiEvent.CreateExercise -> {
-                    val exercise = Exercise(
+                    val exercise = ExerciseTemplate(
+                        id = 0,
                         name = event.exerciseName,
                         primaryMuscle = Muscles.OTHER,
-                        secondaryMuscle = emptyList(),
+                        secondaryMuscles = emptyList(),
                         imageUrl = "",
                     )
                     // exerciseRepository.insert(exercise)

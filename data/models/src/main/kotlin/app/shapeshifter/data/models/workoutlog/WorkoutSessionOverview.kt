@@ -1,8 +1,10 @@
 package app.shapeshifter.data.models.workoutlog
 
+import app.shapeshifter.data.models.workout.WorkoutLog
+
 data class WorkoutSessionOverview(
     val routine: RoutineOverview,
-    val plan: WorkoutPlanOverview,
+    val plan: WorkoutPlanOverview?,
     val workout: WorkoutLog,
 ) {
     data class RoutineOverview(

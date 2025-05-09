@@ -1,7 +1,7 @@
 import app.shapeshifter.data.models.Muscles;
 import kotlin.collections.List;
 
-CREATE TABLE IF NOT EXISTS `exercise`(
+CREATE TABLE IF NOT EXISTS `exercise_template`(
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `name` TEXT NOT NULL,
     `primary_muscle` TEXT AS Muscles NOT NULL,
@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS `exercise`(
 
 selectAll:
 SELECT *
-FROM exercise;
+FROM exercise_template;
 
 insert:
-INSERT INTO exercise (`id`, `name`, `primary_muscle`, `secondary_muscles`, `image_url`)
+INSERT INTO exercise_template (`id`, `name`, `primary_muscle`, `secondary_muscles`, `image_url`)
 VALUES (
 nullif(:id, 0),
 :name,
@@ -25,7 +25,7 @@ nullif(:id, 0),
 
 select:
 SELECT *
-FROM exercise
+FROM exercise_template
 WHERE id IN :ids;
 
 lastInsertRowId:

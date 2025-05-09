@@ -163,7 +163,7 @@ fun WorkoutCard(
                     )
 
                     Text(
-                        text = workoutSession.workoutLog.formatMillisToDate(),
+                        text = workoutSession.formatStartTime(),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.LightGray,
                     )
@@ -225,15 +225,15 @@ fun WorkoutMetrics(
                 .padding(Dimens.Padding.Medium)
                 .weight(1f),
         ) {
-                Icon(
-                    imageVector = Clock,
-                    contentDescription = "Duration",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(24.dp),
-                )
+            Icon(
+                imageVector = Clock,
+                contentDescription = "Duration",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .size(24.dp),
+            )
             Text(
-                text = "${(metrics.duration / (1000 * 60)) % 60} min",
+                text = "${(metrics.duration.inWholeMilliseconds / (1000 * 60)) % 60} min",
             )
         }
 

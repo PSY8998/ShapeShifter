@@ -2,35 +2,36 @@ CREATE TABLE IF NOT EXISTS workout_plan (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     `routine_id` INTEGER NOT NULL,
     `name` TEXT NOT NULL,
+    `note` TEXT,
     FOREIGN KEY (`routine_id`) REFERENCES `routine`(`id`)
 );
 
 CREATE INDEX IF NOT EXISTS index_workout_plan_routine_id ON workout_plan(routine_id);
 
 insert:
-INSERT INTO workout_plan (`id`, `routine_id`, `name`)
+INSERT INTO workout_plan (
+`id`,
+`routine_id`,
+`name`,
+`note`
+)
 VALUES (
 nullif(:id, 0),
 :routineId,
-:name
+:name,
+:note
 );
 
 update:
 UPDATE workout_plan SET
     routine_id = :routineId,
-    name = :name
+    name = :name,
+    note = :note
 WHERE id = :id;
 
-selectAll:
-SELECT * FROM workout_plan;
-
-select:
-SELECT * FROM workout_plan
-    WHERE id = :id;
-
 delete:
-DELETE FROM workout_plan WHERE
-id = :id;
+DELETE FROM workout_plan
+WHERE id = :id;
 
 lastInsertRowId:
 SELECT last_insert_rowid();

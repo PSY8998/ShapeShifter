@@ -80,11 +80,12 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
-import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.SetType
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetLog
+import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
@@ -135,8 +136,8 @@ private fun TrackWorkout(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
-            val startTime by remember(state.asFilled()?.workoutSession?.workoutLog?.startTimeInMillis) {
-                val time = state.asFilled()?.workoutSession?.workoutLog?.startTimeInMillis
+            val startTime by remember(state.asFilled()?.workoutSession?.workoutLog?.startTime) {
+                val time = state.asFilled()?.workoutSession?.workoutLog?.startTime?.inWholeMicroseconds
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -420,24 +421,24 @@ private fun LazyListScope.exerciseLog(
             content = {
                 SetLog(
                     index = index,
-                    weight = set.weight.value,
+                    weight = set.weight.value.toInt(),
                     reps = set.reps.value,
-                    isChecked = set.finishTime > 0,
+                    isChecked = set.isCompleted,
                     onCheckChanged = { isChecked, weight, reps ->
                         onCompleteSet(
                             set.copy(
-                                weight = PositiveInt(weight),
-                                reps = PositiveInt(reps),
-                                finishTime = if (isChecked) System.currentTimeMillis() else 0,
+                                weight = Weight(weight.toFloat()),
+                                reps = Reps(reps),
+                                isCompleted = isChecked,
                             ),
                         )
                     },
-                    prevReps = set.prevReps.value,
-                    prevWeight = set.prevWeight.value,
+                    prevReps = Reps.ZERO.value,
+                    prevWeight = Weight.ZERO.value.toInt(),
                     isBeingTracked = true,
-                    setType = SetType.fromId(set.setTypeId),
+                    setType = SetType.fromId(set.setTypeId.toLong()),
                     onSetTypeChange = { newType ->
-                        onUpdateSet(set.copy(setTypeId = newType.id))
+                        onUpdateSet(set.copy(setTypeId = newType.id.toInt()))
                     },
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background),

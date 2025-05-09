@@ -13,6 +13,6 @@ import com.slack.circuit.runtime.screen.Screen
  */
 @Parcelize
 data class TrackWorkoutScreen(
-    val workoutPlanId: Long,
+    val workoutPlanId: Long?,
     val workoutLogId: Long,
 ) : Screen

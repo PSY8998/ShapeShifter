@@ -6,21 +6,30 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.Exercise
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.ExerciseTemplate
+import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetLog
+import app.shapeshifter.data.models.workout.Weight
+import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import me.tatarka.inject.annotations.Inject
-import kotlin.math.max
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
-interface WorkoutEntityDao : EntityDao<WorkoutLog> {
+interface WorkoutEntityDao {
+    fun insert(entity: WorkoutLog): Long
+
+    fun upsert(entity: WorkoutLog): Long
+
+    fun update(entity: WorkoutLog)
+
+    fun deleteEntity(entity: WorkoutLog)
+
     fun observeWorkoutWithExercisesAndSets(
         workoutLogId: Long,
     ): Flow<WorkoutSession>
@@ -33,21 +42,30 @@ interface WorkoutEntityDao : EntityDao<WorkoutLog> {
 
 @Inject
 class SqlDelightWorkoutEntityDao(
-    override val db: ShapeShifterDatabase,
+    val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
-) : SqlDelightEntityDao<WorkoutLog>, WorkoutEntityDao {
+) : WorkoutEntityDao {
     override fun insert(entity: WorkoutLog): Long {
         return transactionRunner {
             db.workout_logQueries.insert(
                 id = entity.id,
                 workoutPlanId = entity.workoutPlanId,
                 name = entity.name,
-                startTime = entity.startTimeInMillis,
-                finishTime = entity.finishTimeInMillis,
-                restFinishAt = entity.restFinishTimeInMillis,
+                startTime = entity.startTime.inWholeMilliseconds,
+                finishTime = entity.finishTime?.inWholeMilliseconds,
+                restFinishAt = 0,
             )
             db.workout_logQueries.lastInsertRowId().executeAsOne()
+        }
+    }
+
+    override fun upsert(entity: WorkoutLog): Long {
+        return if (entity.id != 0L) {
+            update(entity)
+            entity.id
+        } else {
+            insert(entity)
         }
     }
 
@@ -55,10 +73,10 @@ class SqlDelightWorkoutEntityDao(
         db.workout_logQueries.update(
             workoutPlanId = entity.workoutPlanId,
             name = entity.name,
-            startTime = entity.startTimeInMillis,
-            finishTime = entity.finishTimeInMillis,
+            startTime = entity.startTime.inWholeMilliseconds,
+            finishTime = entity.finishTime?.inWholeMilliseconds,
             id = entity.id,
-            restFinishAt = entity.restFinishTimeInMillis,
+            restFinishAt = 0,
         )
     }
 
@@ -69,9 +87,6 @@ class SqlDelightWorkoutEntityDao(
     override fun observeWorkoutWithExercisesAndSets(
         workoutLogId: Long,
     ): Flow<WorkoutSession> {
-        // Cache for previousWorkout results
-        val previousWorkoutCache = mutableMapOf<Triple<Long, Long, Long>, SetLog?>()
-
         return db.workout_sessionQueries
             .selectWorkoutSession(workoutLogId = workoutLogId)
             .asFlow()
@@ -85,10 +100,9 @@ class SqlDelightWorkoutEntityDao(
                     id = firstItem.workout_log_id,
                     workoutPlanId = firstItem.workout_plan_id,
                     name = firstItem.workout_log_name,
-                    startTimeInMillis = firstItem.workout_start_time,
-                    finishTimeInMillis = firstItem.workout_finish_time,
+                    startTime = firstItem.workout_start_time.milliseconds,
+                    finishTime = firstItem.workout_finish_time?.milliseconds,
                     note = "",
-                    restFinishTimeInMillis = firstItem.workout_rest_finish_at,
                 )
 
                 // Group items by exercise_id and map them to SetLogs
@@ -109,55 +123,34 @@ class SqlDelightWorkoutEntityDao(
                                 return@entries null
                             }
 
-                            val cacheKey = Triple(
-                                item.workout_plan_id,
-                                item.exercise_id,
-                                item.set_index ?: 0,
-                            )
-
-                            // Retrieve previous set from cache or compute if not cached
-                            val previousSet = previousWorkoutCache.getOrPut(cacheKey) {
-                                previousWorkout(
-                                    workoutPlanId = item.workout_plan_id,
-                                    exerciseId = item.exercise_id,
-                                    setTypeIndex = item.set_index ?: 0,
-                                    currentExerciseLogId = item.exercise_log_id,
-                                )
-                            }
-
                             SetLog(
                                 id = item.set_log_id,
-                                setIndex = PositiveInt(item.set_index?.toInt() ?: 0),
-                                weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
-                                reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
-                                prevReps = previousSet?.reps ?: PositiveInt(0),
-                                prevWeight = previousSet?.weight ?: PositiveInt(0),
-                                completed = false,
-                                exerciseLogId = item.exercise_log_id,
-                                finishTime = item.set_finish_time ?: 0,
-                                exercisePlanId = item.exercise_plan_id,
-                                exerciseId = item.exercise_id,
-                                workoutPlanId = item.workout_plan_id,
-                                workoutLogId = item.workout_log_id,
-                                setTypeId = item.set_type_id ?: 2,
+                                index = item.set_index?.toInt() ?: 0,
+                                weight = item.weight?.let { Weight(it.toFloat()) } ?: Weight.ZERO,
+                                reps = item.reps?.let { Reps(it.toInt()) } ?: Reps.ZERO,
+                                previousWeight = Weight.ZERO,
+                                previousReps = Reps.ZERO,
+                                isCompleted = if ((item.set_completed ?: 0) == 1L) true else false,
+                                exerciseId = item.exercise_log_id,
+                                setTypeId = item.set_type_id?.toInt() ?: 2,
+                                setPlanId = null,
                             )
                         }
 
                         ExerciseSession(
                             exerciseLog = ExerciseLog(
                                 id = entry.exercise_log_id!!,
-                                index = entry.exercise_log_index!!,
-                                exerciseId = entry.exercise_id!!,
+                                index = entry.exercise_log_index!!.toInt(),
+                                exerciseTemplateId = entry.exercise_id!!,
                                 exercisePlanId = entry.exercise_plan_id,
                                 note = "",
-                                workoutLogId = workoutLog.id,
-                                workoutPlanId = workoutLog.workoutPlanId,
-                                restTimeDuration = entry.exercise_rest_time_duration!!,
+                                workoutId = workoutLog.id,
+                                restDuration = entry.exercise_rest_time_duration!!.milliseconds,
                             ),
-                            exercise = Exercise(
+                            exercise = ExerciseTemplate(
                                 id = entry.exercise_id,
                                 primaryMuscle = entry.exercise_primary_muscle!!,
-                                secondaryMuscle = entry.exercise_secondary_muscles.orEmpty(),
+                                secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
                                 name = entry.exercise_name.orEmpty(),
                                 imageUrl = "",
                             ),
@@ -171,7 +164,6 @@ class SqlDelightWorkoutEntityDao(
     }
 
     override fun observeWorkoutSessions(): Flow<List<WorkoutSession>> {
-        val previousWorkoutCache = mutableMapOf<Triple<Long, Long, Long>, SetLog?>()
 
         return db.workout_sessionQueries
             .workoutSessions()
@@ -189,10 +181,9 @@ class SqlDelightWorkoutEntityDao(
                             id = firstItem.workout_log_id,
                             workoutPlanId = firstItem.workout_plan_id,
                             name = firstItem.workout_log_name,
-                            startTimeInMillis = firstItem.workout_start_time,
-                            finishTimeInMillis = firstItem.workout_finish_time,
+                            startTime = firstItem.workout_start_time.milliseconds,
+                            finishTime = firstItem.workout_finish_time?.milliseconds,
                             note = "",
-                            restFinishTimeInMillis = firstItem.workout_rest_finish_at,
                         )
 
                         val exerciseSessions = entries
@@ -212,57 +203,37 @@ class SqlDelightWorkoutEntityDao(
                                         return@entries null
                                     }
 
-                                    val cacheKey = Triple(
-                                        item.workout_plan_id,
-                                        item.exercise_id,
-                                        item.set_index ?: 0,
-                                    )
-
-                                    // Retrieve previous set from cache or compute if not cached
-                                    val previousSet = previousWorkoutCache.getOrPut(cacheKey) {
-                                        previousWorkout(
-                                            workoutPlanId = item.workout_plan_id,
-                                            exerciseId = item.exercise_id,
-                                            setTypeIndex = item.set_index ?: 0,
-                                            currentExerciseLogId = item.exercise_log_id,
-                                        )
-                                    }
-
                                     SetLog(
                                         id = item.set_log_id,
-                                        setIndex = PositiveInt(
-                                            item.set_index?.toInt() ?: 0,
-                                        ),
-                                        weight = PositiveInt(max(item.weight?.toInt() ?: 0, 0)),
-                                        reps = PositiveInt(max(item.reps?.toInt() ?: 0, 0)),
-                                        prevReps = previousSet?.reps ?: PositiveInt(0),
-                                        prevWeight = previousSet?.weight ?: PositiveInt(0),
-                                        completed = false,
-                                        exerciseLogId = item.exercise_log_id,
-                                        finishTime = item.set_finish_time ?: 0,
-                                        exercisePlanId = item.exercise_plan_id,
-                                        exerciseId = item.exercise_id,
-                                        workoutPlanId = item.workout_plan_id,
-                                        workoutLogId = item.workout_log_id,
-                                        setTypeId = item.set_type_id ?: 2,
+                                        index = item.set_index?.toInt() ?: 0,
+                                        weight = item.weight?.let { Weight(it.toFloat()) }
+                                            ?: Weight.ZERO,
+                                        reps = item.reps?.let { Reps(it.toInt()) } ?: Reps.ZERO,
+                                        previousWeight = Weight.ZERO,
+                                        previousReps = Reps.ZERO,
+                                        isCompleted = if ((item.set_completed
+                                                ?: 0) == 1L
+                                        ) true else false,
+                                        exerciseId = item.exercise_log_id,
+                                        setTypeId = item.set_type_id?.toInt() ?: 2,
+                                        setPlanId = null,
                                     )
                                 }
 
                                 ExerciseSession(
                                     exerciseLog = ExerciseLog(
                                         id = entry.exercise_log_id!!,
-                                        index = entry.exercise_log_index!!,
-                                        exerciseId = exerciseId!!,
+                                        index = entry.exercise_log_index!!.toInt(),
+                                        exerciseTemplateId = entry.exercise_id!!,
                                         exercisePlanId = entry.exercise_plan_id,
-                                        restTimeDuration = entry.exercise_rest_time_duration!!,
                                         note = "",
-                                        workoutLogId = workoutLog.id,
-                                        workoutPlanId = workoutLog.workoutPlanId,
+                                        workoutId = workoutLog.id,
+                                        restDuration = entry.exercise_rest_time_duration!!.milliseconds,
                                     ),
-                                    exercise = Exercise(
-                                        id = exerciseId,
+                                    exercise = ExerciseTemplate(
+                                        id = entry.exercise_id,
                                         primaryMuscle = entry.exercise_primary_muscle!!,
-                                        secondaryMuscle = entry.exercise_secondary_muscles.orEmpty(),
+                                        secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
                                         name = entry.exercise_name.orEmpty(),
                                         imageUrl = "",
                                     ),
@@ -278,52 +249,6 @@ class SqlDelightWorkoutEntityDao(
                 return@mapNotNull sessions
             }
             .flowOn(dispatchers.io)
-    }
-
-    private fun previousWorkout(
-        workoutPlanId: Long,
-        exerciseId: Long,
-        currentExerciseLogId: Long,
-        setTypeIndex: Long,
-    ): SetLog? {
-        val previousSetForWorkout = db.set_logQueries
-            .previousExerciseSetForWorkout(
-                workoutPlanId = workoutPlanId,
-                exerciseId = exerciseId,
-                setIndex = setTypeIndex,
-                currentExerciseLogId = currentExerciseLogId,
-            ).executeAsOneOrNull()
-            ?: db.set_logQueries
-                .previousExerciseSetForIndex(
-                    exerciseId = exerciseId,
-                    setIndex = setTypeIndex,
-                    currentExerciseLogId = currentExerciseLogId,
-                ).executeAsOneOrNull()
-            ?: db.set_logQueries
-                .previousExerciseSetWithHighestIndex(
-                    exerciseId = exerciseId,
-                    currentExerciseLogId = currentExerciseLogId,
-                )
-                .executeAsOneOrNull()
-            ?: return null
-
-        return SetLog(
-            id = previousSetForWorkout.id,
-            setIndex = PositiveInt(previousSetForWorkout.set_index.toInt()),
-            exerciseLogId = previousSetForWorkout.exercise_log_id,
-            exercisePlanId = previousSetForWorkout.exercise_plan_id,
-            exerciseId = previousSetForWorkout.exercise_id,
-            workoutPlanId = previousSetForWorkout.workout_plan_id,
-            workoutLogId = previousSetForWorkout.workout_log_id,
-            weight = PositiveInt(previousSetForWorkout.weight.toInt()),
-            reps = PositiveInt(previousSetForWorkout.reps.toInt()),
-            prevReps = PositiveInt(0),
-            prevWeight = PositiveInt(0),
-            completed = true,
-            finishTime = 0,
-            setTypeId = previousSetForWorkout.set_type_id,
-        )
-
     }
 
     override fun activeWorkout(): Flow<WorkoutSessionOverview?> {
@@ -343,18 +268,19 @@ class SqlDelightWorkoutEntityDao(
                     id = routineId ?: -1,
                     name = "",
                 ),
-                plan = WorkoutSessionOverview.WorkoutPlanOverview(
-                    id = workoutPlanId,
-                    name = name ?: "Quick Workout",
-                ),
+                plan = workoutPlanId?.let {
+                    WorkoutSessionOverview.WorkoutPlanOverview(
+                        id = workoutPlanId,
+                        name = name ?: "Quick Workout",
+                    )
+                },
                 workout = WorkoutLog(
                     id = id,
                     workoutPlanId = workoutPlanId,
                     name = workoutLogName,
-                    startTimeInMillis = startTime,
-                    finishTimeInMillis = finishTime,
+                    startTime = startTime.milliseconds,
+                    finishTime = finishTime?.milliseconds,
                     note = "",
-                    restFinishTimeInMillis = restFinishAt,
                 ),
             )
         }

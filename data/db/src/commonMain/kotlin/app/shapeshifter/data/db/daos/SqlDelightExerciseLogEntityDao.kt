@@ -3,35 +3,34 @@ package app.shapeshifter.data.db.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
-import app.shapeshifter.data.db.SelectExerciseSession
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.Exercise
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workout.ExerciseLog
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.flow.Flow
 
-interface ExerciseLogEntityDao : EntityDao<ExerciseLog> {
+interface ExerciseLogEntityDao {
+    fun insert(entity: ExerciseLog): Long
+    fun update(entity: ExerciseLog)
     fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>>
-    fun exerciseSession(exerciseLogId: Long): ExerciseSession?
+    fun delete(exerciseLogId: Long)
 }
 
 @Inject
 class SqlDelightExerciseLogEntityDao(
-    override val db: ShapeShifterDatabase,
+    val db: ShapeShifterDatabase,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-) : SqlDelightEntityDao<ExerciseLog>, ExerciseLogEntityDao {
+) : ExerciseLogEntityDao {
+
     override fun insert(entity: ExerciseLog): Long {
         db.exercise_logQueries.insert(
             id = entity.id,
-            exerciseIndex = entity.index,
-            workoutLogId = entity.workoutLogId,
-            workoutPlanId = entity.workoutPlanId,
-            exerciseId = entity.exerciseId,
+            exerciseIndex = entity.index.toLong(),
+            workoutLogId = entity.workoutId,
+            exerciseTemplateId = entity.exerciseTemplateId,
             exercisePlanId = entity.exercisePlanId,
-            restTimeDuration = entity.restTimeDuration,
+            restTimeDuration = entity.restDuration?.inWholeMilliseconds ?: 0,
         )
 
         return db.exercise_logQueries.lastInsertRowId().executeAsOne()
@@ -39,14 +38,14 @@ class SqlDelightExerciseLogEntityDao(
 
     override fun update(entity: ExerciseLog) {
         db.exercise_logQueries.update(
-            restTimeDuration = entity.restTimeDuration,
+            restTimeDuration = entity.restDuration?.inWholeMilliseconds ?: 0,
             id = entity.id,
-            exerciseIndex = entity.index,
+            exerciseIndex = entity.index.toLong(),
         )
     }
 
-    override fun deleteEntity(entity: ExerciseLog) {
-        db.exercise_logQueries.delete(entity.id)
+    override fun delete(exerciseLogId: Long) {
+        db.exercise_logQueries.delete(exerciseLogId)
     }
 
     override fun observeWorkoutExercises(workoutId: Long): Flow<List<ExerciseLog>> {
@@ -54,76 +53,19 @@ class SqlDelightExerciseLogEntityDao(
             .exercise_logQueries
             .selectAll(
                 workout_id = workoutId,
-                mapper = { id, index, exerciseId, workoutLogId, workoutPlanId, exercisePlanId, restTimeDuration->
+                mapper = { id, index, exerciseTemplateId, workoutLogId, exercisePlanId, restTimeDuration ->
                     ExerciseLog(
                         id = id,
-                        index = index,
-                        exerciseId = exerciseId,
-                        workoutPlanId = workoutPlanId,
-                        workoutLogId = workoutLogId,
+                        index = index.toInt(),
+                        exerciseTemplateId = exerciseTemplateId,
+                        workoutId = workoutLogId,
                         exercisePlanId = exercisePlanId,
                         note = "",
-                        restTimeDuration = restTimeDuration,
+                        restDuration = restTimeDuration.toDuration(DurationUnit.MILLISECONDS),
                     )
                 },
             )
             .asFlow()
             .mapToList(appCoroutineDispatchers.io)
     }
-
-    override fun exerciseSession(exerciseLogId: Long): ExerciseSession? {
-        val sessions: List<SelectExerciseSession> = db
-            .exercise_sessionQueries.selectExerciseSession(
-                exerciseLogId = exerciseLogId,
-            ).executeAsList()
-
-        if (sessions.isEmpty()) return null
-
-        val firstSession = sessions.first()
-
-        val exerciseLog = ExerciseLog(
-            id = firstSession.exercise_log_id,
-            index = firstSession.exercise_index,
-            workoutLogId = firstSession.workout_log_id,
-            workoutPlanId = firstSession.workout_plan_id,
-            exerciseId = firstSession.exercise_id,
-            exercisePlanId = firstSession.exercise_plan_id,
-            note = "",
-            restTimeDuration = firstSession.exercise_rest_time_duration,
-        )
-
-        val exercise = Exercise(
-            id = firstSession.exercise_id,
-            name = firstSession.exercise_name,
-            primaryMuscle = firstSession.exercise_primary_muscle,
-            secondaryMuscle = firstSession.exercise_secondary_muscles,
-            imageUrl = firstSession.exercise_image_url,
-        )
-
-        val setLogs = sessions.map { session ->
-            SetLog(
-                id = session.set_log_id,
-                setIndex = PositiveInt(0),
-                prevReps = PositiveInt(session.set_prev_reps?.toInt() ?: 0),
-                prevWeight = PositiveInt(session.set_prev_weight?.toInt() ?: 0),
-                reps = PositiveInt(session.set_log_reps.toInt()),
-                weight = PositiveInt(session.set_log_weight.toInt()),
-                completed = true,
-                finishTime = session.set_finish_time,
-                exerciseLogId = session.exercise_log_id,
-                workoutLogId = session.workout_log_id,
-                workoutPlanId = session.workout_plan_id,
-                exerciseId = session.exercise_id,
-                exercisePlanId = exerciseLog.id,
-                setTypeId = session.set_type_id,
-            )
-        }
-
-        return ExerciseSession(
-            exerciseLog = exerciseLog,
-            exercise = exercise,
-            sets = setLogs,
-        )
-    }
-
 }

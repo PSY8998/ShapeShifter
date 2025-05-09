@@ -15,7 +15,7 @@ SELECT
     elog.exercise_plan_id AS exercise_plan_id,
     elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,
-    slog.finish_time AS set_finish_time,
+    slog.is_completed AS set_completed,
     slog.weight,
     slog.reps,
     slog.set_index,
@@ -25,7 +25,7 @@ FROM
 LEFT JOIN
     exercise_log elog ON wlog.id = elog.workout_log_id
 LEFT JOIN
-    exercise e ON elog.exercise_id = e.id
+    exercise_template e ON elog.exercise_template_id = e.id
 LEFT JOIN
     set_log slog ON elog.id = slog.exercise_log_id
 WHERE
@@ -50,7 +50,7 @@ SELECT
     elog.exercise_plan_id AS exercise_plan_id,
     elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,
-    slog.finish_time AS set_finish_time,
+    slog.is_completed AS set_completed,
     slog.weight,
     slog.reps,
     slog.set_index,
@@ -60,6 +60,6 @@ FROM
 LEFT JOIN
     exercise_log elog ON wlog.id = elog.workout_log_id
 LEFT JOIN
-    exercise e ON elog.exercise_id = e.id
+    exercise_template e ON elog.exercise_template_id = e.id
 LEFT JOIN
     set_log slog ON elog.id = slog.exercise_log_id;

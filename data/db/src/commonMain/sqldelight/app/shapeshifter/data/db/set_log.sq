@@ -1,52 +1,37 @@
 CREATE TABLE IF NOT EXISTS set_log (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `workout_plan_id` INTEGER NOT NULL,
-    `workout_log_id` INTEGER NOT NULL,
-    `exercise_plan_id` INTEGER,
     `exercise_log_id` INTEGER NOT NULL,
-    `exercise_id` INTEGER NOT NULL,
     `set_type_id` INTEGER NOT NULL DEFAULT 2,
     `set_index` INTEGER NOT NULL,
     `weight` INTEGER NOT NULL,
     `reps` INTEGER NOT NULL,
-    `finish_time` INTEGER NOT NULL,
+    `is_completed` INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (`exercise_log_id`) REFERENCES `exercise_log`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`set_type_id`) REFERENCES `set_type`(`id`) ON UPDATE CASCADE
 );
 
 -- indices
-CREATE INDEX IF NOT EXISTS `index_set_workout_log_id` ON `set_log` (`workout_log_id`);
-CREATE INDEX IF NOT EXISTS `index_set_workout_plan_id` ON `set_log` (`workout_plan_id`);
-CREATE INDEX IF NOT EXISTS `index_set_exercise_plan_id` ON `set_log` (`exercise_plan_id`);
 CREATE INDEX IF NOT EXISTS `index_set_exercise_log_id` ON `set_log` (`exercise_log_id`);
 CREATE INDEX IF NOT EXISTS `index_set_set_type_id` ON `set_log` (`set_type_id`);
 
 insert:
 INSERT INTO set_log(
     id,
-    workout_plan_id,
-    workout_log_id,
-    exercise_plan_id,
     exercise_log_id,
-    exercise_id,
     set_type_id,
     set_index,
     weight,
     reps,
-    finish_time
+    is_completed
 )
 VALUES (
     nullIf(:id, 0),
-    :workoutPlanId,
-    :workoutLogId,
-    :exercisePlanId,
     :exerciseLogId,
-    :exerciseId,
     :setTypeId,
     :setIndex,
     :weight,
     :reps,
-    :finishTime
+    :isCompleted
 );
 
 update:
@@ -55,7 +40,7 @@ UPDATE set_log SET
     set_type_id = :setTypeId,
     weight = :weight,
     reps = :reps,
-    finish_time = :finishTime
+    is_completed = :isCompleted
 WHERE id = :id;
 
 
@@ -64,39 +49,103 @@ DELETE FROM set_log
     WHERE id = :id
 ;
 
-previousExerciseSetForWorkout:
-SELECT *
-FROM set_log
-WHERE workout_plan_id = :workoutPlanId
-AND exercise_id = :exerciseId
-AND set_index = :setIndex
-AND exercise_log_id < :currentExerciseLogId
-ORDER BY id DESC
-LIMIT 1;
-
-previousExerciseSetForIndex:
-SELECT *
-FROM set_log
-WHERE exercise_id = :exerciseId
-AND set_index = :setIndex
-AND exercise_log_id < :currentExerciseLogId
-ORDER BY id DESC
-LIMIT 1;
-
-previousExerciseSetWithHighestIndex:
-SELECT *
-FROM set_log
-WHERE exercise_id = :exerciseId
-AND exercise_log_id < :currentExerciseLogId
-ORDER BY set_index DESC, id DESC
-LIMIT 1;
-
 exerciseLastSet:
 SELECT *
 FROM set_log
 WHERE exercise_log_id = :exerciseLogId
 ORDER BY id DESC
 LIMIT 1;
+
+setFromWorkoutPlan:
+SELECT
+  COALESCE(
+    (SELECT sl.weight
+     FROM set_log AS sl
+     JOIN exercise_log AS el ON sl.exercise_log_id = el.id
+     WHERE el.workout_log_id        = :lastWorkoutLogId
+       AND el.exercise_template_id  = :exerciseTemplateId
+       AND sl.set_index             = :setIndex
+     ORDER BY el.id DESC, sl.id DESC
+     LIMIT 1),
+    (SELECT weight
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+     ORDER BY id DESC
+     LIMIT 1)
+  ) AS weight,
+  COALESCE(
+    (SELECT sl.reps
+     FROM set_log AS sl
+     JOIN exercise_log AS el ON sl.exercise_log_id = el.id
+     WHERE el.workout_log_id        = :lastWorkoutLogId
+       AND el.exercise_template_id  = :exerciseTemplateId
+       AND sl.set_index             = :setIndex
+     ORDER BY el.id DESC, sl.id DESC
+     LIMIT 1),
+    (SELECT reps
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+     ORDER BY id DESC
+     LIMIT 1)
+  ) AS reps;
+
+
+setsFromLatestExerciseLog:
+SELECT
+  idx.set_index    AS setIndex,
+  COALESCE(
+    -- 1) last weight for this index from previous logs of same template
+    (SELECT sl.weight
+     FROM set_log sl
+     JOIN exercise_log el ON sl.exercise_log_id = el.id
+     WHERE el.exercise_template_id = :exerciseTemplateId
+       AND sl.set_index = idx.set_index
+     ORDER BY el.id DESC, sl.id DESC
+     LIMIT 1),
+    -- 2) weight for this index in current log (if already entered)
+    (SELECT weight
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+       AND set_index = idx.set_index
+     LIMIT 1),
+    -- 3) last weight of any set in current log
+    (SELECT weight
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+     ORDER BY id DESC
+     LIMIT 1)
+  ) AS weight,
+  COALESCE(
+    (SELECT sl.reps
+     FROM set_log sl
+     JOIN exercise_log el ON sl.exercise_log_id = el.id
+     WHERE el.exercise_template_id = :exerciseTemplateId
+       AND sl.set_index = idx.set_index
+     ORDER BY el.id DESC, sl.id DESC
+     LIMIT 1),
+    (SELECT reps
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+       AND set_index = idx.set_index
+     LIMIT 1),
+    (SELECT reps
+     FROM set_log
+     WHERE exercise_log_id = :currentExerciseLogId
+     ORDER BY id DESC
+     LIMIT 1)
+  ) AS reps
+FROM (
+  -- all set indexes seen in current log or past logs
+  SELECT DISTINCT set_index
+  FROM set_log
+  WHERE exercise_log_id = :currentExerciseLogId
+  UNION
+  SELECT DISTINCT sl.set_index
+  FROM set_log sl
+  JOIN exercise_log el ON sl.exercise_log_id = el.id
+  WHERE el.exercise_template_id = :exerciseTemplateId
+) AS idx
+ORDER BY setIndex;
 
 lastInsertRowId:
 SELECT last_insert_rowid();

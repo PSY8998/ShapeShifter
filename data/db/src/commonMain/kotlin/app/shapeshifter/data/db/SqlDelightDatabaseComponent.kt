@@ -5,15 +5,15 @@ import app.shapeshifter.core.base.inject.ApplicationScope
 import app.shapeshifter.data.db.columnadapters.MuscleColumnAdapter
 import app.shapeshifter.data.db.columnadapters.MusclesColumnAdapter
 import app.shapeshifter.data.db.daos.ExerciseEntityDao
-import app.shapeshifter.data.db.daos.RoutineEntityDao
-import app.shapeshifter.data.db.daos.SqlDelightExerciseEntityDao
-import app.shapeshifter.data.db.daos.SqlDelightRoutineEntityDao
-import app.shapeshifter.data.db.daos.SqlDelightWorkoutEntityDao
-import app.shapeshifter.data.db.daos.SqlDelightExerciseLogEntityDao
-import app.shapeshifter.data.db.daos.WorkoutEntityDao
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
+import app.shapeshifter.data.db.daos.RoutineEntityDao
 import app.shapeshifter.data.db.daos.SetLogEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightExerciseEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightExerciseLogEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightRoutineEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightSetLogEntityDao
+import app.shapeshifter.data.db.daos.SqlDelightWorkoutEntityDao
+import app.shapeshifter.data.db.daos.WorkoutEntityDao
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 
@@ -25,7 +25,7 @@ class DatabaseFactory(
 ) {
     fun build() = ShapeShifterDatabase(
         driver = driver,
-        exerciseAdapter = Exercise.Adapter(
+        exercise_templateAdapter =  Exercise_template.Adapter(
             primary_muscleAdapter = MuscleColumnAdapter,
             secondary_musclesAdapter = MusclesColumnAdapter,
         ),

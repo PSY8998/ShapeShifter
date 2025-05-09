@@ -74,7 +74,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import coil3.compose.AsyncImage
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -88,7 +88,6 @@ import shapeshifter.feature.exercise.ui.generated.resources.Res
 import shapeshifter.feature.exercise.ui.generated.resources.barbell_overhead
 import shapeshifter.feature.exercise.ui.generated.resources.exercise_deadlift
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
 
 @Inject
 class ExercisesUiFactory : Ui.Factory {
@@ -246,7 +245,7 @@ private fun ExerciseScrollContent(
     selectedExerciseIds: List<Long>,
     onSelectExercise: (exerciseId: Long) -> Unit,
     onUnSelectExercise: (exerciseId: Long) -> Unit,
-    exercises: List<Exercise>,
+    exercises: List<ExerciseTemplate>,
     canSelect: Boolean,
 ) {
     LazyColumn(
@@ -349,7 +348,7 @@ private fun ExerciseScrollContent(
 
 @Composable
 private fun ExerciseCard(
-    exercise: Exercise,
+    exercise: ExerciseTemplate,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -400,7 +399,7 @@ private fun ExerciseCard(
 
                     Text(
                         modifier = Modifier,
-                        text = exercise.secondaryMuscle.joinToString("/ ") {
+                        text = exercise.secondaryMuscles.joinToString("/ ") {
                             it.displayName
                         },
                         color = Color.Gray,

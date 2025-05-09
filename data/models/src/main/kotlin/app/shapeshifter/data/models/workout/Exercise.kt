@@ -18,7 +18,7 @@ data class ExerciseLog(
     override val note: String?,
     override val restDuration: Duration?,
     override val index: Int,
-    val exercisePlanId: Long,
+    val exercisePlanId: Long?,
 ) : Exercise
 
 data class ExercisePlan(

@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.UpdateExerciseLogIndexUseCase

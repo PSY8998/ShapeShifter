@@ -40,9 +40,8 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
-import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
+import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import app.shapeshifter.feature.workout.ui.components.MenuItem
 import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
@@ -553,7 +552,7 @@ private fun WorkoutTopBar(
                             .padding(top = Dimens.Padding.ExtraSmall),
                     ) {
                         Text(
-                            "${workoutSession.routine.name} ${workoutSession.plan.name}",
+                            "${workoutSession.routine.name} ${workoutSession.plan?.name}",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.Gray,

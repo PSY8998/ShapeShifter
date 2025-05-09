@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import app.shapeshifter.common.ui.compose.screens.ExerciseDetailScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.feature.exercise.domain.FetchExercisesUseCase
 import app.shapeshifter.feature.exercise.domain.ObserveExercisesUseCase
 import com.slack.circuit.retained.collectAsRetainedState
@@ -83,7 +83,7 @@ class ExercisesPresenter(
             }
         }
 
-        val exercises: List<Exercise> by observeExercisesUseCase.flow
+        val exercises: List<ExerciseTemplate> by observeExercisesUseCase.flow
             .collectAsRetainedState(initial = emptyList())
 
         return if (exercises.isEmpty()) {

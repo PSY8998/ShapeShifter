@@ -1,12 +1,13 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
-import app.shapeshifter.data.models.Exercise
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.plans.ExercisePlan
+import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.models.plans.ExercisePlanSession
-import app.shapeshifter.data.models.plans.SetPlan
-import app.shapeshifter.data.models.plans.WorkoutPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.ExercisePlan
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetPlan
+import app.shapeshifter.data.models.workout.Weight
+import app.shapeshifter.data.models.workout.WorkoutPlan
 import me.tatarka.inject.annotations.Inject
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,7 @@ class WorkoutPlanSessionManager {
                 id = 0,
                 routineId = routineId,
                 name = "",
+                note = null,
             ),
             exercisePlanSessions = emptyList(),
         )
@@ -49,7 +51,7 @@ class WorkoutPlanSessionManager {
     }
 
     fun addExercises(
-        exercises: List<Exercise>,
+        exercises: List<ExerciseTemplate>,
         startIndex: Int,
     ) {
         exercises.forEachIndexed { index, exercise ->
@@ -62,7 +64,7 @@ class WorkoutPlanSessionManager {
 
     // Add a new exercise to the current plan.
     private fun addExercise(
-        exercise: Exercise,
+        exercise: ExerciseTemplate,
         index: Int,
     ) {
         val workoutPlan = _currentPlan.value?.workoutPlan
@@ -70,9 +72,11 @@ class WorkoutPlanSessionManager {
         val exerciseWithId = ExercisePlanSession(
             exercisePlan = ExercisePlan(
                 id = newExercisePlanTempIdCounter.decrementAndGet().toLong(),
-                workoutPlanId = workoutPlan.id,
-                exerciseId = exercise.id,
-                index = PositiveInt(index),
+                workoutId = workoutPlan.id,
+                exerciseTemplateId = exercise.id,
+                index = index,
+                note = null,
+                restDuration = null,
             ),
             exercise = exercise,
             setPlans = emptyList(),
@@ -110,8 +114,8 @@ class WorkoutPlanSessionManager {
                 val updatedSetPlans = exercise.setPlans.map { setPlan ->
                     if (setPlan.id == setPlanId) {
                         setPlan.copy(
-                            weight = weight ?: setPlan.weight,
-                            reps = reps ?: setPlan.reps,
+                            weight = weight?.let { Weight(it.toFloat()) } ?: setPlan.weight,
+                            reps = reps?.let { Reps(it) } ?: setPlan.reps,
                         )
                     } else {
                         setPlan

@@ -2,7 +2,6 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -11,15 +10,11 @@ import kotlinx.coroutines.withContext
 class RemoveExerciseLogUseCase(
     private val dispatchers: AppCoroutineDispatchers,
     private val dao: ExerciseLogEntityDao,
-) : UseCase<RemoveExerciseLogUseCase.Params, ExerciseLog?>() {
+) : UseCase<RemoveExerciseLogUseCase.Params, Unit>() {
 
-    override suspend fun doWork(params: Params): ExerciseLog? {
+    override suspend fun doWork(params: Params) {
         return withContext(dispatchers.databaseWrite) {
-            val exerciseSession = dao.exerciseSession(params.exerciseLogId)
-            if (exerciseSession?.exerciseLog != null) {
-                dao.deleteEntity(exerciseSession.exerciseLog)
-            }
-            exerciseSession?.exerciseLog
+            dao.delete(params.exerciseLogId)
         }
     }
 

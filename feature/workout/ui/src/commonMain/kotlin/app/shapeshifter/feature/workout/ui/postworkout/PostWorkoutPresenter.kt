@@ -14,7 +14,6 @@ import com.slack.circuit.runtime.screen.Screen
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 
 @Inject
@@ -55,12 +54,12 @@ class PostWorkoutPresenter(
             val duration = session?.let { workoutSession ->
                 // Calculate duration - Assuming WorkoutSession has startTime and endTime as Long milliseconds
                 // Adjust property names (e.g., startTimeInMillis, endTimeInMillis) if different in your model
-                val startMillis = workoutSession.workoutLog.startTimeInMillis ?: return@let Duration.ZERO // Use actual property name
-                val endMillis = workoutSession.workoutLog.finishTimeInMillis ?: return@let Duration.ZERO     // Use actual property name
+                val startMillis = workoutSession.workoutLog.startTime // Use actual property name
+                val endMillis = workoutSession.workoutLog.finishTime ?: return@let Duration.ZERO     // Use actual property name
 
                 if (endMillis > startMillis) {
                     // Calculate difference and convert to Duration
-                    (endMillis - startMillis).milliseconds
+                    (endMillis - startMillis)
                 } else {
                     Duration.ZERO
                 }

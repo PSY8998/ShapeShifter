@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -18,7 +18,7 @@ class UpdateExerciseLogIndexUseCase(
             withContext(dispatchers.databaseWrite) {
                 dao.update(
                     exerciseLog.copy(
-                        index = index.toLong(),
+                        index = index,
                     ),
                 )
             }

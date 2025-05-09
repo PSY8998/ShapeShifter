@@ -2,19 +2,34 @@ package app.shapeshifter.data.db.daos
 
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workout.SetLog
 import me.tatarka.inject.annotations.Inject
 
-interface SetLogEntityDao : EntityDao<SetLog>
+interface SetLogEntityDao {
+    fun insert(entity: SetLog): Long
+    fun insert(entities: List<SetLog>)
+    fun upsert(entity: SetLog): Long
+    fun update(entity: SetLog)
+    fun deleteEntity(entity: SetLog)
+}
 
 @Inject
 class SqlDelightSetLogEntityDao(
-    override val db: ShapeShifterDatabase,
+    val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner,
-) : SqlDelightEntityDao<SetLog>, SetLogEntityDao {
+) : SetLogEntityDao {
+
+    override fun insert(entities: List<SetLog>) {
+        db.transaction {
+            for (entity in entities) {
+                insert(entity)
+            }
+        }
+    }
+
     override fun insert(entity: SetLog): Long {
         val lastSet = db.set_logQueries.exerciseLastSet(
-            exerciseLogId = entity.exerciseLogId,
+            exerciseLogId = entity.exerciseId,
         ).executeAsOneOrNull()
 
         // update set index
@@ -23,29 +38,34 @@ class SqlDelightSetLogEntityDao(
         return transactionRunner {
             db.set_logQueries.insert(
                 id = entity.id,
-                exerciseLogId = entity.exerciseLogId,
-                workoutLogId = entity.workoutLogId,
-                workoutPlanId = entity.workoutPlanId,
-                exerciseId = entity.exerciseId,
-                exercisePlanId = entity.exercisePlanId,
+                exerciseLogId = entity.exerciseId,
                 setIndex = setIndex.toLong(),
                 weight = entity.weight.value.toLong(),
                 reps = entity.reps.value.toLong(),
-                finishTime = entity.finishTime,
-                setTypeId = entity.setTypeId,
+                setTypeId = entity.setTypeId.toLong(),
+                isCompleted = if (entity.isCompleted) 1 else 0,
             )
 
             db.set_logQueries.lastInsertRowId().executeAsOne()
         }
     }
 
+    override fun upsert(entity: SetLog): Long {
+        return if (entity.id != 0L) {
+            update(entity)
+            entity.id
+        } else {
+            insert(entity)
+        }
+    }
+
     override fun update(entity: SetLog) {
         db.set_logQueries.update(
-            exerciseLogId = entity.exerciseLogId,
+            exerciseLogId = entity.exerciseId,
             weight = entity.weight.value.toLong(),
             reps = entity.reps.value.toLong(),
-            finishTime = entity.finishTime,
-            setTypeId = entity.setTypeId,
+            isCompleted = if (entity.isCompleted) 1 else 0,
+            setTypeId = entity.setTypeId.toLong(),
             id = entity.id,
         )
     }

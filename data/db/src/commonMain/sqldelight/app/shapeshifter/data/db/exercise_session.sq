@@ -2,15 +2,14 @@ selectExerciseSession:
 SELECT
     elog.id AS exercise_log_id,
     elog.exercise_index AS exercise_index,
-    elog.exercise_id AS exercise_id,
+    elog.exercise_template_id AS exercise_id,
     elog.workout_log_id AS workout_log_id,
-    elog.workout_plan_id AS workout_plan_id,
     elog.exercise_plan_id AS exercise_plan_id,
     elog.rest_time_duration AS exercise_rest_time_duration,
     slog.id AS set_log_id,
     slog.reps AS set_log_reps,
     slog.weight AS set_log_weight,
-    slog.finish_time AS set_finish_time,
+    slog.is_completed AS set_completed,
     slog.set_type_id AS set_type_id,
     e.name AS exercise_name,
     e.image_url AS exercise_image_url,
@@ -20,7 +19,7 @@ SELECT
         SELECT NULLIF(slog_sub.reps, slog_sub.reps)
             FROM set_log AS slog_sub
             LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
-            WHERE elog_sub.exercise_id = elog.exercise_id
+            WHERE elog_sub.exercise_template_id = elog.exercise_template_id
             AND (
                 elog.workout_log_id = -1
                 OR elog_sub.workout_log_id = elog.workout_log_id
@@ -33,7 +32,7 @@ SELECT
         SELECT NULLIF(slog_sub.weight, slog_sub.weight)
             FROM set_log AS slog_sub
             LEFT JOIN exercise_log AS elog_sub ON slog_sub.exercise_log_id = elog_sub.id
-            WHERE elog_sub.exercise_id = elog.exercise_id
+            WHERE elog_sub.exercise_template_id = elog.exercise_template_id
             AND (
                 elog.workout_log_id = -1
                 OR elog_sub.workout_log_id = elog.workout_log_id
@@ -47,7 +46,7 @@ FROM
 JOIN
     set_log AS slog ON slog.exercise_log_id = elog.id
 JOIN
-    exercise AS e ON e.id = elog.exercise_id
+    exercise_template AS e ON e.id = elog.exercise_template_id
 WHERE
     elog.id = :exerciseLogId
 ORDER BY elog.id DESC

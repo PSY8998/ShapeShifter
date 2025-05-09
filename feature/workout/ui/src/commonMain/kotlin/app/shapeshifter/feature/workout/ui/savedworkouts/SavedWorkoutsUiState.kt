@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.ui.savedworkouts
 
 import androidx.compose.runtime.Immutable
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
+import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState

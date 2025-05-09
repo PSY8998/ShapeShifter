@@ -8,9 +8,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.plans.SetPlan
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetPlan
+import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.feature.workout.domain.FetchExercisesUseCase
 import app.shapeshifter.feature.workout.domain.SaveWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.SelectWorkoutPlanUseCase
@@ -128,10 +129,11 @@ class CreateWorkoutPlanPresenter(
                         exercisePlanId = event.exercisePlanId,
                         newSetPlan = SetPlan(
                             id = 0,
-                            exercisePlanId = event.exercisePlanId,
-                            index = PositiveInt(nextIndex),
-                            weight = 0,
-                            reps = 0,
+                            exerciseId = event.exercisePlanId,
+                            index = nextIndex,
+                            weight = Weight.ZERO,
+                            reps = Reps.ZERO,
+                            setTypeId = 2,
                         ),
                     )
                 }

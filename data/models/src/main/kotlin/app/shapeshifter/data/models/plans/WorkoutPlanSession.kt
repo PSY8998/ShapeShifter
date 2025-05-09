@@ -1,6 +1,9 @@
 package app.shapeshifter.data.models.plans
 
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
+import app.shapeshifter.data.models.workout.ExercisePlan
+import app.shapeshifter.data.models.workout.SetPlan
+import app.shapeshifter.data.models.workout.WorkoutPlan
 
 data class WorkoutPlanSession(
     val workoutPlan: WorkoutPlan,
@@ -9,6 +12,6 @@ data class WorkoutPlanSession(
 
 data class ExercisePlanSession(
     val exercisePlan: ExercisePlan,
-    val exercise: Exercise,
+    val exercise: ExerciseTemplate,
     val setPlans: List<SetPlan>
 )

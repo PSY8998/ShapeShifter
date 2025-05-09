@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS `exercise_log` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    `exercise_index` INTEGER NOT NULL ,
-    `exercise_id` INTEGER NOT NULL,
-    `workout_plan_id` INTEGER NOT NULL,
+    `exercise_index` INTEGER NOT NULL,
+    `exercise_template_id` INTEGER NOT NULL,
     `workout_log_id` INTEGER NOT NULL,
     `exercise_plan_id` INTEGER,
     `rest_time_duration` INTEGER NOT NULL,
@@ -11,8 +10,7 @@ CREATE TABLE IF NOT EXISTS `exercise_log` (
 
 -- indices
 CREATE INDEX IF NOT EXISTS `index_exercise_workout_log_id` ON `exercise_log` (`workout_log_id`);
-CREATE INDEX IF NOT EXISTS `index_exercise_workout_plan_id` ON `exercise_log` (`workout_plan_id`);
-CREATE INDEX IF NOT EXISTS `index_exercise_id` ON `exercise_log` (`exercise_id`);
+CREATE INDEX IF NOT EXISTS `index_exercise_id` ON `exercise_log` (`exercise_template_id`);
 CREATE INDEX IF NOT EXISTS `index_exercise_plan_id` ON `exercise_log` (`exercise_plan_id`);
 
 -- queries
@@ -20,18 +18,16 @@ insert:
 INSERT INTO exercise_log (
     `id`,
     `exercise_index`,
-    `exercise_id`,
+    `exercise_template_id`,
     `workout_log_id`,
-    `workout_plan_id`,
     `exercise_plan_id`,
     `rest_time_duration`
 )
 VALUES (
     nullif(:id, 0),
     :exerciseIndex,
-    :exerciseId,
+    :exerciseTemplateId,
     :workoutLogId,
-    :workoutPlanId,
     :exercisePlanId,
     :restTimeDuration
 );

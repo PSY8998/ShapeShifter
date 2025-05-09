@@ -4,12 +4,15 @@ import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.routines.Routine
 import me.tatarka.inject.annotations.Inject
 
-interface RoutineEntityDao : EntityDao<Routine>
+interface RoutineEntityDao {
+    fun insert(entity: Routine): Long
+}
 
 @Inject
 class SqlDelightRoutineEntityDao(
-    override val db: ShapeShifterDatabase,
-) : SqlDelightEntityDao<Routine>, RoutineEntityDao {
+    val db: ShapeShifterDatabase,
+) : RoutineEntityDao {
+
     override fun insert(entity: Routine): Long {
         db.routineQueries.insert(
             id = entity.id,
@@ -17,13 +20,5 @@ class SqlDelightRoutineEntityDao(
         )
 
         return db.routineQueries.lastInsertRowId().executeAsOne()
-    }
-
-    override fun update(entity: Routine) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteEntity(entity: Routine) {
-        TODO("Not yet implemented")
     }
 }

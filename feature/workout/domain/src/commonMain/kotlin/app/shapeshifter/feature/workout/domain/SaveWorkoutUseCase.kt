@@ -24,7 +24,7 @@ class SaveWorkoutUseCase(
             val exercisePlan = exercisePlanSession.exercisePlan
             val exercisePlanId = exercisePlanEntityDao.updateOrInsert(
                 entity = exercisePlan.copy(
-                    workoutPlanId = workoutId,
+                    workoutId = workoutId,
                     id = exercisePlan.id.takeIf { it > 0 } ?: 0,
                 ),
             )
@@ -32,7 +32,7 @@ class SaveWorkoutUseCase(
                 setPlanEntityDao.updateOrInsert(
                     entity = setPlan.copy(
                         id = setPlan.id.takeIf { it > 0 } ?: 0,
-                        exercisePlanId = exercisePlanId,
+                        exerciseId = exercisePlanId,
                     ),
                 )
             }

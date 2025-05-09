@@ -5,52 +5,54 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 
-interface ExerciseEntityDao : EntityDao<Exercise> {
-    fun observeExercises(): Flow<List<Exercise>>
-    fun select(ids: List<Long>): List<Exercise>
+interface ExerciseEntityDao {
+    fun insert(entity: ExerciseTemplate): Long
+    fun insert(entities: List<ExerciseTemplate>)
+    fun observeExercises(): Flow<List<ExerciseTemplate>>
+    fun select(ids: List<Long>): List<ExerciseTemplate>
 }
 
 @Inject
 class SqlDelightExerciseEntityDao(
-    override val db: ShapeShifterDatabase,
+    val db: ShapeShifterDatabase,
     private val transactionRunner: DatabaseTransactionRunner,
     private val dispatchers: AppCoroutineDispatchers,
-) : SqlDelightEntityDao<Exercise>, ExerciseEntityDao {
+) : ExerciseEntityDao {
 
-    override fun insert(entity: Exercise): Long {
+    override fun insert(entity: ExerciseTemplate): Long {
         return transactionRunner {
-            db.exerciseQueries.insert(
+            db.exercise_templateQueries.insert(
                 id = entity.id,
                 name = entity.name,
                 primary_muscle = entity.primaryMuscle,
-                secondary_muscles = entity.secondaryMuscle,
+                secondary_muscles = entity.secondaryMuscles,
                 image_url = entity.imageUrl,
             )
-            db.exerciseQueries.lastInsertRowId().executeAsOne()
+            db.exercise_templateQueries.lastInsertRowId().executeAsOne()
         }
     }
 
-    override fun update(entity: Exercise) {
-        TODO("Not yet implemented")
+    override fun insert(entities: List<ExerciseTemplate>) {
+        db.transaction {
+            for (entity in entities) {
+                insert(entity)
+            }
+        }
     }
 
-    override fun deleteEntity(entity: Exercise) {
-        TODO("Not yet implemented")
-    }
-
-    override fun observeExercises(): Flow<List<Exercise>> {
-        return db.exerciseQueries.selectAll(
-            mapper = { id, name, primary_muscle, secondary_muscle, image_url ->
-                Exercise(
+    override fun observeExercises(): Flow<List<ExerciseTemplate>> {
+        return db.exercise_templateQueries.selectAll(
+            mapper = { id, name, primaryMuscle, secondaryMuscles, imageUrl ->
+                ExerciseTemplate(
                     id = id,
                     name = name,
-                    primaryMuscle = primary_muscle,
-                    secondaryMuscle = secondary_muscle,
-                    imageUrl = image_url,
+                    primaryMuscle = primaryMuscle,
+                    secondaryMuscles = secondaryMuscles,
+                    imageUrl = imageUrl,
                 )
             },
         )
@@ -58,18 +60,18 @@ class SqlDelightExerciseEntityDao(
             .mapToList(dispatchers.io)
     }
 
-    override fun select(ids: List<Long>): List<Exercise> {
-        return db.exerciseQueries.select(
+    override fun select(ids: List<Long>): List<ExerciseTemplate> {
+        return db.exercise_templateQueries.select(
             ids = ids,
-            mapper = { id, name, primary_muscle, secondary_muscle, image_url ->
-                Exercise(
+            mapper = { id, name, primaryMuscle, secondaryMuscles, imageUrl ->
+                ExerciseTemplate(
                     id = id,
                     name = name,
-                    primaryMuscle = primary_muscle,
-                    secondaryMuscle = secondary_muscle,
-                    imageUrl = image_url
+                    primaryMuscle = primaryMuscle,
+                    secondaryMuscles = secondaryMuscles,
+                    imageUrl = imageUrl,
                 )
-            }
+            },
         ).executeAsList()
     }
 }

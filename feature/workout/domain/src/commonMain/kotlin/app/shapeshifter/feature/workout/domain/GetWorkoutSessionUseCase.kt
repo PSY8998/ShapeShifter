@@ -1,15 +1,18 @@
 package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
-import app.shapeshifter.data.models.PositiveInt
 import app.shapeshifter.data.models.plans.WorkoutPlanSession
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetLog
+import app.shapeshifter.data.models.workout.Weight
+import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.SetLog
-import app.shapeshifter.data.models.workoutlog.WorkoutLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @Inject
 class GetWorkoutSessionUseCase(
@@ -20,7 +23,10 @@ class GetWorkoutSessionUseCase(
     override suspend fun doWork(params: Params): WorkoutSession {
         return if (params.workoutPlanId == -1L) {
             WorkoutSession(
-                workoutLog = WorkoutLog.emptyQuickWorkout(),
+                workoutLog = WorkoutLog.empty(
+                    name = "Quick Workout",
+                    startTime = System.currentTimeMillis().milliseconds
+                ),
                 exerciseSessions = emptyList(),
             )
         } else {
@@ -40,30 +46,25 @@ class GetWorkoutSessionUseCase(
                     exerciseLog = ExerciseLog(
                         id = exercisePlanSession.exercisePlan.id,
                         index = 0,
-                        workoutLogId = workoutPlanSession.workoutPlan.id,
-                        workoutPlanId = workoutPlanSession.workoutPlan.id,
-                        exerciseId = exercisePlanSession.exercisePlan.exerciseId,
                         exercisePlanId = exercisePlanSession.exercisePlan.id,
                         note = "",
-                        restTimeDuration = 0L,
+                        workoutId = workoutPlanSession.workoutPlan.id,
+                        exerciseTemplateId = exercisePlanSession.exercisePlan.exerciseTemplateId,
+                        restDuration = Duration.ZERO,
                     ),
                     exercise = exercisePlanSession.exercise,
                     sets = exercisePlanSession.setPlans.map { setPlan ->
                         SetLog(
                             id = setPlan.id,
-                            setIndex = setPlan.index,
-                            exerciseLogId = exercisePlanSession.exercisePlan.id,
-                            exercisePlanId = exercisePlanSession.exercisePlan.id,
                             exerciseId = exercisePlanSession.exercise.id,
-                            workoutPlanId = workoutPlanSession.workoutPlan.id,
-                            workoutLogId = workoutPlanSession.workoutPlan.id,
-                            weight = PositiveInt(setPlan.weight),
-                            reps = PositiveInt(setPlan.reps),
-                            prevReps = PositiveInt(0),
-                            prevWeight = PositiveInt(0),
-                            completed = false,
-                            finishTime = 0,
+                            weight = setPlan.weight,
+                            reps = setPlan.reps,
                             setTypeId = 2,
+                            index = setPlan.index,
+                            setPlanId = null,
+                            isCompleted = false,
+                            previousWeight = Weight.ZERO,
+                            previousReps = Reps.ZERO,
                         )
                     }
                 )
@@ -73,10 +74,9 @@ class GetWorkoutSessionUseCase(
                 id = workoutPlanSession.workoutPlan.id,
                 workoutPlanId = workoutPlanSession.workoutPlan.id,
                 name = workoutPlanSession.workoutPlan.name,
-                startTimeInMillis = System.currentTimeMillis(),
-                finishTimeInMillis = 0L,
                 note = "",
-                restFinishTimeInMillis = 0L
+                startTime = System.currentTimeMillis().milliseconds,
+                finishTime = null,
             ),
             exerciseSessions = exerciseSessions
         )

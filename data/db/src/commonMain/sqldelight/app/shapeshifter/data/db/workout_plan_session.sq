@@ -16,7 +16,7 @@ FROM
 LEFT JOIN
     exercise_plan eplan ON wplan.id = eplan.workout_plan_id
 LEFT JOIN
-    exercise e ON eplan.exercise_id = e.id
+    exercise_template e ON eplan.exercise_template_id = e.id
 LEFT JOIN
     set_plan splan ON eplan.id = splan.exercise_plan_id
 WHERE
@@ -41,6 +41,6 @@ FROM
 LEFT JOIN
     exercise_plan eplan ON wplan.id = eplan.workout_plan_id
 LEFT JOIN
-    exercise e ON eplan.exercise_id = e.id
+    exercise_template e ON eplan.exercise_template_id = e.id
 LEFT JOIN
     set_plan splan ON eplan.id = splan.exercise_plan_id;

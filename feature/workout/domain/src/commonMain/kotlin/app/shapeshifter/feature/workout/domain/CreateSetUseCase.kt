@@ -3,8 +3,9 @@ package app.shapeshifter.feature.workout.domain
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.SetLogEntityDao
 import app.shapeshifter.data.db.daos.SqlDelightSetLogEntityDao
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.SetLog
+import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -29,19 +30,15 @@ class CreateSetUseCase(
 
             val setLog = SetLog(
                 id = 0L,
-                exerciseLogId = params.exerciseLogId,
-                setIndex = PositiveInt(1), // The DAO will calculate the correct index
-                weight = PositiveInt(0),
-                reps = PositiveInt(0),
-                prevWeight = PositiveInt(0),
-                prevReps = PositiveInt(0),
-                completed = false,
-                finishTime = 0,
-                exercisePlanId = null,
-                exerciseId = params.exerciseId,
-                workoutPlanId = params.workoutPlanId,
-                workoutLogId = params.workoutLogId,
-                setTypeId = setTypeId,
+                weight = Weight.ZERO,
+                reps = Reps.ZERO,
+                exerciseId =  params.exerciseLogId,
+                setTypeId = setTypeId.toInt(),
+                index = 1,
+                setPlanId = null,
+                isCompleted = false,
+                previousWeight = Weight.ZERO,
+                previousReps = Reps.ZERO,
             )
 
             dao.insert(setLog)
@@ -51,7 +48,7 @@ class CreateSetUseCase(
     data class Params(
         val exerciseLogId: Long,
         val exerciseId: Long,
-        val workoutPlanId: Long,
+        val workoutPlanId: Long?,
         val workoutLogId: Long,
     )
 

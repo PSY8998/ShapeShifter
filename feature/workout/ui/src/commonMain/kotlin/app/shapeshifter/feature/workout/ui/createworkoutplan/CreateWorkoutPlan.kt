@@ -58,7 +58,8 @@ import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.data.models.plans.ExercisePlanSession
-import app.shapeshifter.data.models.plans.SetPlan
+import app.shapeshifter.data.models.workout.Reps
+import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.feature.workout.ui.components.pattern
 import app.shapeshifter.feature.workout.ui.createworkoutplan.components.EmptyWorkout
 import app.shapeshifter.feature.workout.ui.createworkoutplan.components.ExerciseTypeRadarChart
@@ -293,8 +294,8 @@ private fun LazyListScope.exercisePlan(
         SetPlanUi(
             index = index,
             id = setPlan.id,
-            weight = setPlan.weight,
-            reps = setPlan.reps,
+            weight = setPlan.weight.value.toInt(),
+            reps = setPlan.reps.value,
             onSetRepsChanged = {
                 onSetRepsChanged(setPlan.id, it)
             },
@@ -526,7 +527,7 @@ fun SetPlanUi(
             onValueChange = {
                 if (pattern.matches(it)) {
                     setWeight = it
-                    onSetWeightChanged(it.toIntOrNull() ?: SetPlan.Undefined)
+                    onSetWeightChanged(it.toIntOrNull() ?: Weight.ZERO.value.toInt())
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
@@ -573,7 +574,7 @@ fun SetPlanUi(
             onValueChange = {
                 if (pattern.matches(it)) {
                     setReps = it
-                    onSetRepsChanged(it.toIntOrNull() ?: SetPlan.Undefined)
+                    onSetRepsChanged(it.toIntOrNull() ?: Reps.ZERO.value)
                 }
             },
             textStyle = MaterialTheme.typography.bodyMedium.copy(

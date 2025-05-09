@@ -3,7 +3,7 @@ package app.shapeshifter.feature.exercise.data.exercise
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.core.base.inject.ApplicationScope
 import app.shapeshifter.data.db.daos.ExerciseEntityDao
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.supabase.datasources.ExerciseDataSource
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ class ExerciseRepository(
         }
     }
 
-    fun observeExercises(): Flow<List<Exercise>> {
+    fun observeExercises(): Flow<List<ExerciseTemplate>> {
         return exerciseEntityDao.observeExercises()
     }
 }

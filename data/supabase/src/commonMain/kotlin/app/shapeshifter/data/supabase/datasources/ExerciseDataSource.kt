@@ -1,6 +1,6 @@
 package app.shapeshifter.data.supabase.datasources
 
-import app.shapeshifter.data.models.Exercise
+import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.models.Muscles
 import app.shapeshifter.data.supabase.responses.ExerciseResponse
 import io.github.jan.supabase.SupabaseClient
@@ -8,7 +8,7 @@ import io.github.jan.supabase.postgrest.from
 import me.tatarka.inject.annotations.Inject
 
 interface ExerciseDataSource {
-    suspend fun exercises(): List<Exercise>
+    suspend fun exercises(): List<ExerciseTemplate>
 }
 
 @Inject
@@ -17,17 +17,17 @@ class SupabaseExerciseDataSource(
 ) : SupabaseDataSource,
     ExerciseDataSource {
 
-    override suspend fun exercises(): List<Exercise> {
+    override suspend fun exercises(): List<ExerciseTemplate> {
         val exercisesResponse: List<ExerciseResponse> = supabase.from(EXERCISE_TABLE)
             .select()
             .decodeList<ExerciseResponse>()
 
         return exercisesResponse.map { response ->
-            Exercise(
+            ExerciseTemplate(
                 id = response.id,
                 name = response.name,
                 primaryMuscle = Muscles.safeValueOf(response.primaryMuscle),
-                secondaryMuscle = response.secondaryMuscles?.map { Muscles.safeValueOf(it) }
+                secondaryMuscles = response.secondaryMuscles?.map { Muscles.safeValueOf(it) }
                     ?: emptyList(),
                 imageUrl = response.imageUrl ?: "",
             )

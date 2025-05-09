@@ -1,8 +1,8 @@
 package app.shapeshifter.feature.workout.ui.trackworkout
 
 import androidx.compose.runtime.Immutable
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.data.models.workoutlog.WorkoutSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -41,7 +41,7 @@ sealed interface TrackWorkoutUiEvent : CircuitUiEvent {
     data class OnAddSet(
         val exerciseLogId: Long,
         val exerciseId: Long,
-        val workoutPlanId: Long,
+        val workoutPlanId: Long?,
         val workoutLogId: Long,
     ) : TrackWorkoutUiEvent
 

@@ -12,8 +12,6 @@ import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
 import app.shapeshifter.common.ui.compose.screens.PostWorkoutScreen
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
-import app.shapeshifter.data.models.plans.WorkoutPlan
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
 import app.shapeshifter.feature.workout.domain.AddExerciseLogUseCase
 import app.shapeshifter.feature.workout.domain.CreateSetUseCase
 import app.shapeshifter.feature.workout.domain.CreateWorkoutUseCase
@@ -34,6 +32,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.launch
 
 @Inject
@@ -89,9 +88,9 @@ class TrackWorkoutPresenter(
         }
 
         LaunchedImpressionEffect(screen.workoutPlanId, screen.workoutLogId) {
-            val insertedWorkoutId = if (screen.workoutPlanId == WorkoutPlan.QuickWorkoutId) {
+            val insertedWorkoutId = if (screen.workoutPlanId == null) {
                 // Create an empty workout session
-                createWorkoutUseCase(CreateWorkoutUseCase.Params(workoutPlanId = WorkoutPlan.QuickWorkoutId))
+                createWorkoutUseCase(CreateWorkoutUseCase.Params(workoutPlanId = null))
                     .getOrNull()
             } else {
                 // Create a workout session based on an existing workout plan session
@@ -109,7 +108,10 @@ class TrackWorkoutPresenter(
                         val exerciseLogId = result.exerciseLogId
                         val selectedExerciseId = result.exerciseId
                         scope.launch {
-                            val deletedLog: ExerciseLog? = removeExerciseLogUseCase.invoke(
+                            val exerciseLogToReplace =
+                                workoutSession?.exerciseSessions?.find { it.exerciseLog.id == exerciseLogId }
+
+                            removeExerciseLogUseCase.invoke(
                                 RemoveExerciseLogUseCase.Params(
                                     exerciseLogId,
                                 ),
@@ -119,8 +121,8 @@ class TrackWorkoutPresenter(
                                 AddExerciseLogUseCase.Params(
                                     workoutLogId = workoutLogId,
                                     exerciseIds = listOf(selectedExerciseId),
-                                    workoutPlanId = WorkoutPlan.QuickWorkoutId,
-                                    index = deletedLog?.index ?: 0,
+                                    workoutPlanId = null,
+                                    index = exerciseLogToReplace?.exerciseLog?.index?.toLong() ?: 0,
                                 ),
                             )
                         }
@@ -134,7 +136,7 @@ class TrackWorkoutPresenter(
                                     AddExerciseLogUseCase.Params(
                                         workoutLogId = workoutLogId,
                                         exerciseIds = selectedExerciseIds,
-                                        workoutPlanId = WorkoutPlan.QuickWorkoutId,
+                                        workoutPlanId = null,
                                         index = 0,
                                     ),
                                 )
@@ -183,9 +185,7 @@ class TrackWorkoutPresenter(
                         finishedSetUseCase(
                             params = FinishedSetUseCase.Params(
                                 setLog = event.set,
-                                workoutLog = session.workoutLog.copy(
-                                    restFinishTimeInMillis = System.currentTimeMillis() + event.exerciseLog.restTimeDuration,
-                                ),
+                                workoutLog = session.workoutLog,
                             ),
                         )
                     }
@@ -207,7 +207,7 @@ class TrackWorkoutPresenter(
                             params = FinishWorkoutUseCase.Params(
                                 workoutSession = event.workoutSession.copy(
                                     workoutLog = event.workoutSession.workoutLog.copy(
-                                        startTimeInMillis = event.selectedDate,
+                                        startTime = event.selectedDate.milliseconds,
                                     ),
                                 ),
                             ),
@@ -264,7 +264,7 @@ class TrackWorkoutPresenter(
                         updateSetLogUseCase(
                             params = UpdateSetLogUseCase.Params(
                                 setLog = event.setLog,
-                            )
+                            ),
                         )
                     }
                 }
@@ -282,9 +282,7 @@ class TrackWorkoutPresenter(
 
             else -> TrackWorkoutUiState.Filled(
                 workoutSession = workoutSession!!,
-                restTimeDurationInSecs = workoutSession?.workoutLog?.restFinishTimeInMillis?.let {
-                    it - System.currentTimeMillis()
-                }?.takeIf { it > 0 } ?: 0,
+                restTimeDurationInSecs = 0,
                 eventSink = ::eventSink,
             )
         }

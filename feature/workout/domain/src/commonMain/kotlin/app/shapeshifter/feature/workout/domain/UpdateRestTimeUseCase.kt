@@ -2,9 +2,10 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.ExerciseLogEntityDao
-import app.shapeshifter.data.models.workoutlog.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.withContext
 
 @Inject
@@ -17,7 +18,7 @@ class UpdateRestTimeUseCase(
         return withContext(dispatchers.databaseWrite) {
             dao.update(
                 params.exerciseLog.copy(
-                    restTimeDuration = params.restTimeDurationInSecs * 1000,
+                    restDuration = (params.restTimeDurationInSecs * 1000).milliseconds,
                 ),
             )
         }

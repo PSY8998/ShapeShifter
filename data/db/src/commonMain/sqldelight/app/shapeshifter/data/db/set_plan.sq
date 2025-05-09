@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS set_plan (
     FOREIGN KEY (`exercise_plan_id`) REFERENCES exercise_plan(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE INDEX IF NOT EXISTS index_exercise_plan_id ON set_plan(exercise_plan_id);
+
 insert:
 INSERT INTO set_plan(
 id,

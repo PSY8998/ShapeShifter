@@ -2,11 +2,10 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.SetLogEntityDao
-import app.shapeshifter.data.models.PositiveInt
-import app.shapeshifter.data.models.workoutlog.SetLog
+import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.domain.UseCase
-import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
+import kotlinx.coroutines.withContext
 
 @Inject
 class UpdateSetLogUseCase(
@@ -19,8 +18,7 @@ class UpdateSetLogUseCase(
             val updatedSetLog = params.setLog.copy(
                 weight = params.setLog.weight,
                 reps = params.setLog.reps,
-                finishTime = params.setLog.finishTime,
-                completed = params.setLog.completed,
+                isCompleted = params.setLog.isCompleted,
                 setTypeId = params.setLog.setTypeId,
             )
 
