@@ -1,7 +1,5 @@
 package app.shapeshifter.feature.workout.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -22,8 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
@@ -174,110 +168,7 @@ fun ExerciseLog(
 
 }
 
-@Composable
-fun SetColumnTitles(
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = Dimens.Padding.Small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(
-            text = "Set",
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-            color = Color.Gray,
-            modifier = Modifier
-                .weight(1f),
-        )
-        Text(
-            text = "Prev",
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f),
-        )
-        Text(
-            text = "Kg",
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f),
-        )
-        Text(
-            text = "Reps",
-            style = MaterialTheme.typography.titleMedium,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f),
-        )
-        Box(
-            modifier = Modifier
-                .weight(1f),
-        )
 
-    }
-}
-
-
-@Composable
-fun AddNewSet(
-    onAddSet: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentWidth(align = Alignment.CenterHorizontally)
-                .background(
-                    color = MaterialTheme.colorScheme.secondary,
-                    shape = MaterialTheme.shapes.small,
-                )
-                .clip(shape = MaterialTheme.shapes.small)
-                .clickable {
-                    onAddSet()
-                }
-                .padding(4.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .weight(1f),
-        )
-
-        Box(
-            modifier = Modifier
-                .weight(1f),
-        )
-
-        Box(
-            modifier = Modifier
-                .weight(1f),
-        )
-
-        Box(
-            modifier = Modifier
-                .weight(1f),
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

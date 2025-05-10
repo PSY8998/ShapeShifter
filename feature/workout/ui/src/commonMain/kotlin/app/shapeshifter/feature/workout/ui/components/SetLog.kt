@@ -1,30 +1,18 @@
 package app.shapeshifter.feature.workout.ui.components
 
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.DecayAnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.exponentialDecay
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,7 +23,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,28 +31,21 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.data.models.SetType
-import kotlin.math.roundToInt
-import kotlinx.coroutines.delay
 
 @Composable
 fun SetLog(
@@ -406,108 +386,3 @@ fun SetTypeBottomSheet(
         }
     }
 }
-
-enum class SetAnchors {
-    SELECTED,
-    UNSELECTED,
-    OVERSCROLL,
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun SetAnchorBox(
-    backgroundContent: @Composable RowScope.(progress: Float) -> Unit,
-    content: @Composable RowScope.() -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    val density = LocalDensity.current
-
-    val state = rememberAnchorDraggableState(
-        initialValue = SetAnchors.UNSELECTED,
-        positionalThreshold = { totalDistance: Float -> totalDistance * 0.5f },
-        velocityThreshold = { with(density) { 100.dp.toPx() } },
-        decayAnimationSpec = exponentialDecay(
-            frictionMultiplier = 1f,
-        ),
-        snapAnimationSpec = spring(
-            stiffness = Spring.StiffnessMedium,
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-        ),
-        confirmValueChange = {
-            it != SetAnchors.OVERSCROLL
-        },
-    ).apply {
-        updateAnchors(
-            newAnchors = DraggableAnchors {
-                with(density) {
-                    SetAnchors.UNSELECTED at 0.dp.toPx()
-                    SetAnchors.SELECTED at -80.dp.toPx()
-                    SetAnchors.OVERSCROLL at -180.dp.toPx()
-                }
-            },
-        )
-    }
-
-    Box(
-        modifier = modifier,
-        propagateMinConstraints = true,
-    ) {
-        Row(
-            content = {
-                val selectedProgress = state.progress(SetAnchors.UNSELECTED, SetAnchors.SELECTED)
-                backgroundContent(selectedProgress)
-            },
-            modifier = Modifier,
-        )
-        Row(
-            content = content,
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        x = state
-                            .requireOffset()
-                            .roundToInt(),
-                        y = 0,
-                    )
-                }
-                .anchoredDraggable(
-                    state = state,
-                    orientation = Orientation.Horizontal,
-                    enabled = enabled,
-                ),
-        )
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun <T : Any> rememberAnchorDraggableState(
-    initialValue: T,
-    snapAnimationSpec: AnimationSpec<Float>,
-    decayAnimationSpec: DecayAnimationSpec<Float>,
-    positionalThreshold: (distance: Float) -> Float,
-    velocityThreshold: () -> Float,
-    confirmValueChange: (T) -> Boolean = { true },
-): AnchoredDraggableState<T> {
-    return rememberSaveable(
-        saver = AnchoredDraggableState.Saver(
-            snapAnimationSpec = snapAnimationSpec,
-            decayAnimationSpec = decayAnimationSpec,
-            positionalThreshold = positionalThreshold,
-            velocityThreshold = velocityThreshold,
-            confirmValueChange = confirmValueChange,
-        ),
-    ) {
-        AnchoredDraggableState(
-            initialValue = initialValue,
-            positionalThreshold = positionalThreshold,
-            velocityThreshold = velocityThreshold,
-            decayAnimationSpec = decayAnimationSpec,
-            snapAnimationSpec = snapAnimationSpec,
-            confirmValueChange = confirmValueChange,
-        )
-    }
-}
-
-

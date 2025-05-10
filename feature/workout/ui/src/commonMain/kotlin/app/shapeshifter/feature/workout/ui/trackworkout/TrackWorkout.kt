@@ -3,7 +3,6 @@ package app.shapeshifter.feature.workout.ui.trackworkout
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,25 +69,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
-import app.shapeshifter.data.models.SetType
 import app.shapeshifter.data.models.workout.ExerciseLog
 import app.shapeshifter.data.models.workout.ExerciseLogSession
-import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetLog
-import app.shapeshifter.data.models.workout.Weight
-import app.shapeshifter.feature.workout.ui.components.AddNewSet
-import app.shapeshifter.feature.workout.ui.components.ExerciseLog
-import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
-import app.shapeshifter.feature.workout.ui.components.SetColumnTitles
-import app.shapeshifter.feature.workout.ui.components.SetLog
+import app.shapeshifter.feature.workout.ui.components.Exercise
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
@@ -137,7 +125,8 @@ private fun TrackWorkout(
                 .fillMaxSize(),
         ) {
             val startTime by remember(state.asFilled()?.workoutSession?.workout?.startTime) {
-                val time = state.asFilled()?.workoutSession?.workout?.startTime?.toEpochMilliseconds()
+                val time =
+                    state.asFilled()?.workoutSession?.workout?.startTime?.toEpochMilliseconds()
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -200,8 +189,12 @@ private fun TrackWorkout(
                                     bottom = paddingValues.calculateBottomPadding() + Dimens.Padding.Largest,
                                 ),
                             ) {
-                                targetState.workoutSession.exerciseSessions.forEach { exerciseSession ->
-                                    exerciseLog(
+                                itemsIndexed(
+                                    items = targetState.workoutSession.exerciseSessions,
+                                    key = { _, exerciseSession -> exerciseSession.exercise.id },
+                                    contentType = { _, _ -> "exercise" },
+                                ) { _, exerciseSession ->
+                                    Exercise(
                                         exerciseSession = exerciseSession,
                                         onCompleteSet = {
                                             state.eventSink(
@@ -262,6 +255,8 @@ private fun TrackWorkout(
                                                 ),
                                             )
                                         },
+                                        modifier = Modifier
+                                            .padding(bottom = Dimens.Padding.ExtraMedium),
                                     )
                                 }
 
@@ -315,7 +310,8 @@ private fun TrackWorkout(
     }
 }
 
-private fun LazyListScope.exerciseLog(
+@Composable
+private fun Exercise(
     exerciseSession: ExerciseLogSession,
     onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
@@ -325,152 +321,20 @@ private fun LazyListScope.exerciseLog(
     onRemoveExercise: (exerciseLog: ExerciseLog) -> Unit,
     onUpdateRestTime: (Int, Int) -> Unit,
     onUpdateSet: (setLog: SetLog) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val exerciseLog = exerciseSession.exercise
-
-    item(
-        key = "exercise_${exerciseLog.id}",
-        contentType = "exercise",
-    ) {
-        ExerciseLog(
-            name = exerciseSession.exerciseTemplate.name,
-            onReorderExercises = { onReorderExercises(exerciseLog.id) },
-            onReplaceExercise = { onReplaceExercise(exerciseLog) },
-            onRemoveExercise = { onRemoveExercise(exerciseLog) },
-            updateRestTime = onUpdateRestTime,
-            modifier = Modifier,
-        )
-    }
-
-    item(
-        key = "set_titles_${exerciseLog.id}",
-        contentType = "set_titles",
-    ) {
-        SetColumnTitles(
-            modifier = Modifier
-                .fillMaxWidth(),
-        )
-    }
-
-    itemsIndexed(
-        items = exerciseSession.sets,
-        contentType = { _, _ -> "set" },
-        key = { _, set -> "set_${set.id}" },
-    ) { index, set ->
-        SetAnchorBox(
-            backgroundContent = { progress ->
-                Box(
-                    contentAlignment = Alignment.CenterEnd,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = MaterialTheme.colorScheme.errorContainer),
-                ) {
-                    // Define the start and end offset for the slide animation
-                    val startOffset = 80.dp // Start 100.dp to the right (adjust as needed)
-                    val endOffset = 0.dp     // End position is 0.dp (the original position)
-
-                    var targetOffset by remember { mutableStateOf(startOffset) }
-
-                    // Animate the offset based on targetOffset
-                    val animatedOffset by animateDpAsState(
-                        targetValue = targetOffset,
-                        animationSpec = tween(
-                            easing = FastOutSlowInEasing,
-                        ),
-                        label = "DeleteTransition",
-                    )
-
-                    // Trigger animation only once when progress reaches 1.0
-                    LaunchedEffect(progress) {
-                        if (progress == 1.0f) {
-                            targetOffset = endOffset
-                        }
-
-                        if (progress == 0f) {
-                            targetOffset = startOffset
-                        }
-                    }
-
-                    val density = LocalDensity.current
-
-                    IconButton(
-                        modifier = Modifier
-                            .padding(horizontal = Dimens.Padding.Medium)
-                            .offset {
-                                IntOffset(
-                                    x = with(density) {
-                                        animatedOffset
-                                            .toPx()
-                                            .toInt()
-                                    },
-                                    y = 0,
-                                )
-                            },
-                        onClick = {
-                            onDeleteSet(set)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Remove Set",
-                            tint = MaterialTheme.colorScheme.onErrorContainer,
-                        )
-                    }
-                }
-            },
-            content = {
-                SetLog(
-                    index = index,
-                    weight = set.weight.value.toInt(),
-                    reps = set.reps.value,
-                    isChecked = set.isCompleted,
-                    onCheckChanged = { isChecked, weight, reps ->
-                        onCompleteSet(
-                            set.copy(
-                                weight = Weight(weight.toFloat()),
-                                reps = Reps(reps),
-                                isCompleted = isChecked,
-                            ),
-                        )
-                    },
-                    prevReps = Reps.ZERO.value,
-                    prevWeight = Weight.ZERO.value.toInt(),
-                    isBeingTracked = true,
-                    setType = SetType.fromId(set.setTypeId.toLong()),
-                    onSetTypeChange = { newType ->
-                        onUpdateSet(set.copy(setTypeId = newType.id.toInt()))
-                    },
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background),
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateItem(
-                    fadeInSpec = null,
-                    fadeOutSpec = null,
-                ),
-        )
-    }
-
-    item(
-        key = "${exerciseLog.id}_new_set",
-        contentType = "new_set",
-    ) {
-        AddNewSet(
-            onAddSet = {
-                onAddSet(exerciseLog.id)
-            },
-            modifier = Modifier
-                .animateItem()
-                .padding(vertical = Dimens.Padding.Small),
-        )
-    }
-
-    itemDivider(
-        key = "divider_${exerciseLog.id}",
-        modifier = Modifier
-            .padding(vertical = Dimens.Padding.Medium),
+    Exercise(
+        exerciseSession = exerciseSession,
+        isInEditMode = true,
+        isInLoggingMode = true,
+        onDelete = { set ->
+            onDeleteSet(set as SetLog)
+        },
+        onAddSet = {
+            onAddSet(exerciseSession.exercise.id)
+        },
+        modifier = modifier
+            .fillMaxWidth(),
     )
 }
 

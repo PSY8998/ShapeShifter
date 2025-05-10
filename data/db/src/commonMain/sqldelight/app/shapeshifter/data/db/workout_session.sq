@@ -10,6 +10,7 @@ SELECT
     e.name AS exercise_name,
     e.primary_muscle AS exercise_primary_muscle,
     e.secondary_muscles AS exercise_secondary_muscles,
+    e.image_url AS exercise_image_url,
     elog.id AS exercise_log_id,
     elog.exercise_index AS exercise_log_index,
     elog.exercise_plan_id AS exercise_plan_id,

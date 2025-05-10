@@ -155,7 +155,7 @@ class SqlDelightWorkoutEntityDao(
                                 primaryMuscle = entry.exercise_primary_muscle!!,
                                 secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
                                 name = entry.exercise_name.orEmpty(),
-                                imageUrl = "",
+                                imageUrl = entry.exercise_image_url ?: "",
                             ),
                             sets = sets,
                         )
