@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.SqlDelightWorkoutPlanEntityDao
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -15,7 +15,7 @@ class DeleteWorkoutPlanUseCase(
 
     override suspend fun doWork(params: Params) {
         return withContext(dispatchers.databaseWrite){
-            workoutPlanEntityDao.deleteEntity(params.workoutPlanSession.workoutPlan)
+            workoutPlanEntityDao.deleteEntity(params.workoutPlanSession.workout)
         }
     }
 

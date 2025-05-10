@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
-import app.shapeshifter.data.models.plans.ExercisePlanSession
+import app.shapeshifter.data.models.workout.ExercisePlanSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.feature.workout.ui.components.pattern
@@ -138,13 +138,13 @@ internal fun CreateWorkoutPlan(
                     ExerciseTypeRadarChart()
                 }
 
-                uiState.workoutPlanSession?.exercisePlanSessions?.forEach { exercisePlanSession ->
+                uiState.workoutPlanSession?.exerciseSessions?.forEach { exercisePlanSession ->
                     exercisePlan(
                         exercisePlanSession = exercisePlanSession,
                         onAddSet = {
                             uiState.eventSink(
                                 CreateWorkoutPlanUiEvent.OnAddSet(
-                                    exercisePlanSession.exercisePlan.id,
+                                    exercisePlanSession.exercise.id,
                                 ),
                             )
                         },
@@ -269,18 +269,18 @@ private fun LazyListScope.exercisePlan(
     onSetRepsChanged: (id: Long, reps: Int) -> Unit,
 ) {
     item(
-        key = exercisePlanSession.exercisePlan.id.toString() + exercisePlanSession.exercise.name,
+        key = exercisePlanSession.exercise.id.toString() + exercisePlanSession.exerciseTemplate.name,
     ) {
         ExercisePlan(
-            name = exercisePlanSession.exercise.name,
-            imageUrl = exercisePlanSession.exercise.imageUrl,
+            name = exercisePlanSession.exerciseTemplate.name,
+            imageUrl = exercisePlanSession.exerciseTemplate.imageUrl,
             modifier = Modifier
                 .padding(top = Dimens.Padding.Medium),
         )
     }
 
     item(
-        key = exercisePlanSession.exercisePlan.id.toString() + "titles",
+        key = exercisePlanSession.exercise.id.toString() + "titles",
     ) {
         SetColumnTitles(
             modifier = Modifier,
@@ -289,7 +289,7 @@ private fun LazyListScope.exercisePlan(
 
     itemsIndexed(
         key = { _, item -> "set_" + item.id },
-        items = exercisePlanSession.setPlans,
+        items = exercisePlanSession.sets,
     ) { index, setPlan ->
         SetPlanUi(
             index = index,
@@ -307,7 +307,7 @@ private fun LazyListScope.exercisePlan(
     }
 
     item(
-        key = exercisePlanSession.exercisePlan.id.toString() + "add_set",
+        key = exercisePlanSession.exercise.id.toString() + "add_set",
     ) {
         AddNewSet(
             onAddSet = {

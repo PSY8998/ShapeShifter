@@ -50,24 +50,25 @@ class PostWorkoutPresenter(
         }
 
         // Derive and format the duration for the specific session
-        val formattedTime = remember(session, screen.workoutLogId) { // Assuming screen has workoutId
-            val duration = session?.let { workoutSession ->
-                // Calculate duration - Assuming WorkoutSession has startTime and endTime as Long milliseconds
-                // Adjust property names (e.g., startTimeInMillis, endTimeInMillis) if different in your model
-                val startMillis = workoutSession.workoutLog.startTime // Use actual property name
-                val endMillis = workoutSession.workoutLog.finishTime ?: return@let Duration.ZERO     // Use actual property name
+        val formattedTime =
+            remember(session, screen.workoutLogId) { // Assuming screen has workoutId
+                val duration = session?.let { workoutSession ->
+                    // Calculate duration - Assuming WorkoutSession has startTime and endTime as Long milliseconds
+                    // Adjust property names (e.g., startTimeInMillis, endTimeInMillis) if different in your model
+                    val startMillis = workoutSession.workout.startTime // Use actual property name
+                    val endMillis = workoutSession.workout.finishTime
+                        ?: return@let Duration.ZERO     // Use actual property name
 
-                if (endMillis > startMillis) {
-                    // Calculate difference and convert to Duration
-                    (endMillis - startMillis)
-                } else {
-                    Duration.ZERO
-                }
-            } ?: Duration.ZERO // Default to zero if session not found or times invalid
+                    if (endMillis > startMillis) {
+                        // Calculate difference and convert to Duration
+                        (endMillis - startMillis)
+                    } else {
+                        Duration.ZERO
+                    }
+                } ?: Duration.ZERO // Default to zero if session not found or times invalid
 
-            formatDuration(duration) // Format the calculated duration (which is now guaranteed to be Duration)
-        }
-
+                formatDuration(duration) // Format the calculated duration (which is now guaranteed to be Duration)
+            }
 
 
         fun eventSink(event: PostWorkoutEvent) {
@@ -83,7 +84,10 @@ class PostWorkoutPresenter(
             session?.exerciseSessions?.map { exerciseSession ->
                 // Assuming ExerciseAndSets has an 'exercise' property of type ExerciseEntity
                 // And ExerciseEntity has 'id' and 'name'
-                ExerciseInfo(id = exerciseSession.exerciseLog.id, name = exerciseSession.exercise.name)
+                ExerciseInfo(
+                    id = exerciseSession.exercise.id,
+                    name = exerciseSession.exerciseTemplate.name,
+                )
             } ?: emptyList()
         }
 
@@ -93,8 +97,10 @@ class PostWorkoutPresenter(
 
         // TODO: Implement actual record detection logic based on session data vs historical data
         val achievedRecords = remember(session) {
-            if (completedExercises.isNotEmpty() && (session?.exerciseSessions?.flatMap { it.sets }?.size ?: 0) > 5) { // Placeholder condition
-                 listOf(RecordInfo(name = "Heaviest Deadlift", value = "200 lb")) // Placeholder data
+            if (completedExercises.isNotEmpty() && (session?.exerciseSessions?.flatMap { it.sets }?.size
+                    ?: 0) > 5
+            ) { // Placeholder condition
+                listOf(RecordInfo(name = "Heaviest Deadlift", value = "200 lb")) // Placeholder data
             } else {
                 emptyList()
             }

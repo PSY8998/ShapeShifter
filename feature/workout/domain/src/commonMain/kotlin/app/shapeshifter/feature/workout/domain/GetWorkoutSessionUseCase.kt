@@ -1,14 +1,15 @@
 package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLogSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workout.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workout.WorkoutLogSession
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
@@ -22,8 +23,8 @@ class GetWorkoutSessionUseCase(
 
     override suspend fun doWork(params: Params): WorkoutSession {
         return if (params.workoutPlanId == null) {
-            WorkoutSession(
-                workoutLog = WorkoutLog.empty(
+            WorkoutLogSession(
+                workout = WorkoutLog.empty(
                     name = "Quick Workout",
                     startTime = Clock.System.now(),
                 ),
@@ -41,19 +42,19 @@ class GetWorkoutSessionUseCase(
 
     private fun convertToWorkoutSession(workoutPlanSession: WorkoutPlanSession?): WorkoutSession {
         val exerciseSessions =
-            workoutPlanSession!!.exercisePlanSessions.map { exercisePlanSession ->
-                ExerciseSession(
-                    exerciseLog = ExerciseLog(
-                        id = exercisePlanSession.exercisePlan.id,
+            workoutPlanSession!!.exerciseSessions.map { exercisePlanSession ->
+                ExerciseLogSession(
+                    exercise = ExerciseLog(
+                        id = exercisePlanSession.exercise.id,
                         index = 0,
-                        exercisePlanId = exercisePlanSession.exercisePlan.id,
+                        exercisePlanId = exercisePlanSession.exercise.id,
                         note = "",
-                        workoutId = workoutPlanSession.workoutPlan.id,
-                        exerciseTemplateId = exercisePlanSession.exercisePlan.exerciseTemplateId,
+                        workoutId = workoutPlanSession.workout.id,
+                        exerciseTemplateId = exercisePlanSession.exercise.exerciseTemplateId,
                         restDuration = Duration.ZERO,
                     ),
-                    exercise = exercisePlanSession.exercise,
-                    sets = exercisePlanSession.setPlans.map { setPlan ->
+                    exerciseTemplate = exercisePlanSession.exerciseTemplate,
+                    sets = exercisePlanSession.sets.map { setPlan ->
                         SetLog(
                             id = setPlan.id,
                             exerciseId = exercisePlanSession.exercise.id,
@@ -69,11 +70,11 @@ class GetWorkoutSessionUseCase(
                     },
                 )
             }
-        return WorkoutSession(
-            workoutLog = WorkoutLog(
-                id = workoutPlanSession.workoutPlan.id,
-                workoutPlanId = workoutPlanSession.workoutPlan.id,
-                name = workoutPlanSession.workoutPlan.name,
+        return WorkoutLogSession(
+            workout = WorkoutLog(
+                id = workoutPlanSession.workout.id,
+                workoutPlanId = workoutPlanSession.workout.id,
+                name = workoutPlanSession.workout.name,
                 note = "",
                 startTime = Clock.System.now(),
                 finishTime = null,

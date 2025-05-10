@@ -32,8 +32,9 @@ import app.shapeshifter.common.ui.compose.resources.Fire
 import app.shapeshifter.common.ui.compose.resources.Medal
 import app.shapeshifter.common.ui.compose.screens.ProfileScreen
 import app.shapeshifter.data.models.metrics.WorkoutMetrics
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workout.ExerciseLogSession
+import app.shapeshifter.data.models.workout.ExerciseSession
+import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.runtime.CircuitContext
@@ -113,7 +114,7 @@ fun ProfileTopBar(
 
 @Composable
 fun PreviousWorkouts(
-    workoutSessions: List<WorkoutSession>,
+    workoutSessions: List<WorkoutLogSession>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -129,7 +130,7 @@ fun PreviousWorkouts(
 
 @Composable
 fun WorkoutCard(
-    workoutSession: WorkoutSession,
+    workoutSession: WorkoutLogSession,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -154,7 +155,7 @@ fun WorkoutCard(
                         .weight(1f),
                 ) {
                     Text(
-                        text = workoutSession.workoutLog.name,
+                        text = workoutSession.workout.name,
                         fontWeight = FontWeight.Bold,
                     )
 
@@ -295,7 +296,7 @@ fun WorkoutMetrics(
 
 @Composable
 fun WorkoutSummaryExercises(
-    exerciseSessions: List<ExerciseSession>,
+    exerciseSessions: List<ExerciseLogSession>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -310,7 +311,7 @@ fun WorkoutSummaryExercises(
                 modifier = Modifier,
             ) {
                 Text(
-                    text = exerciseSession.exercise.name,
+                    text = exerciseSession.exerciseTemplate.name,
                     style = MaterialTheme.typography.titleMedium,
                 )
 

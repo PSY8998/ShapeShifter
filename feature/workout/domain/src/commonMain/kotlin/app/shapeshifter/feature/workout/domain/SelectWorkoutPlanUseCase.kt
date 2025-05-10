@@ -1,7 +1,7 @@
 package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.data.db.daos.SqlDelightWorkoutPlanEntityDao
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 

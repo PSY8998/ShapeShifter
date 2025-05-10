@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
+import app.shapeshifter.data.models.workout.ExerciseLogSession
 import app.shapeshifter.feature.workout.ui.components.DraggableItem
 import app.shapeshifter.feature.workout.ui.components.dragContainer
 import app.shapeshifter.feature.workout.ui.components.rememberDragDropState
@@ -87,8 +87,8 @@ internal fun ReorderExercises(
 
 @Composable
 fun ReorderableExerciseList(
-    exerciseSessions: List<ExerciseSession>,
-    onReorderedExercises: (List<ExerciseSession>) -> Unit,
+    exerciseSessions: List<ExerciseLogSession>,
+    onReorderedExercises: (List<ExerciseLogSession>) -> Unit,
     modifier: Modifier,
 ) {
     var list by remember { mutableStateOf(exerciseSessions) }
@@ -111,7 +111,7 @@ fun ReorderableExerciseList(
             contentPadding = PaddingValues(Dimens.Padding.Small),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            itemsIndexed(list, key = { _, item -> item.exerciseLog.id }) { index, item ->
+            itemsIndexed(list, key = { _, item -> item.exercise.id }) { index, item ->
                 DraggableItem(dragDropState, index) { isDragging ->
                     ElevatedCard(
                         elevation = CardDefaults.cardElevation(if (isDragging) 8.dp else 1.dp),
@@ -121,7 +121,7 @@ fun ReorderableExerciseList(
                         ),
                     ) {
                         Text(
-                            text = item.exercise.name,
+                            text = item.exerciseTemplate.name,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(20.dp),

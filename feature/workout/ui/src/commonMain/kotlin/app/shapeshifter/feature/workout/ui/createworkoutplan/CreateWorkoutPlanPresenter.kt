@@ -8,10 +8,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.common.ui.compose.screens.ExercisesScreen
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetPlan
 import app.shapeshifter.data.models.workout.Weight
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import app.shapeshifter.feature.workout.domain.FetchExercisesUseCase
 import app.shapeshifter.feature.workout.domain.SaveWorkoutUseCase
 import app.shapeshifter.feature.workout.domain.SelectWorkoutPlanUseCase
@@ -71,14 +71,14 @@ class CreateWorkoutPlanPresenter(
             when (val intent = screen.intent) {
                 is CreateWorkoutPlanScreen.Intent.NewWorkoutPlan -> {
                     val session = workoutPlanSession
-                    if (session != null && session.workoutPlan.id != 0L) {
+                    if (session != null && session.workout.id != 0L) {
                         workoutPlanSessionManager.loadExistingPlan(
                             existingPlan = session,
                         )
                     } else {
                         val managerCurrentPlan = workoutPlanSessionManager.currentPlan.value
                         if (managerCurrentPlan != null &&
-                            managerCurrentPlan.workoutPlan.id == 0L
+                            managerCurrentPlan.workout.id == 0L
                         ) {
                             // Already working on a new plan in the manager, let it be.
                         } else {
@@ -107,7 +107,7 @@ class CreateWorkoutPlanPresenter(
                     fetchExercisesUseCase(selectedExerciseIds).getOrNull() ?: emptyList()
                 workoutPlanSessionManager.addExercises(
                     exercises = exercises,
-                    startIndex = workoutPlanSessionManager.currentPlan.value?.exercisePlanSessions?.size
+                    startIndex = workoutPlanSessionManager.currentPlan.value?.exerciseSessions?.size
                         ?: 0,
                 )
             }
@@ -120,10 +120,10 @@ class CreateWorkoutPlanPresenter(
 
                 is CreateWorkoutPlanUiEvent.OnAddSet -> {
                     val currentExercisePlan = workoutPlanSessionManager.currentPlan.value
-                        ?.exercisePlanSessions
-                        ?.find { exercisePlanSession -> exercisePlanSession.exercisePlan.id == event.exercisePlanId }
+                        ?.exerciseSessions
+                        ?.find { exercisePlanSession -> exercisePlanSession.exercise.id == event.exercisePlanId }
 
-                    val nextIndex = currentExercisePlan?.setPlans?.size ?: 0
+                    val nextIndex = currentExercisePlan?.sets?.size ?: 0
 
                     workoutPlanSessionManager.addSetPlanToExercise(
                         exercisePlanId = event.exercisePlanId,

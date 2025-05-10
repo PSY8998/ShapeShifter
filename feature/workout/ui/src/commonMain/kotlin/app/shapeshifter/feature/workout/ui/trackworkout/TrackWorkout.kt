@@ -82,10 +82,10 @@ import app.shapeshifter.common.ui.compose.screens.TrackWorkoutScreen
 import app.shapeshifter.common.ui.compose.ui.Crossfade
 import app.shapeshifter.data.models.SetType
 import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLogSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.data.models.workout.Weight
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
 import app.shapeshifter.feature.workout.ui.components.AddNewSet
 import app.shapeshifter.feature.workout.ui.components.ExerciseLog
 import app.shapeshifter.feature.workout.ui.components.SetAnchorBox
@@ -136,8 +136,8 @@ private fun TrackWorkout(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize(),
         ) {
-            val startTime by remember(state.asFilled()?.workoutSession?.workoutLog?.startTime) {
-                val time = state.asFilled()?.workoutSession?.workoutLog?.startTime?.toEpochMilliseconds()
+            val startTime by remember(state.asFilled()?.workoutSession?.workout?.startTime) {
+                val time = state.asFilled()?.workoutSession?.workout?.startTime?.toEpochMilliseconds()
                 if (time == null) {
                     mutableLongStateOf(0L)
                 } else {
@@ -207,7 +207,7 @@ private fun TrackWorkout(
                                             state.eventSink(
                                                 TrackWorkoutUiEvent.OnSetCompleted(
                                                     set = it,
-                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                    exerciseLog = exerciseSession.exercise,
                                                 ),
                                             )
                                         },
@@ -216,8 +216,8 @@ private fun TrackWorkout(
                                                 TrackWorkoutUiEvent.OnAddSet(
                                                     exerciseLogId = it,
                                                     exerciseId = exerciseSession.exercise.id,
-                                                    workoutPlanId = targetState.workoutSession.workoutLog.workoutPlanId,
-                                                    workoutLogId = targetState.workoutSession.workoutLog.id,
+                                                    workoutPlanId = targetState.workoutSession.workout.workoutPlanId,
+                                                    workoutLogId = targetState.workoutSession.workout.id,
                                                 ),
                                             )
                                         },
@@ -228,14 +228,14 @@ private fun TrackWorkout(
                                             state.eventSink(
                                                 TrackWorkoutUiEvent
                                                     .OnReorderExercises(
-                                                        targetState.workoutSession.workoutLog.id,
+                                                        targetState.workoutSession.workout.id,
                                                     ),
                                             )
                                         },
                                         onRemoveExercise = {
                                             state.eventSink(
                                                 TrackWorkoutUiEvent.OnRemoveExercise(
-                                                    exerciseSession.exerciseLog,
+                                                    exerciseSession.exercise,
                                                 ),
                                             )
                                         },
@@ -243,7 +243,7 @@ private fun TrackWorkout(
                                             state.eventSink(
                                                 TrackWorkoutUiEvent.OnUpdateRestTime(
                                                     minutes, seconds,
-                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                    exerciseLog = exerciseSession.exercise,
                                                 ),
                                             )
                                         },
@@ -251,7 +251,7 @@ private fun TrackWorkout(
                                         onReplaceExercise = {
                                             state.eventSink(
                                                 TrackWorkoutUiEvent.OnReplaceExercise(
-                                                    exerciseLog = exerciseSession.exerciseLog,
+                                                    exerciseLog = exerciseSession.exercise,
                                                 ),
                                             )
                                         },
@@ -316,7 +316,7 @@ private fun TrackWorkout(
 }
 
 private fun LazyListScope.exerciseLog(
-    exerciseSession: ExerciseSession,
+    exerciseSession: ExerciseLogSession,
     onCompleteSet: (setLog: SetLog) -> Unit,
     onAddSet: (exerciseLogId: Long) -> Unit,
     onDeleteSet: (setLog: SetLog) -> Unit,
@@ -326,14 +326,14 @@ private fun LazyListScope.exerciseLog(
     onUpdateRestTime: (Int, Int) -> Unit,
     onUpdateSet: (setLog: SetLog) -> Unit,
 ) {
-    val exerciseLog = exerciseSession.exerciseLog
+    val exerciseLog = exerciseSession.exercise
 
     item(
         key = "exercise_${exerciseLog.id}",
         contentType = "exercise",
     ) {
         ExerciseLog(
-            name = exerciseSession.exercise.name,
+            name = exerciseSession.exerciseTemplate.name,
             onReorderExercises = { onReorderExercises(exerciseLog.id) },
             onReplaceExercise = { onReplaceExercise(exerciseLog) },
             onRemoveExercise = { onRemoveExercise(exerciseLog) },

@@ -40,14 +40,12 @@ import androidx.compose.ui.unit.dp
 import app.shapeshifter.common.ui.compose.NestedScaffold
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import app.shapeshifter.common.ui.compose.screens.SavedWorkoutsScreen
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workout.WorkoutLog
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import app.shapeshifter.feature.workout.ui.components.MenuItem
 import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
-import app.shapeshifter.feature.workout.ui.createworkoutplan.WorkoutPlanNameResult
-import app.shapeshifter.feature.workout.ui.createworkoutplan.showWorkoutPlanName
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
 import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.LocalOverlayHost
@@ -423,7 +421,7 @@ private fun MyRoutine(
                 }
 
                 for (workoutPlanSession in workoutPlanSessions) {
-                    key(workoutPlanSession.workoutPlan.id) {
+                    key(workoutPlanSession.workout.id) {
                         WorkoutPlanCard(
                             modifier = Modifier,
                             workoutPlanSession = workoutPlanSession,
@@ -466,7 +464,7 @@ fun WorkoutPlanCard(
                     .padding(Dimens.Padding.ExtraSmall),
             ) {
                 Text(
-                    text = workoutPlanSession.workoutPlan.name,
+                    text = workoutPlanSession.workout.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -495,8 +493,8 @@ fun WorkoutPlanCard(
                 )
             }
             Row {
-                for (exercisePlanSession in workoutPlanSession.exercisePlanSessions) {
-                    Text(exercisePlanSession.exercise.name + ", ")
+                for (exercisePlanSession in workoutPlanSession.exerciseSessions) {
+                    Text(exercisePlanSession.exerciseTemplate.name + ", ")
                 }
             }
 

@@ -53,8 +53,8 @@ class CreateWorkoutUseCase(
             return@withContext transactionRunner {
                 val workoutLog = WorkoutLog(
                     id = 0,
-                    workoutPlanId = workoutPlanSession.workoutPlan.id,
-                    name = workoutPlanSession.workoutPlan.name,
+                    workoutPlanId = workoutPlanSession.workout.id,
+                    name = workoutPlanSession.workout.name,
                     startTime = startTime,
                     finishTime = null,
                     note = "",
@@ -62,14 +62,14 @@ class CreateWorkoutUseCase(
 
                 val workoutLogId = workoutEntityDao.insert(workoutLog)
 
-                workoutPlanSession.exercisePlanSessions.forEach { exercisePlanSession ->
+                workoutPlanSession.exerciseSessions.forEach { exercisePlanSession ->
                     val exerciseLog = ExerciseLog(
                         id = 0,
                         index = 0,
-                        exercisePlanId = exercisePlanSession.exercisePlan.id,
+                        exercisePlanId = exercisePlanSession.exercise.id,
                         note = "",
                         workoutId = workoutLogId,
-                        exerciseTemplateId = exercisePlanSession.exercisePlan.exerciseTemplateId,
+                        exerciseTemplateId = exercisePlanSession.exercise.exerciseTemplateId,
                         restDuration = Duration.ZERO,
                     )
 
@@ -80,7 +80,7 @@ class CreateWorkoutUseCase(
                             0
                         }
 
-                    val setLogs = exercisePlanSession.setPlans.map { setPlan ->
+                    val setLogs = exercisePlanSession.sets.map { setPlan ->
                         SetLog(
                             id = 0,
                             exerciseId = exerciseLogId,

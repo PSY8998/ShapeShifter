@@ -6,13 +6,13 @@ import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.ExerciseTemplate
-import app.shapeshifter.data.models.plans.ExercisePlanSession
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
 import app.shapeshifter.data.models.workout.ExercisePlan
+import app.shapeshifter.data.models.workout.ExercisePlanSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetPlan
 import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workout.WorkoutPlan
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -104,7 +104,7 @@ class SqlDelightWorkoutPlanEntityDao(
                                 }
 
                                 ExercisePlanSession(
-                                    exercisePlan = ExercisePlan(
+                                    exercise = ExercisePlan(
                                         id = entry.exercise_plan_id!!,
                                         workoutId = entry.workout_plan_id,
                                         exerciseTemplateId = entry.exercise_id!!,
@@ -112,20 +112,20 @@ class SqlDelightWorkoutPlanEntityDao(
                                         note = null,
                                         restDuration = null,
                                     ),
-                                    exercise = ExerciseTemplate(
+                                    exerciseTemplate = ExerciseTemplate(
                                         id = exerciseId!!,
                                         name = entry.exercise_name.orEmpty(),
                                         primaryMuscle = entry.exercise_primary_muscle!!,
                                         secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
                                         imageUrl = "",
                                     ),
-                                    setPlans = sets,
+                                    sets = sets,
                                 )
                             }
 
                         WorkoutPlanSession(
-                            workoutPlan = workoutPlan,
-                            exercisePlanSessions = exercisePlanSessions,
+                            workout = workoutPlan,
+                            exerciseSessions = exercisePlanSessions,
                         )
                     }
                 return@mapNotNull sessions
@@ -155,7 +155,7 @@ class SqlDelightWorkoutPlanEntityDao(
                     }
                 }
                 ExercisePlanSession(
-                    exercisePlan = ExercisePlan(
+                    exercise = ExercisePlan(
                         id = entry.exercise_plan_id!!,
                         workoutId = entry.workout_plan_id,
                         exerciseTemplateId = entry.exercise_id!!,
@@ -163,27 +163,27 @@ class SqlDelightWorkoutPlanEntityDao(
                         note = null,
                         restDuration = null,
                     ),
-                    exercise = ExerciseTemplate(
+                    exerciseTemplate = ExerciseTemplate(
                         id = entry.exercise_id,
                         name = entry.exercise_name.orEmpty(),
                         primaryMuscle = entry.exercise_primary_muscle!!,
                         secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
                         imageUrl = "",
                     ),
-                    setPlans = setPlans,
+                    sets = setPlans,
                 )
             }
 
         val entry = session.first()
 
         return WorkoutPlanSession(
-            workoutPlan = WorkoutPlan(
+            workout = WorkoutPlan(
                 id = entry.workout_plan_id,
                 routineId = entry.workout_plan_routine_id,
                 name = entry.workout_plan_name,
                 note = null,
             ),
-            exercisePlanSessions = exercisePlanSessions,
+            exerciseSessions = exercisePlanSessions,
         )
     }
 }

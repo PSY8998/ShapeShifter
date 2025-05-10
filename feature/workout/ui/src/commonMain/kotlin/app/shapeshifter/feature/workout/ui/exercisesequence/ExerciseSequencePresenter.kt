@@ -8,7 +8,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import app.shapeshifter.common.ui.compose.screens.ExerciseSequenceScreen
 import app.shapeshifter.data.models.workout.ExerciseLog
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workout.WorkoutLogSession
+import app.shapeshifter.data.models.workout.WorkoutSession
 import app.shapeshifter.feature.workout.domain.ObserveWorkoutDetailsUseCase
 import app.shapeshifter.feature.workout.domain.UpdateExerciseLogIndexUseCase
 import com.slack.circuit.retained.collectAsRetainedState
@@ -51,7 +52,7 @@ class ExerciseSequencePresenter(
 
         val workoutId: Long by rememberSaveable { mutableLongStateOf(screen.workoutLogId) }
 
-        val workoutSession: WorkoutSession?
+        val workoutSession: WorkoutLogSession?
             by observeWorkoutDetailsUseCase.flow.collectAsRetainedState(null)
 
         if (workoutId != 0L) {
@@ -69,7 +70,7 @@ class ExerciseSequencePresenter(
                 is ExerciseSequenceUiEvent.OnReorderedExercises -> {
                     scope.launch {
                         val exerciseLogs: List<ExerciseLog> =
-                            event.exerciseSessions.map { it.exerciseLog }
+                            event.exerciseSessions.map { it.exercise }
                         updateExerciseLogIndexUseCase(
                             params = UpdateExerciseLogIndexUseCase.Params(
                                 exerciseLogs = exerciseLogs,

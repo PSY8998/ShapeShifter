@@ -111,7 +111,7 @@ class SavedWorkoutsPresenter(
                         navigator.goTo(
                             CreateWorkoutPlanScreen(
                                 intent = CreateWorkoutPlanScreen.Intent.EditWorkoutPlan(
-                                    event.workoutPlanSession.workoutPlan.id,
+                                    event.workoutPlanSession.workout.id,
                                 ),
                             ),
                         )
@@ -122,7 +122,7 @@ class SavedWorkoutsPresenter(
                     scope.launch {
                         navigator.goTo(
                             TrackWorkoutScreen(
-                                workoutPlanId = event.workoutPlanSession.workoutPlan.id,
+                                workoutPlanId = event.workoutPlanSession.workout.id,
                                 workoutLogId = 0,
                             ),
                         )

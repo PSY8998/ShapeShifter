@@ -8,12 +8,12 @@ import app.shapeshifter.data.db.DatabaseTransactionRunner
 import app.shapeshifter.data.db.ShapeShifterDatabase
 import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.models.workout.ExerciseLog
+import app.shapeshifter.data.models.workout.ExerciseLogSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.SetLog
 import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workout.WorkoutLog
-import app.shapeshifter.data.models.workoutlog.ExerciseSession
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -33,9 +33,9 @@ interface WorkoutEntityDao {
 
     fun observeWorkoutWithExercisesAndSets(
         workoutLogId: Long,
-    ): Flow<WorkoutSession>
+    ): Flow<WorkoutLogSession>
 
-    fun observeWorkoutSessions(): Flow<List<WorkoutSession>>
+    fun observeWorkoutSessions(): Flow<List<WorkoutLogSession>>
 
     fun activeWorkout(): Flow<WorkoutSessionOverview?>
 
@@ -87,7 +87,7 @@ class SqlDelightWorkoutEntityDao(
 
     override fun observeWorkoutWithExercisesAndSets(
         workoutLogId: Long,
-    ): Flow<WorkoutSession> {
+    ): Flow<WorkoutLogSession> {
         return db.workout_sessionQueries
             .selectWorkoutSession(workoutLogId = workoutLogId)
             .asFlow()
@@ -140,8 +140,8 @@ class SqlDelightWorkoutEntityDao(
                             )
                         }
 
-                        ExerciseSession(
-                            exerciseLog = ExerciseLog(
+                        ExerciseLogSession(
+                            exercise = ExerciseLog(
                                 id = entry.exercise_log_id!!,
                                 index = entry.exercise_log_index!!.toInt(),
                                 exerciseTemplateId = entry.exercise_id!!,
@@ -150,7 +150,7 @@ class SqlDelightWorkoutEntityDao(
                                 workoutId = workoutLog.id,
                                 restDuration = entry.exercise_rest_time_duration!!.milliseconds,
                             ),
-                            exercise = ExerciseTemplate(
+                            exerciseTemplate = ExerciseTemplate(
                                 id = entry.exercise_id,
                                 primaryMuscle = entry.exercise_primary_muscle!!,
                                 secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
@@ -161,12 +161,12 @@ class SqlDelightWorkoutEntityDao(
                         )
                     }
 
-                WorkoutSession(workoutLog, exerciseSessions)
+                WorkoutLogSession(workoutLog, exerciseSessions)
             }
             .flowOn(dispatchers.io)
     }
 
-    override fun observeWorkoutSessions(): Flow<List<WorkoutSession>> {
+    override fun observeWorkoutSessions(): Flow<List<WorkoutLogSession>> {
 
         return db.workout_sessionQueries
             .workoutSessions()
@@ -225,8 +225,8 @@ class SqlDelightWorkoutEntityDao(
                                     )
                                 }
 
-                                ExerciseSession(
-                                    exerciseLog = ExerciseLog(
+                                ExerciseLogSession(
+                                    exercise = ExerciseLog(
                                         id = entry.exercise_log_id!!,
                                         index = entry.exercise_log_index!!.toInt(),
                                         exerciseTemplateId = entry.exercise_id!!,
@@ -235,7 +235,7 @@ class SqlDelightWorkoutEntityDao(
                                         workoutId = workoutLog.id,
                                         restDuration = entry.exercise_rest_time_duration!!.milliseconds,
                                     ),
-                                    exercise = ExerciseTemplate(
+                                    exerciseTemplate = ExerciseTemplate(
                                         id = entry.exercise_id,
                                         primaryMuscle = entry.exercise_primary_muscle!!,
                                         secondaryMuscles = entry.exercise_secondary_muscles.orEmpty(),
@@ -245,8 +245,8 @@ class SqlDelightWorkoutEntityDao(
                                     sets = sets,
                                 )
                             }
-                        WorkoutSession(
-                            workoutLog = workoutLog,
+                        WorkoutLogSession(
+                            workout = workoutLog,
                             exerciseSessions = exerciseSessions,
                         )
                     }

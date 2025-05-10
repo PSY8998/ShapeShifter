@@ -1,6 +1,6 @@
 package app.shapeshifter.feature.workout.ui.createworkoutplan
 
-import app.shapeshifter.data.models.plans.WorkoutPlanSession
+import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 

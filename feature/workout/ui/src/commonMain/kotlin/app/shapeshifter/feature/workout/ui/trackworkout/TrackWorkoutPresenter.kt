@@ -109,7 +109,7 @@ class TrackWorkoutPresenter(
                         val selectedExerciseId = result.exerciseId
                         scope.launch {
                             val exerciseLogToReplace =
-                                workoutSession?.exerciseSessions?.find { it.exerciseLog.id == exerciseLogId }
+                                workoutSession?.exerciseSessions?.find { it.exercise.id == exerciseLogId }
 
                             removeExerciseLogUseCase.invoke(
                                 RemoveExerciseLogUseCase.Params(
@@ -122,7 +122,7 @@ class TrackWorkoutPresenter(
                                     workoutLogId = workoutLogId,
                                     exerciseIds = listOf(selectedExerciseId),
                                     workoutPlanId = null,
-                                    index = exerciseLogToReplace?.exerciseLog?.index?.toLong() ?: 0,
+                                    index = exerciseLogToReplace?.exercise?.index?.toLong() ?: 0,
                                 ),
                             )
                         }
@@ -171,7 +171,7 @@ class TrackWorkoutPresenter(
                     scope.launch {
                         discardWorkoutUseCase(
                             params = DiscardWorkoutUseCase.Params(
-                                workoutLog = workoutSession?.workoutLog ?: return@launch,
+                                workoutLog = workoutSession?.workout ?: return@launch,
                             ),
                         )
 
@@ -185,7 +185,7 @@ class TrackWorkoutPresenter(
                         finishedSetUseCase(
                             params = FinishedSetUseCase.Params(
                                 setLog = event.set,
-                                workoutLog = session.workoutLog,
+                                workoutLog = session.workout,
                             ),
                         )
                     }
@@ -206,7 +206,7 @@ class TrackWorkoutPresenter(
                         finishWorkoutUseCase(
                             params = FinishWorkoutUseCase.Params(
                                 workoutSession = event.workoutSession.copy(
-                                    workoutLog = event.workoutSession.workoutLog.copy(
+                                    workout = event.workoutSession.workout.copy(
                                         startTime = event.selectedDate.let {
                                             Instant.fromEpochMilliseconds(it)
                                         },

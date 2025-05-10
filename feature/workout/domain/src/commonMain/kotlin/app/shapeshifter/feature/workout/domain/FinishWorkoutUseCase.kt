@@ -2,7 +2,7 @@ package app.shapeshifter.feature.workout.domain
 
 import app.shapeshifter.core.base.inject.AppCoroutineDispatchers
 import app.shapeshifter.data.db.daos.WorkoutEntityDao
-import app.shapeshifter.data.models.workoutlog.WorkoutSession
+import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
 import kotlinx.coroutines.withContext
@@ -23,7 +23,7 @@ class FinishWorkoutUseCase(
 
         return withContext(dispatchers.databaseWrite) {
             // Calculate workout duration based on start time and current time
-            val workoutLog = params.workoutSession.workoutLog
+            val workoutLog = params.workoutSession.workout
             val startTime = workoutLog.startTime
             val currentTime = Clock.System.now()
             val duration = currentTime - startTime
@@ -41,6 +41,6 @@ class FinishWorkoutUseCase(
     }
 
     data class Params(
-        val workoutSession: WorkoutSession,
+        val workoutSession: WorkoutLogSession,
     )
 }

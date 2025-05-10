@@ -1,10 +1,7 @@
-package app.shapeshifter.data.models.workoutlog
+package app.shapeshifter.data.models.workout
 
 import app.shapeshifter.data.models.ExerciseTemplate
 import app.shapeshifter.data.models.metrics.WorkoutMetrics
-import app.shapeshifter.data.models.workout.ExerciseLog
-import app.shapeshifter.data.models.workout.SetLog
-import app.shapeshifter.data.models.workout.WorkoutLog
 import kotlin.time.Duration
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -12,17 +9,33 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
 
-data class WorkoutSession(
-    val workoutLog: WorkoutLog,
-    val exerciseSessions: List<ExerciseSession>,
-) {
+interface WorkoutSession {
+    val workout: Workout
+    val exerciseSessions: List<ExerciseSession>
+}
+
+interface ExerciseSession {
+    val exercise: Exercise
+    val exerciseTemplate: ExerciseTemplate
+    val sets: List<Set>
+}
+
+data class WorkoutPlanSession(
+    override val workout: WorkoutPlan,
+    override val exerciseSessions: List<ExercisePlanSession>,
+) : WorkoutSession
+
+data class WorkoutLogSession(
+    override val workout: WorkoutLog,
+    override val exerciseSessions: List<ExerciseLogSession>,
+) : WorkoutSession {
     fun isValid(): Boolean {
         return exerciseSessions.isNotEmpty() && exerciseSessions.all { it.isValid() }
     }
 
     fun metrics(): WorkoutMetrics {
-        val duration = workoutLog.finishTime?.let {
-            it - workoutLog.startTime
+        val duration = workout.finishTime?.let {
+            it - workout.startTime
         } ?: Duration.ZERO
 
         val calories = 200
@@ -41,18 +54,21 @@ data class WorkoutSession(
         }
 
         val timeZone = TimeZone.currentSystemDefault()
-        return dateTimeFormat.format(workoutLog.startTime.toLocalDateTime(timeZone))
+        return dateTimeFormat.format(workout.startTime.toLocalDateTime(timeZone))
     }
-
-
 }
 
-data class ExerciseSession(
-    val exerciseLog: ExerciseLog,
-    val exercise: ExerciseTemplate,
-    val sets: List<SetLog>,
-) {
+data class ExercisePlanSession(
+    override val exercise: ExercisePlan,
+    override val exerciseTemplate: ExerciseTemplate,
+    override val sets: List<SetPlan>,
+) : ExerciseSession
 
+data class ExerciseLogSession(
+    override val exercise: ExerciseLog,
+    override val exerciseTemplate: ExerciseTemplate,
+    override val sets: List<SetLog>,
+) : ExerciseSession {
     fun setsOverview(): String {
         var totalSets = 0
         var totalReps = 0
