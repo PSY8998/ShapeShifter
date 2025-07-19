@@ -19,6 +19,7 @@ kotlin {
                 api(projects.common.ui.compose)
 
                 implementation(libs.circuit.foundation)
+                implementation(libs.circuit.navigation)
 
                 implementation(libs.kotlininject.runtime)
 

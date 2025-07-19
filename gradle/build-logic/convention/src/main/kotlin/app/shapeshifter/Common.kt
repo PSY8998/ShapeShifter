@@ -19,6 +19,7 @@ fun Project.configureKotlinMultiplatform(
                     compilerOptions {
                         setProjectDefaults(enableWarningsAsErrors)
                         compilerOptions()
+                        addCoroutinesCompilerArgs()
                     }
                 }
             }
@@ -38,6 +39,7 @@ fun Project.configureKotlin(
                 compilerOptions {
                     setProjectDefaults(enableWarningsAsErrors)
                     compilerOptions()
+                    addCoroutinesCompilerArgs()
                 }
             }
         }
@@ -81,6 +83,7 @@ fun KotlinCommonCompilerOptions.setProjectDefaults(
 
 fun KotlinCommonCompilerOptions.addCoroutinesCompilerArgs() {
     // Enable experimental coroutines APIs, including Flow
-    freeCompilerArgs.add("-opt-in=kotlinx.coroutines.FlowPreview")
-    freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+    //freeCompilerArgs.add("-opt-in=kotlinx.coroutines.FlowPreview")
+    //freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+    freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
 }

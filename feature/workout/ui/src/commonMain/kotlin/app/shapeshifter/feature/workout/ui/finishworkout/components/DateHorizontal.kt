@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.shapeshifter.common.ui.compose.resources.Dimens
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarItemInfo
@@ -41,11 +39,9 @@ import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.WeekDay
 import com.kizitonwose.calendar.core.now
-import java.time.DayOfWeek
-import java.time.format.TextStyle
-import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
@@ -181,17 +177,14 @@ private fun Day(
             if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 
         Text(
-            text = weekDay.date.dayOfMonth.toString(),
+            text = weekDay.date.day.toString(),
             color = contentColor,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodyLarge,
         )
 
         Text(
-            text = weekDay.date.month.getDisplayName(
-                TextStyle.SHORT,
-                Locale.getDefault(),
-            ),
+            text = weekDay.date.month.name,
             color = contentColor,
             style = MaterialTheme.typography.bodySmall,
         )
@@ -206,10 +199,7 @@ private fun Day(
         )
 
         Text(
-            text = weekDay.date.dayOfWeek.getDisplayName(
-                TextStyle.SHORT,
-                Locale.getDefault(),
-            ),
+            text = weekDay.date.dayOfWeek.name,
             color = contentColor,
             style = MaterialTheme.typography.bodySmall,
         )

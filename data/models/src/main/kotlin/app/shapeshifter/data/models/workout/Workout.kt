@@ -1,6 +1,7 @@
 package app.shapeshifter.data.models.workout
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 interface Workout {
     val id: Long
@@ -8,6 +9,7 @@ interface Workout {
     val note: String?
 }
 
+//@OptIn(ExperimentalTime::class)
 data class WorkoutLog(
     override val id: Long,
     override val name: String,

@@ -5,8 +5,8 @@ import app.shapeshifter.data.db.daos.WorkoutEntityDao
 import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 
 @Inject
 class FinishWorkoutUseCase(

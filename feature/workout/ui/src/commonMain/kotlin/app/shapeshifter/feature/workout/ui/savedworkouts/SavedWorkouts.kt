@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,7 +30,9 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +48,6 @@ import app.shapeshifter.feature.workout.ui.components.MenuItem
 import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
 import app.shapeshifter.feature.workout.ui.components.showDiscardWorkoutDialog
 import app.shapeshifter.feature.workout.ui.drawable.MoreHorizontal
-import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.overlay.LocalOverlayHost
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
@@ -73,6 +73,7 @@ class SavedWorkoutsUiFactory : Ui.Factory {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun SavedWorkouts(
     uiState: SavedWorkoutsUiState,

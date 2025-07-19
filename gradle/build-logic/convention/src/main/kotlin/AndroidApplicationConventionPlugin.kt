@@ -1,4 +1,4 @@
-import app.shapeshifter.addCoroutinesCompilerArgs
+
 import app.shapeshifter.configureAndroid
 import app.shapeshifter.configureKotlin
 import app.shapeshifter.configureSpotless
@@ -18,9 +18,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             configureKotlin(
                 enableWarningsAsErrors = true,
-                compilerOptions = {
-                    addCoroutinesCompilerArgs()
-                },
             )
 
             configureAndroid()

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -60,6 +61,7 @@ import app.shapeshifter.common.ui.compose.screens.CreateWorkoutPlanScreen
 import app.shapeshifter.data.models.workout.ExercisePlanSession
 import app.shapeshifter.data.models.workout.Reps
 import app.shapeshifter.data.models.workout.Weight
+import app.shapeshifter.feature.workout.ui.components.Exercise
 import app.shapeshifter.feature.workout.ui.components.pattern
 import app.shapeshifter.feature.workout.ui.createworkoutplan.components.EmptyWorkout
 import app.shapeshifter.feature.workout.ui.createworkoutplan.components.ExerciseTypeRadarChart
@@ -138,33 +140,30 @@ internal fun CreateWorkoutPlan(
                     ExerciseTypeRadarChart()
                 }
 
-                uiState.workoutPlanSession?.exerciseSessions?.forEach { exercisePlanSession ->
-                    exercisePlan(
-                        exercisePlanSession = exercisePlanSession,
-                        onAddSet = {
-                            uiState.eventSink(
-                                CreateWorkoutPlanUiEvent.OnAddSet(
-                                    exercisePlanSession.exercise.id,
-                                ),
-                            )
-                        },
-                        onSetWeightChanged = { id, weight ->
-                            uiState.eventSink(
-                                CreateWorkoutPlanUiEvent.OnSetWeightChanged(
-                                    setId = id,
-                                    setWeight = weight,
-                                ),
-                            )
-                        },
-                        onSetRepsChanged = { id, reps ->
-                            uiState.eventSink(
-                                CreateWorkoutPlanUiEvent.OnSetRepsChanged(
-                                    setId = id,
-                                    setReps = reps,
-                                ),
-                            )
-                        },
-                    )
+                if (uiState.workoutPlanSession?.exerciseSessions != null) {
+                    items(
+                        items = uiState.workoutPlanSession.exerciseSessions,
+                        key = { it.exercise.id },
+                    ) { exerciseSession ->
+                        Exercise(
+                            exerciseSession = exerciseSession,
+                            isInEditMode = true,
+                            isInLoggingMode = false,
+                            onDelete = { set ->
+
+                            },
+                            onAddSet = {
+                                uiState.eventSink(
+                                    CreateWorkoutPlanUiEvent.OnAddSet(
+                                        exerciseSession.exercise.id,
+                                    ),
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Dimens.Padding.ExtraMedium),
+                        )
+                    }
                 }
 
                 if (uiState.workoutPlanSession == null) {

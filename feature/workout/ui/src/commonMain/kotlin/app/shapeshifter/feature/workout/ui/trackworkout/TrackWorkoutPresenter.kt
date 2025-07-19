@@ -32,8 +32,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.effects.LaunchedImpressionEffect
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 
 @Inject
 class TrackWorkoutPresenterFactory(

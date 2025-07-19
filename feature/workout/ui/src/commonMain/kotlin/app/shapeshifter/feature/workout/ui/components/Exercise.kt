@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -534,8 +535,9 @@ private fun Set(
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Black,
                                 ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .wrapContentSize(Alignment.Center),
                             )
                         }
 
@@ -580,8 +582,9 @@ private fun Set(
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Black,
                                 ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .wrapContentSize(Alignment.Center),
                             )
                         }
 

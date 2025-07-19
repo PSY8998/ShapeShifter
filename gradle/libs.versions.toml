@@ -1,30 +1,30 @@
 [versions]
 minSdk = "24"
-compileSdk = "35"
-targetSdk = "35"
+compileSdk = "36"
+targetSdk = "36"
 
-agp = "8.7.2"
-kotlin = "2.1.20"
-ksp = "2.1.20-2.0.1"
+agp = "8.11.1"
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
 ktlint = "0.48.2"
 coreKtx = "1.16.0"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 material = "1.12.0"
 activity = "1.10.1"
-circuit = "0.27.1"
+circuit = "0.29.1"
 tatarka = "0.8.0"
-spotless = "6.25.0"
+spotless = "7.1.0"
 desugaring = "2.1.5"
-sqldelight = "2.0.2"
-compose-multiplatform = "1.7.3"
-coroutines = "1.9.0"
+sqldelight = "2.1.0"
+compose-multiplatform = "1.8.2"
+coroutines = "1.10.2"
 paging-multiplatform = "3.3.0-alpha02-0.5.1"
-supabase = "3.1.4"
-coil = "3.1.0"
-splashscreen = "1.2.0-beta02"
+supabase = "3.2.1"
+coil = "3.2.0"
+splashscreen = "1.2.0-rc01"
 pager = "0.37.2"
-datastore = "1.1.3"
-ktor = "3.1.2"
+datastore = "1.1.7"
+ktor = "3.2.2"
 
 # test
 espressoCore = "3.6.1"
@@ -44,7 +44,7 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
+buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.6.7" }
 
 [libraries]
 # DataStore
@@ -61,12 +61,14 @@ androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", v
 
 # multiplatform
 
+ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
+
 # kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
-kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.26.0"
-kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
-kotlinx-dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:0.6.2"
+kotlinx-atomicfu = "org.jetbrains.kotlinx:atomicfu:0.29.0"
+kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
+kotlinx-dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:0.7.1"
 
 # databse
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
@@ -83,6 +85,7 @@ circuit-effects = { module = "com.slack.circuit:circuitx-effects", version.ref =
 circuit-overlay = { module = "com.slack.circuit:circuit-overlay", version.ref = "circuit" }
 circuitx-overlay = { module = "com.slack.circuit:circuitx-overlays", version.ref = "circuit" }
 circuit-runtime = { module = "com.slack.circuit:circuit-runtime", version.ref = "circuit" }
+circuit-navigation = { module = "com.slack.circuit:circuitx-navigation", version.ref = "circuit" }
 
 # dependency injection
 kotlininject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "tatarka" }
@@ -109,7 +112,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 # calendar
-calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version = "2.6.0-beta01" }
+calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version = "2.8.0" }
 dateTimePicker = { module = "com.github.commandiron:WheelPickerCompose", version = "1.1.11" }
 
 aayChart = { module = "io.github.thechance101:chart", version = "1.1.0" }
@@ -126,5 +129,3 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
 compose-gradlePlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "compose-multiplatform" }
 composeCompiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-
-#reordering

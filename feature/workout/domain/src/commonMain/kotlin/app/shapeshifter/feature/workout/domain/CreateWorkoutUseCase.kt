@@ -12,10 +12,10 @@ import app.shapeshifter.data.models.workout.Weight
 import app.shapeshifter.data.models.workout.WorkoutLog
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 
 @Inject
 class CreateWorkoutUseCase(

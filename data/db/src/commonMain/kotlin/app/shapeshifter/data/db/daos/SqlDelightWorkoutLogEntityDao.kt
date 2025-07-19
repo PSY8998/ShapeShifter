@@ -17,10 +17,10 @@ import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.data.models.workoutlog.WorkoutSessionOverview
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.datetime.Instant
 
 interface WorkoutEntityDao {
     fun insert(entity: WorkoutLog): Long

@@ -12,8 +12,8 @@ import app.shapeshifter.data.models.workout.WorkoutPlanSession
 import app.shapeshifter.data.models.workout.WorkoutSession
 import app.shapeshifter.domain.UseCase
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 import kotlin.time.Duration
-import kotlinx.datetime.Clock
 
 @Inject
 class GetWorkoutSessionUseCase(

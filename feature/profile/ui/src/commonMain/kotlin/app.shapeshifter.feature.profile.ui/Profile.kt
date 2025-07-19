@@ -36,7 +36,6 @@ import app.shapeshifter.data.models.workout.ExerciseLogSession
 import app.shapeshifter.data.models.workout.ExerciseSession
 import app.shapeshifter.data.models.workout.WorkoutLogSession
 import app.shapeshifter.feature.workout.ui.components.ThreeDotMenu
-import com.slack.circuit.foundation.internal.BackHandler
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -71,10 +70,10 @@ fun Profile(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            BackHandler(
-                enabled = true,
-                onBack = { state.eventSink(ProfileUiEvent.GoBack) },
-            )
+//            BackHandler(
+//                enabled = true,
+//                onBack = { state.eventSink(ProfileUiEvent.GoBack) },
+//            )
 
             ProfileTopBar(
                 modifier = Modifier
