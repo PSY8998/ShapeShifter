@@ -22,7 +22,6 @@ paging-multiplatform = "3.3.0-alpha02-0.5.1"
 supabase = "3.2.1"
 coil = "3.2.0"
 splashscreen = "1.2.0-rc01"
-pager = "0.37.2"
 datastore = "1.1.7"
 ktor = "3.2.2"
 
